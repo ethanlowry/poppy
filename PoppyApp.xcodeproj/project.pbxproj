@@ -1,0 +1,561 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9D5EDE4617FB4386008EB372 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4517FB4386008EB372 /* Foundation.framework */; };
+		9D5EDE4817FB4386008EB372 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */; };
+		9D5EDE4A17FB4386008EB372 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4917FB4386008EB372 /* UIKit.framework */; };
+		9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EDE4E17FB4386008EB372 /* InfoPlist.strings */; };
+		9D5EDE5217FB4386008EB372 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D5EDE5117FB4386008EB372 /* main.m */; };
+		9D5EDE5617FB4386008EB372 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D5EDE5517FB4386008EB372 /* AppDelegate.m */; };
+		9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EDE5717FB4386008EB372 /* Images.xcassets */; };
+		9D5EDE5F17FB4386008EB372 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE5E17FB4386008EB372 /* XCTest.framework */; };
+		9D5EDE6017FB4386008EB372 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4517FB4386008EB372 /* Foundation.framework */; };
+		9D5EDE6117FB4386008EB372 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4917FB4386008EB372 /* UIKit.framework */; };
+		9D5EDE6917FB4386008EB372 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EDE6717FB4386008EB372 /* InfoPlist.strings */; };
+		9D5EDE6B17FB4386008EB372 /* PoppyAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D5EDE6A17FB4386008EB372 /* PoppyAppTests.m */; };
+		9D5EDE7517FB443E008EB372 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7417FB443E008EB372 /* AssetsLibrary.framework */; };
+		9D5EDE7717FB444B008EB372 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7617FB444B008EB372 /* OpenGLES.framework */; };
+		9D5EDE7917FB445C008EB372 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7817FB445C008EB372 /* QuartzCore.framework */; };
+		9D5EDE7B17FB4465008EB372 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7A17FB4465008EB372 /* CoreMedia.framework */; };
+		9D5EDE7D17FB4471008EB372 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7C17FB4471008EB372 /* CoreVideo.framework */; };
+		9D5EDE7F17FB4479008EB372 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7E17FB4479008EB372 /* AVFoundation.framework */; };
+		9D5EDE8C17FB4692008EB372 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EDE8B17FB4692008EB372 /* Default-568h@2x.png */; };
+		9D5EE03617FB4FDB008EB372 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EE03117FB4FB6008EB372 /* libGPUImage.a */; };
+		9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D5EE03917FB521C008EB372 /* LiveViewController.m */; };
+		9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EE03D17FB6572008EB372 /* LiveView.xib */; };
+		9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D81FCC917FC8DDA00B74EF4 /* blank.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9D5EDE6217FB4386008EB372 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9D5EDE3A17FB4386008EB372 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9D5EDE4117FB4386008EB372;
+			remoteInfo = PoppyApp;
+		};
+		9D5EE03017FB4FB6008EB372 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9D5EE02A17FB4FB6008EB372 /* GPUImage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BCF1A33414DDB1EC00852800;
+			remoteInfo = GPUImage;
+		};
+		9D5EE03217FB4FB6008EB372 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9D5EE02A17FB4FB6008EB372 /* GPUImage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BCF1A34414DDB1EC00852800;
+			remoteInfo = GPUImageTests;
+		};
+		9D5EE03417FB4FBD008EB372 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9D5EE02A17FB4FB6008EB372 /* GPUImage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BCF1A33314DDB1EC00852800;
+			remoteInfo = GPUImage;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		9D5EDE4217FB4386008EB372 /* PoppyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PoppyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D5EDE4517FB4386008EB372 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		9D5EDE4917FB4386008EB372 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		9D5EDE4D17FB4386008EB372 /* PoppyApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PoppyApp-Info.plist"; sourceTree = "<group>"; };
+		9D5EDE4F17FB4386008EB372 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		9D5EDE5117FB4386008EB372 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9D5EDE5317FB4386008EB372 /* PoppyApp-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PoppyApp-Prefix.pch"; sourceTree = "<group>"; };
+		9D5EDE5417FB4386008EB372 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		9D5EDE5517FB4386008EB372 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		9D5EDE5717FB4386008EB372 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		9D5EDE5D17FB4386008EB372 /* PoppyAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PoppyAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D5EDE5E17FB4386008EB372 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		9D5EDE6617FB4386008EB372 /* PoppyAppTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PoppyAppTests-Info.plist"; sourceTree = "<group>"; };
+		9D5EDE6817FB4386008EB372 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		9D5EDE6A17FB4386008EB372 /* PoppyAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoppyAppTests.m; sourceTree = "<group>"; };
+		9D5EDE7417FB443E008EB372 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		9D5EDE7617FB444B008EB372 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		9D5EDE7817FB445C008EB372 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		9D5EDE7A17FB4465008EB372 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		9D5EDE7C17FB4471008EB372 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		9D5EDE7E17FB4479008EB372 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		9D5EDE8B17FB4692008EB372 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		9D5EE02A17FB4FB6008EB372 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
+		9D5EE03817FB521C008EB372 /* LiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveViewController.h; sourceTree = "<group>"; };
+		9D5EE03917FB521C008EB372 /* LiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LiveViewController.m; sourceTree = "<group>"; };
+		9D5EE03D17FB6572008EB372 /* LiveView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LiveView.xib; sourceTree = "<group>"; };
+		9D81FCC917FC8DDA00B74EF4 /* blank.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blank.png; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9D5EDE3F17FB4386008EB372 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D5EE03617FB4FDB008EB372 /* libGPUImage.a in Frameworks */,
+				9D5EDE7F17FB4479008EB372 /* AVFoundation.framework in Frameworks */,
+				9D5EDE7D17FB4471008EB372 /* CoreVideo.framework in Frameworks */,
+				9D5EDE7B17FB4465008EB372 /* CoreMedia.framework in Frameworks */,
+				9D5EDE7917FB445C008EB372 /* QuartzCore.framework in Frameworks */,
+				9D5EDE7717FB444B008EB372 /* OpenGLES.framework in Frameworks */,
+				9D5EDE7517FB443E008EB372 /* AssetsLibrary.framework in Frameworks */,
+				9D5EDE4817FB4386008EB372 /* CoreGraphics.framework in Frameworks */,
+				9D5EDE4A17FB4386008EB372 /* UIKit.framework in Frameworks */,
+				9D5EDE4617FB4386008EB372 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D5EDE5A17FB4386008EB372 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D5EDE5F17FB4386008EB372 /* XCTest.framework in Frameworks */,
+				9D5EDE6117FB4386008EB372 /* UIKit.framework in Frameworks */,
+				9D5EDE6017FB4386008EB372 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9D5EDE3917FB4385008EB372 = {
+			isa = PBXGroup;
+			children = (
+				9D5EDE4B17FB4386008EB372 /* PoppyApp */,
+				9D5EDE6417FB4386008EB372 /* PoppyAppTests */,
+				9D5EDE4417FB4386008EB372 /* Frameworks */,
+				9D5EDE4317FB4386008EB372 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9D5EDE4317FB4386008EB372 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9D5EDE4217FB4386008EB372 /* PoppyApp.app */,
+				9D5EDE5D17FB4386008EB372 /* PoppyAppTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9D5EDE4417FB4386008EB372 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9D5EE02A17FB4FB6008EB372 /* GPUImage.xcodeproj */,
+				9D5EDE7E17FB4479008EB372 /* AVFoundation.framework */,
+				9D5EDE7C17FB4471008EB372 /* CoreVideo.framework */,
+				9D5EDE7A17FB4465008EB372 /* CoreMedia.framework */,
+				9D5EDE7817FB445C008EB372 /* QuartzCore.framework */,
+				9D5EDE7617FB444B008EB372 /* OpenGLES.framework */,
+				9D5EDE7417FB443E008EB372 /* AssetsLibrary.framework */,
+				9D5EDE4517FB4386008EB372 /* Foundation.framework */,
+				9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */,
+				9D5EDE4917FB4386008EB372 /* UIKit.framework */,
+				9D5EDE5E17FB4386008EB372 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9D5EDE4B17FB4386008EB372 /* PoppyApp */ = {
+			isa = PBXGroup;
+			children = (
+				9D5EDE5417FB4386008EB372 /* AppDelegate.h */,
+				9D5EDE5517FB4386008EB372 /* AppDelegate.m */,
+				9D5EE03817FB521C008EB372 /* LiveViewController.h */,
+				9D5EE03917FB521C008EB372 /* LiveViewController.m */,
+				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
+				9D5EDE5717FB4386008EB372 /* Images.xcassets */,
+				9D5EDE4C17FB4386008EB372 /* Supporting Files */,
+			);
+			path = PoppyApp;
+			sourceTree = "<group>";
+		};
+		9D5EDE4C17FB4386008EB372 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9D81FCC917FC8DDA00B74EF4 /* blank.png */,
+				9D5EDE8B17FB4692008EB372 /* Default-568h@2x.png */,
+				9D5EDE4D17FB4386008EB372 /* PoppyApp-Info.plist */,
+				9D5EDE4E17FB4386008EB372 /* InfoPlist.strings */,
+				9D5EDE5117FB4386008EB372 /* main.m */,
+				9D5EDE5317FB4386008EB372 /* PoppyApp-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9D5EDE6417FB4386008EB372 /* PoppyAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				9D5EDE6A17FB4386008EB372 /* PoppyAppTests.m */,
+				9D5EDE6517FB4386008EB372 /* Supporting Files */,
+			);
+			path = PoppyAppTests;
+			sourceTree = "<group>";
+		};
+		9D5EDE6517FB4386008EB372 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9D5EDE6617FB4386008EB372 /* PoppyAppTests-Info.plist */,
+				9D5EDE6717FB4386008EB372 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9D5EE02B17FB4FB6008EB372 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9D5EE03117FB4FB6008EB372 /* libGPUImage.a */,
+				9D5EE03317FB4FB6008EB372 /* GPUImageTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9D5EDE4117FB4386008EB372 /* PoppyApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D5EDE6E17FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyApp" */;
+			buildPhases = (
+				9D5EDE3E17FB4386008EB372 /* Sources */,
+				9D5EDE3F17FB4386008EB372 /* Frameworks */,
+				9D5EDE4017FB4386008EB372 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9D5EE03517FB4FBD008EB372 /* PBXTargetDependency */,
+			);
+			name = PoppyApp;
+			productName = PoppyApp;
+			productReference = 9D5EDE4217FB4386008EB372 /* PoppyApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9D5EDE5C17FB4386008EB372 /* PoppyAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D5EDE7117FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyAppTests" */;
+			buildPhases = (
+				9D5EDE5917FB4386008EB372 /* Sources */,
+				9D5EDE5A17FB4386008EB372 /* Frameworks */,
+				9D5EDE5B17FB4386008EB372 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9D5EDE6317FB4386008EB372 /* PBXTargetDependency */,
+			);
+			name = PoppyAppTests;
+			productName = PoppyAppTests;
+			productReference = 9D5EDE5D17FB4386008EB372 /* PoppyAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9D5EDE3A17FB4386008EB372 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "Ethan Lowry";
+				TargetAttributes = {
+					9D5EDE5C17FB4386008EB372 = {
+						TestTargetID = 9D5EDE4117FB4386008EB372;
+					};
+				};
+			};
+			buildConfigurationList = 9D5EDE3D17FB4386008EB372 /* Build configuration list for PBXProject "PoppyApp" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 9D5EDE3917FB4385008EB372;
+			productRefGroup = 9D5EDE4317FB4386008EB372 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 9D5EE02B17FB4FB6008EB372 /* Products */;
+					ProjectRef = 9D5EE02A17FB4FB6008EB372 /* GPUImage.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				9D5EDE4117FB4386008EB372 /* PoppyApp */,
+				9D5EDE5C17FB4386008EB372 /* PoppyAppTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		9D5EE03117FB4FB6008EB372 /* libGPUImage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libGPUImage.a;
+			remoteRef = 9D5EE03017FB4FB6008EB372 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9D5EE03317FB4FB6008EB372 /* GPUImageTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = GPUImageTests.octest;
+			remoteRef = 9D5EE03217FB4FB6008EB372 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9D5EDE4017FB4386008EB372 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */,
+				9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */,
+				9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */,
+				9D5EDE8C17FB4692008EB372 /* Default-568h@2x.png in Resources */,
+				9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D5EDE5B17FB4386008EB372 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D5EDE6917FB4386008EB372 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9D5EDE3E17FB4386008EB372 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */,
+				9D5EDE5617FB4386008EB372 /* AppDelegate.m in Sources */,
+				9D5EDE5217FB4386008EB372 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D5EDE5917FB4386008EB372 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D5EDE6B17FB4386008EB372 /* PoppyAppTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9D5EDE6317FB4386008EB372 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9D5EDE4117FB4386008EB372 /* PoppyApp */;
+			targetProxy = 9D5EDE6217FB4386008EB372 /* PBXContainerItemProxy */;
+		};
+		9D5EE03517FB4FBD008EB372 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GPUImage;
+			targetProxy = 9D5EE03417FB4FBD008EB372 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		9D5EDE4E17FB4386008EB372 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9D5EDE4F17FB4386008EB372 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		9D5EDE6717FB4386008EB372 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9D5EDE6817FB4386008EB372 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		9D5EDE6C17FB4386008EB372 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		9D5EDE6D17FB4386008EB372 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9D5EDE6F17FB4386008EB372 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PoppyApp/PoppyApp-Prefix.pch";
+				HEADER_SEARCH_PATHS = "../**";
+				INFOPLIST_FILE = "PoppyApp/PoppyApp-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		9D5EDE7017FB4386008EB372 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PoppyApp/PoppyApp-Prefix.pch";
+				HEADER_SEARCH_PATHS = "../**";
+				INFOPLIST_FILE = "PoppyApp/PoppyApp-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		9D5EDE7217FB4386008EB372 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/PoppyApp.app/PoppyApp";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PoppyApp/PoppyApp-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "PoppyAppTests/PoppyAppTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		9D5EDE7317FB4386008EB372 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/PoppyApp.app/PoppyApp";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PoppyApp/PoppyApp-Prefix.pch";
+				INFOPLIST_FILE = "PoppyAppTests/PoppyAppTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9D5EDE3D17FB4386008EB372 /* Build configuration list for PBXProject "PoppyApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D5EDE6C17FB4386008EB372 /* Debug */,
+				9D5EDE6D17FB4386008EB372 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D5EDE6E17FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D5EDE6F17FB4386008EB372 /* Debug */,
+				9D5EDE7017FB4386008EB372 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D5EDE7117FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D5EDE7217FB4386008EB372 /* Debug */,
+				9D5EDE7317FB4386008EB372 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9D5EDE3A17FB4386008EB372 /* Project object */;
+}
