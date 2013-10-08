@@ -7,7 +7,8 @@
 //
 
 #import "AppDelegate.h"
-#import "LiveViewController.h"
+//#import "LiveViewController.h"
+#import "OptionsViewController.h"
 
 @implementation AppDelegate
 
@@ -17,7 +18,8 @@
     // Override point for customization after application launch.
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
     self.window.backgroundColor = [UIColor whiteColor];
-    [self.window setRootViewController:[[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil]];
+//    [self.window setRootViewController:[[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil]];
+    [self.window setRootViewController:[[OptionsViewController alloc] initWithNibName:@"OptionsView" bundle:nil]];
     [self.window makeKeyAndVisible];
     return YES;
 }

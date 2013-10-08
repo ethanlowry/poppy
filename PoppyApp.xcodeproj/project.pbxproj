@@ -30,6 +30,8 @@
 		9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D5EE03917FB521C008EB372 /* LiveViewController.m */; };
 		9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EE03D17FB6572008EB372 /* LiveView.xib */; };
 		9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D81FCC917FC8DDA00B74EF4 /* blank.png */; };
+		BD47241B1803B920001BFF18 /* OptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD47241A1803B920001BFF18 /* OptionsViewController.m */; };
+		BD4724201803CB1E001BFF18 /* OptionsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD47241F1803CB1E001BFF18 /* OptionsView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +94,9 @@
 		9D5EE03917FB521C008EB372 /* LiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LiveViewController.m; sourceTree = "<group>"; };
 		9D5EE03D17FB6572008EB372 /* LiveView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LiveView.xib; sourceTree = "<group>"; };
 		9D81FCC917FC8DDA00B74EF4 /* blank.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blank.png; sourceTree = "<group>"; };
+		BD4724191803B920001BFF18 /* OptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OptionsViewController.h; sourceTree = "<group>"; };
+		BD47241A1803B920001BFF18 /* OptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OptionsViewController.m; sourceTree = "<group>"; };
+		BD47241F1803CB1E001BFF18 /* OptionsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OptionsView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,7 +174,10 @@
 				9D5EDE5517FB4386008EB372 /* AppDelegate.m */,
 				9D5EE03817FB521C008EB372 /* LiveViewController.h */,
 				9D5EE03917FB521C008EB372 /* LiveViewController.m */,
+				BD4724191803B920001BFF18 /* OptionsViewController.h */,
+				BD47241A1803B920001BFF18 /* OptionsViewController.m */,
 				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
+				BD47241F1803CB1E001BFF18 /* OptionsView.xib */,
 				9D5EDE5717FB4386008EB372 /* Images.xcassets */,
 				9D5EDE4C17FB4386008EB372 /* Supporting Files */,
 			);
@@ -264,6 +272,9 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Ethan Lowry";
 				TargetAttributes = {
+					9D5EDE4117FB4386008EB372 = {
+						DevelopmentTeam = W5HKAGZNM5;
+					};
 					9D5EDE5C17FB4386008EB372 = {
 						TestTargetID = 9D5EDE4117FB4386008EB372;
 					};
@@ -320,6 +331,7 @@
 				9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */,
 				9D5EDE8C17FB4692008EB372 /* Default-568h@2x.png in Resources */,
 				9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */,
+				BD4724201803CB1E001BFF18 /* OptionsView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +351,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */,
+				BD47241B1803B920001BFF18 /* OptionsViewController.m in Sources */,
 				9D5EDE5617FB4386008EB372 /* AppDelegate.m in Sources */,
 				9D5EDE5217FB4386008EB372 /* main.m in Sources */,
 			);
@@ -460,12 +473,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/PoppyApp-Prefix.pch";
 				HEADER_SEARCH_PATHS = "../**";
 				INFOPLIST_FILE = "PoppyApp/PoppyApp-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -475,12 +491,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/PoppyApp-Prefix.pch";
 				HEADER_SEARCH_PATHS = "../**";
 				INFOPLIST_FILE = "PoppyApp/PoppyApp-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
