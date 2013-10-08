@@ -182,15 +182,23 @@ bool didFinishEffect = NO;
 }
 
 
-- (BOOL)shouldAutorotate
-{
-    return YES;
-}
+//- (BOOL)shouldAutorotate
+//{
+//    return YES;
+//}
+//
+//- (NSUInteger)supportedInterfaceOrientations
+//{
+//    return
+//        UIInterfaceOrientationMaskLandscapeLeft;
+//}
 
-
-- (NSUInteger)supportedInterfaceOrientations
+-(void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    return UIInterfaceOrientationMaskLandscapeLeft;
+    NSLog(@"CHILD rotating!");
+    if (toInterfaceOrientation != UIInterfaceOrientationLandscapeLeft) {
+        [self dismissModalViewControllerAnimated:YES];
+    }
 }
 
 - (BOOL)prefersStatusBarHidden
