@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9D4F5F6B1821767B00542AE0 /* RBVolumeButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9D5EDE4617FB4386008EB372 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4517FB4386008EB372 /* Foundation.framework */; };
 		9D5EDE4817FB4386008EB372 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */; };
 		9D5EDE4A17FB4386008EB372 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4917FB4386008EB372 /* UIKit.framework */; };
@@ -64,6 +65,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9D4F5F691821767B00542AE0 /* RBVolumeButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBVolumeButtons.h; sourceTree = "<group>"; };
+		9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBVolumeButtons.m; sourceTree = "<group>"; };
 		9D5EDE4217FB4386008EB372 /* PoppyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PoppyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D5EDE4517FB4386008EB372 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -169,6 +172,8 @@
 				9D5EDE5517FB4386008EB372 /* AppDelegate.m */,
 				9D5EE03817FB521C008EB372 /* LiveViewController.h */,
 				9D5EE03917FB521C008EB372 /* LiveViewController.m */,
+				9D4F5F691821767B00542AE0 /* RBVolumeButtons.h */,
+				9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */,
 				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
 				9D5EDE5717FB4386008EB372 /* Images.xcassets */,
 				9D5EDE4C17FB4386008EB372 /* Supporting Files */,
@@ -341,6 +346,7 @@
 				9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */,
 				9D5EDE5617FB4386008EB372 /* AppDelegate.m in Sources */,
 				9D5EDE5217FB4386008EB372 /* main.m in Sources */,
+				9D4F5F6B1821767B00542AE0 /* RBVolumeButtons.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

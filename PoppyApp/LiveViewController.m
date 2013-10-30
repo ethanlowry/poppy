@@ -7,6 +7,7 @@
 //
 
 #import "LiveViewController.h"
+#import "RBVolumeButtons.h"
 
 @interface LiveViewController ()
 
@@ -15,6 +16,7 @@
 @implementation LiveViewController
 
 bool didFinishEffect = NO;
+bool isRecording = NO;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -28,8 +30,23 @@ bool didFinishEffect = NO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-
+    buttonStealer = [[RBVolumeButtons alloc] init];
+    buttonStealer.upBlock = ^{
+        // + volume button pressed
+        NSLog(@"VOLUME UP!");
+        if (isRecording) {
+            isRecording = NO;
+            [self stopRecording];
+        } else {
+            isRecording = YES;
+            [self startRecording];
+        }
+    };
+    buttonStealer.downBlock = ^{
+        // - volume button pressed
+        NSLog(@"VOLUME DOWN!");
+    };
+    [buttonStealer startStealingVolumeButtonEvents];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -63,8 +80,8 @@ bool didFinishEffect = NO;
     GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] init];
     GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] init];
     
-    CGRect cropRectLeft = CGRectMake(.1, .15, .35, .7);
-    CGRect cropRectRight = CGRectMake(.55, .15, .35, .7);
+    CGRect cropRectLeft = CGRectMake(.2, .15, .3, .7);
+    CGRect cropRectRight = CGRectMake(.5, .15, .3, .7);
     
     cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectLeft];
     cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectRight];
@@ -96,67 +113,14 @@ bool didFinishEffect = NO;
     [blankImage processImage];
     [transformLeft addTarget:blendImages];
     
-    GPUImageAddBlendFilter *blendImages2 = [[GPUImageAddBlendFilter alloc] init];
-    [blendImages addTarget:blendImages2];
-    [transformRight addTarget:blendImages2];
+    finalFilter = [[GPUImageAddBlendFilter alloc] init];
+    [blendImages addTarget:finalFilter];
+    [transformRight addTarget:finalFilter];
     
-    [blendImages2 addTarget:uberView];
-    
-    // Record a movie for 10 s and store it in /Documents, visible via iTunes file sharing
-    
-    NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
-    unlink([pathToMovie UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
-    NSURL *movieURL = [NSURL fileURLWithPath:pathToMovie];
-    movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(1280.0, 720.0)];
-    
-    
-    __unsafe_unretained typeof(self) weakSelf = self;
-    
-    movieWriter.completionBlock = ^{
-        NSLog(@"in the completion block");
-        if (didFinishEffect)
-        {
-            NSLog(@"already called for this video - ignoring");
-        } else
-        {
-            didFinishEffect = YES;
-            NSLog(@"GPU FILTER complete");
-            [weakSelf writeMovieToLibraryWithPath:movieURL];
-        }
-    };
-    
-    [blendImages2 addTarget:movieWriter];
+    [finalFilter addTarget:uberView];
     
     [videoCamera startCameraCapture];
-    
-    
-     double delayToStartRecording = 0.5;
-     dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, delayToStartRecording * NSEC_PER_SEC);
-     dispatch_after(startTime, dispatch_get_main_queue(), ^(void){
-     NSLog(@"Start recording");
-     
-     videoCamera.audioEncodingTarget = movieWriter;
-     [movieWriter startRecording];
-     
-     //        NSError *error = nil;
-     //        if (![videoCamera.inputCamera lockForConfiguration:&error])
-     //        {
-     //            NSLog(@"Error locking for configuration: %@", error);
-     //        }
-     //        [videoCamera.inputCamera setTorchMode:AVCaptureTorchModeOn];
-     //        [videoCamera.inputCamera unlockForConfiguration];
-     
-     double delayInSeconds = 5.0;
-     dispatch_time_t stopTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-     dispatch_after(stopTime, dispatch_get_main_queue(), ^(void){
-     
-     [blendImages2 removeTarget:movieWriter];
-     videoCamera.audioEncodingTarget = nil;
-     [movieWriter finishRecording];
-     NSLog(@"Movie completed");
-     });
-     });
-    
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -196,6 +160,61 @@ bool didFinishEffect = NO;
 - (BOOL)prefersStatusBarHidden
 {
     return YES;
+}
+
+- (void)startRecording
+{
+    didFinishEffect = NO;
+    NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
+    unlink([pathToMovie UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
+    NSURL *movieURL = [NSURL fileURLWithPath:pathToMovie];
+    movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(1280.0, 720.0)];
+    
+    
+    __unsafe_unretained typeof(self) weakSelf = self;
+    
+    movieWriter.completionBlock = ^{
+        NSLog(@"in the completion block");
+        if (didFinishEffect)
+        {
+            NSLog(@"already called for this video - ignoring");
+        } else
+        {
+            didFinishEffect = YES;
+            NSLog(@"GPU FILTER complete");
+            [weakSelf writeMovieToLibraryWithPath:movieURL];
+        }
+    };
+    
+    [finalFilter addTarget:movieWriter];
+    
+    double delayToStartRecording = 0.1;
+    dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, delayToStartRecording * NSEC_PER_SEC);
+    dispatch_after(startTime, dispatch_get_main_queue(), ^(void){
+        NSLog(@"Start recording");
+        
+        videoCamera.audioEncodingTarget = movieWriter;
+        [movieWriter startRecording];
+        
+        //        NSError *error = nil;
+        //        if (![videoCamera.inputCamera lockForConfiguration:&error])
+        //        {
+        //            NSLog(@"Error locking for configuration: %@", error);
+        //        }
+        //        [videoCamera.inputCamera setTorchMode:AVCaptureTorchModeOn];
+        //        [videoCamera.inputCamera unlockForConfiguration];
+
+    });
+
+    
+}
+
+-(void)stopRecording
+{
+    videoCamera.audioEncodingTarget = nil;
+    [finalFilter removeTarget:movieWriter];
+    [movieWriter finishRecording];
+    NSLog(@"Movie completed");
 }
 
 

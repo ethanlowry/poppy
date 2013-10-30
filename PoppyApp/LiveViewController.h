@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "GPUImage.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "RBVolumeButtons.h"
 
 @interface LiveViewController : UIViewController
 {
@@ -16,6 +17,8 @@
     GPUImageMovieWriter *movieWriter;
     GPUImageView *uberView;
     GPUImagePicture *blankImage;
+    GPUImageAddBlendFilter *finalFilter;
+    RBVolumeButtons *buttonStealer;
 }
 
 @end
