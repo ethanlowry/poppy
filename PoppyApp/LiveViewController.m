@@ -71,10 +71,11 @@ bool isVideo = YES;
 - (void)viewDidAppear:(BOOL)animated
 {
     uberView = (GPUImageView *)self.view;
+    
     UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cameraViewTapAction:)];
     [uberView addGestureRecognizer:tgr];
     [self activateCamera];
-    [finalFilter addTarget:uberView];
+    [self showToggleButton];
 
 }
 
@@ -95,6 +96,7 @@ bool isVideo = YES;
         [self applyFilters:stillCamera];
         [stillCamera startCameraCapture];
     }
+    [finalFilter addTarget:uberView];
 }
 
 - (void)applyFilters:(id)camera
@@ -178,6 +180,68 @@ bool isVideo = YES;
     return YES;
 }
 
+- (void)showToggleButton
+{
+    NSLog(@"add the toggle button");
+    UIView *viewCaptureMode = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 100, self.view.bounds.size.height - 100, 70, 75)];
+    [viewCaptureMode setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewCaptureMode.frame.size.width, viewCaptureMode.frame.size.height)];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.3];
+    
+    UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 50, 20)];
+    [labelCaptureMode setTag: 100];
+    [labelCaptureMode setTextColor:[UIColor whiteColor]];
+    [labelCaptureMode setTextAlignment:NSTextAlignmentCenter];
+    
+    UISwitch *switchCaptureMode = [[UISwitch alloc] initWithFrame:CGRectMake(10, 35, 50, 20)];
+    [switchCaptureMode addTarget: self action: @selector(toggleCaptureMode:) forControlEvents:UIControlEventValueChanged];
+    
+    if(isVideo){
+        [labelCaptureMode setText:@"Video"];
+        [switchCaptureMode setOn: YES];
+    } else {
+        [labelCaptureMode setText:@"Photo"];
+        [switchCaptureMode setOn: NO];
+    }
+    
+    [viewCaptureMode addSubview: viewShadow];
+    [viewCaptureMode addSubview: labelCaptureMode];
+    [viewCaptureMode addSubview: switchCaptureMode];
+    [self.view addSubview:viewCaptureMode];
+    
+    [self.view bringSubviewToFront:viewCaptureMode];
+    
+}
+
+- (void)hideToggleButton
+{
+    NSLog(@"remove the toggle button");
+    [self.view viewWithTag:100];
+}
+
+- (IBAction) toggleCaptureMode: (id) sender {
+    UISwitch *toggle = (UISwitch *) sender;
+    NSLog(@"%@", toggle.on ? @"On" : @"Off");
+    UILabel *toggleLabel = (id)[self.view viewWithTag:100];
+    isVideo = toggle.on;
+    id camera = stillCamera;
+    if (toggle.on) {
+        [toggleLabel setText: @"Video"];
+        
+    } else {
+        camera = videoCamera;
+        [toggleLabel setText: @"Photo"];
+    }
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+    ^{
+        [camera stopCameraCapture];
+        [self activateCamera];
+    });
+}
+
 - (void)captureStill
 {
     NSLog(@"CAPTURING STILL");
@@ -249,13 +313,23 @@ bool isVideo = YES;
     
     [finalFilter addTarget:movieWriter];
     
-    double delayToStartRecording = 0.1;
-    dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, delayToStartRecording * NSEC_PER_SEC);
-    dispatch_after(startTime, dispatch_get_main_queue(), ^(void){
-        NSLog(@"Start recording");
-        
-        videoCamera.audioEncodingTarget = movieWriter;
-        [movieWriter startRecording];
+    //double delayToStartRecording = 0.1;
+    //dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, delayToStartRecording * NSEC_PER_SEC);
+    
+    dispatch_async(dispatch_get_main_queue(),
+       ^{
+           NSLog(@"Start recording");
+           
+           videoCamera.audioEncodingTarget = movieWriter;
+           [movieWriter startRecording];
+       });
+    
+    
+    //dispatch_after(startTime, dispatch_get_main_queue(), ^(void){
+    //    NSLog(@"Start recording");
+    
+    //    videoCamera.audioEncodingTarget = movieWriter;
+    //    [movieWriter startRecording];
         
         //        NSError *error = nil;
         //        if (![videoCamera.inputCamera lockForConfiguration:&error])
@@ -265,7 +339,7 @@ bool isVideo = YES;
         //        [videoCamera.inputCamera setTorchMode:AVCaptureTorchModeOn];
         //        [videoCamera.inputCamera unlockForConfiguration];
 
-    });
+    //});
 }
 
 -(void)stopRecording
@@ -357,5 +431,9 @@ bool isVideo = YES;
                                 }];
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft);
+}
 
 @end
