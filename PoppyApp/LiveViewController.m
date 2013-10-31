@@ -17,6 +17,8 @@
 
 bool didFinishEffect = NO;
 bool isRecording = NO;
+bool isVideo = YES;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -30,38 +32,73 @@ bool isRecording = NO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    // Create a Poppy album if it doesn't already exist
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    [library addAssetsGroupAlbumWithName:@"Poppy"
+                                  resultBlock:^(ALAssetsGroup *group) {
+                                      NSLog(@"added album:%@", @"Poppy");
+                                  }
+                                 failureBlock:^(NSError *error) {
+                                     NSLog(@"error adding album");
+                                 }];
+    
+    
     buttonStealer = [[RBVolumeButtons alloc] init];
     buttonStealer.upBlock = ^{
         // + volume button pressed
         NSLog(@"VOLUME UP!");
-        if (isRecording) {
-            isRecording = NO;
-            [self stopRecording];
+        if (isVideo) {
+            if (isRecording) {
+                isRecording = NO;
+                [self stopRecording];
+            } else {
+                isRecording = YES;
+                [self startRecording];
+            }
         } else {
-            isRecording = YES;
-            [self startRecording];
+            [self captureStill];
         }
     };
     buttonStealer.downBlock = ^{
         // - volume button pressed
         NSLog(@"VOLUME DOWN!");
     };
+    
+    // NOTE: immediately steals volume button events. maybe we want to only do this in landscape mode
     [buttonStealer startStealingVolumeButtonEvents];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     uberView = (GPUImageView *)self.view;
-    
     UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cameraViewTapAction:)];
     [uberView addGestureRecognizer:tgr];
-    
-    //camera setup
-    videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
-    
-    videoCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
-    videoCamera.horizontallyMirrorFrontFacingCamera = NO;
-    videoCamera.horizontallyMirrorRearFacingCamera = NO;
+    [self activateCamera];
+    [finalFilter addTarget:uberView];
+
+}
+
+- (void)activateCamera
+{
+    if (isVideo) {
+        // video camera setup
+        videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
+        videoCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
+        videoCamera.horizontallyMirrorRearFacingCamera = NO;
+        [self applyFilters:videoCamera];
+        [videoCamera startCameraCapture];
+    } else {
+        //still camera setup
+        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
+        stillCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
+        stillCamera.horizontallyMirrorRearFacingCamera = NO;
+        [self applyFilters:stillCamera];
+        [stillCamera startCameraCapture];
+    }
+}
+
+- (void)applyFilters:(id)camera
+{
     
     // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
     CATransform3D perspectiveTransformLeft = CATransform3DIdentity;
@@ -90,7 +127,7 @@ bool isRecording = NO;
     CGAffineTransform landscapeTransformLeft = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), -1.0, 0.0);
     GPUImageTransformFilter *transformLeft = [[GPUImageTransformFilter alloc] init];
     transformLeft.affineTransform = landscapeTransformLeft;
-
+    
     CGAffineTransform landscapeTransformRight = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), 1.0, 0.0);
     GPUImageTransformFilter *transformRight = [[GPUImageTransformFilter alloc] init];
     transformRight.affineTransform = landscapeTransformRight;
@@ -99,13 +136,13 @@ bool isRecording = NO;
     UIImage *blankPic = [UIImage imageNamed:@"blank"];
     blankImage = [[GPUImagePicture alloc] initWithImage: blankPic];
     GPUImageAddBlendFilter *blendImages = [[GPUImageAddBlendFilter alloc] init];
-
+    
     //STACK ALL THESE FILTERS TOGETHER
-    [videoCamera addTarget:filterLeft];
+    [camera addTarget:filterLeft];
     [filterLeft addTarget:cropLeft];
     [cropLeft addTarget:transformLeft];
-
-    [videoCamera addTarget:filterRight];
+    
+    [camera addTarget:filterRight];
     [filterRight addTarget:cropRight];
     [cropRight addTarget:transformRight];
     
@@ -116,35 +153,14 @@ bool isRecording = NO;
     finalFilter = [[GPUImageAddBlendFilter alloc] init];
     [blendImages addTarget:finalFilter];
     [transformRight addTarget:finalFilter];
-    
-    [finalFilter addTarget:uberView];
-    
-    [videoCamera startCameraCapture];
-
 }
+
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-- (void)writeMovieToLibraryWithPath:(NSURL *)path
-{
-    NSLog(@"writing %@ to library", path);
-    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-    [library writeVideoAtPathToSavedPhotosAlbum:path
-                                completionBlock:^(NSURL *assetURL, NSError *error) {
-                                    if (error)
-                                    {
-                                        NSLog(@"Error saving to library%@", [error localizedDescription]);
-                                    } else
-                                    {
-                                        NSLog(@"SAVED %@ to photo lib",path);
-                                    }
-                                }];
-}
-
 
 - (BOOL)shouldAutorotate
 {
@@ -162,6 +178,51 @@ bool isRecording = NO;
     return YES;
 }
 
+- (void)captureStill
+{
+    NSLog(@"CAPTURING STILL");
+    [stillCamera capturePhotoAsJPEGProcessedUpToFilter:finalFilter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
+        
+        // Save to assets library
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        
+        [library writeImageDataToSavedPhotosAlbum:processedJPEG metadata:stillCamera.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
+         {
+             if (error2) {
+                 NSLog(@"ERROR: the image failed to be written");
+             }
+             else {
+                 NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
+                 [library enumerateGroupsWithTypes:ALAssetsGroupAlbum
+                                      usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                                            if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:@"Poppy"]) {
+                                                NSLog(@"found album %@", @"Poppy");
+                                                // Now assign the image to the Poppy album
+                                                
+                                                
+                                                [library assetForURL:assetURL
+                                                              resultBlock:^(ALAsset *asset) {
+                                                                  // assign the photo to the album
+                                                                  [group addAsset:asset];
+                                                                  NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [group valueForProperty:ALAssetsGroupPropertyName]);
+                                                              }
+                                                             failureBlock:^(NSError* error) {
+                                                                 NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
+                                                             }];
+                                            }
+                                        }
+                                      failureBlock:^(NSError* error) {
+                                          NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
+                                      }];
+             }
+             
+             runOnMainQueueWithoutDeadlocking(^{
+                 //[photoCaptureButton setEnabled:YES];
+             });
+         }];
+    }];
+}
+
 - (void)startRecording
 {
     didFinishEffect = NO;
@@ -171,7 +232,7 @@ bool isRecording = NO;
     movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(1280.0, 720.0)];
     
     
-    __unsafe_unretained typeof(self) weakSelf = self;
+    //__unsafe_unretained typeof(self) weakSelf = self;
     
     movieWriter.completionBlock = ^{
         NSLog(@"in the completion block");
@@ -182,7 +243,7 @@ bool isRecording = NO;
         {
             didFinishEffect = YES;
             NSLog(@"GPU FILTER complete");
-            [weakSelf writeMovieToLibraryWithPath:movieURL];
+            [self writeMovieToLibraryWithPath:movieURL];
         }
     };
     
@@ -205,8 +266,6 @@ bool isRecording = NO;
         //        [videoCamera.inputCamera unlockForConfiguration];
 
     });
-
-    
 }
 
 -(void)stopRecording
@@ -221,16 +280,18 @@ bool isRecording = NO;
 - (void)cameraViewTapAction:(UITapGestureRecognizer *)tgr
 {
     if (tgr.state == UIGestureRecognizerStateRecognized) {
+        
         CGPoint location = [tgr locationInView:uberView];
         
-        AVCaptureDevice *device = videoCamera.inputCamera;
+        if (isVideo) {
+            device = videoCamera.inputCamera;
+        } else {
+            device = stillCamera.inputCamera;
+        }
+        
         CGPoint pointOfInterest = CGPointMake(.5f, .5f);
         NSLog(@"taplocation x = %f y = %f", location.x, location.y);
         CGSize frameSize = [uberView frame].size;
-        
-        if ([videoCamera cameraPosition] == AVCaptureDevicePositionFront) {
-            location.x = frameSize.width - location.x;
-        }
         
         pointOfInterest = CGPointMake(location.y / frameSize.height, 1.f - (location.x / frameSize.width));
         
@@ -256,6 +317,44 @@ bool isRecording = NO;
             }  
         }
     }
+}
+
+- (void)writeMovieToLibraryWithPath:(NSURL *)path
+{
+    NSLog(@"writing %@ to library", path);
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    [library writeVideoAtPathToSavedPhotosAlbum:path
+                                completionBlock:^(NSURL *assetURL, NSError *error) {
+                                    if (error)
+                                    {
+                                        NSLog(@"Error saving to library%@", [error localizedDescription]);
+                                    } else
+                                    {
+                                        NSLog(@"SAVED %@ to photo lib",path);
+                                        [library enumerateGroupsWithTypes:ALAssetsGroupAlbum
+                                                               usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                                                                   if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:@"Poppy"]) {
+                                                                       NSLog(@"found album %@", @"Poppy");
+                                                                       // Now assign the image to the Poppy album
+                                                                       
+                                                                       
+                                                                       [library assetForURL:assetURL
+                                                                                resultBlock:^(ALAsset *asset) {
+                                                                                    // assign the photo to the album
+                                                                                    [group addAsset:asset];
+                                                                                    NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [group valueForProperty:ALAssetsGroupPropertyName]);
+                                                                                }
+                                                                               failureBlock:^(NSError* error) {
+                                                                                   NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
+                                                                               }];
+                                                                   }
+                                                               }
+                                                             failureBlock:^(NSError* error) {
+                                                                 NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
+                                                             }];
+
+                                    }
+                                }];
 }
 
 

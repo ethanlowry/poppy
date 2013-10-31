@@ -14,11 +14,13 @@
 @interface LiveViewController : UIViewController
 {
     GPUImageVideoCamera *videoCamera;
+    GPUImageStillCamera *stillCamera;
     GPUImageMovieWriter *movieWriter;
     GPUImageView *uberView;
     GPUImagePicture *blankImage;
     GPUImageAddBlendFilter *finalFilter;
     RBVolumeButtons *buttonStealer;
+    AVCaptureDevice *device;
 }
 
 @end
