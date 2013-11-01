@@ -6,6 +6,11 @@
 //  Copyright (c) 2013 Ethan Lowry. All rights reserved.
 //
 
+// TAGGED VIEWS:
+// 100 = the view containing the toggle switch
+// 101 = the toggle label
+// 102 = the "recording" light
+
 #import "LiveViewController.h"
 #import "RBVolumeButtons.h"
 
@@ -15,9 +20,13 @@
 
 @implementation LiveViewController
 
+float scaleFactorX = 0.6;
+float scaleFactorY = 0.7;
+
 bool didFinishEffect = NO;
 bool isRecording = NO;
 bool isVideo = YES;
+NSTimer *timerDimmer;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -119,8 +128,8 @@ bool isVideo = YES;
     GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] init];
     GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] init];
     
-    CGRect cropRectLeft = CGRectMake(.2, .15, .3, .7);
-    CGRect cropRectRight = CGRectMake(.5, .15, .3, .7);
+    CGRect cropRectLeft = CGRectMake((1.0 - scaleFactorX)/2, (1.0 - scaleFactorY)/2, scaleFactorX/2, scaleFactorY);
+    CGRect cropRectRight = CGRectMake(.5, (1.0 - scaleFactorY)/2, scaleFactorX/2, scaleFactorY);
     
     cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectLeft];
     cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectRight];
@@ -180,51 +189,93 @@ bool isVideo = YES;
     return YES;
 }
 
-- (void)showToggleButton
+- (void) showToggleButton
 {
-    NSLog(@"add the toggle button");
-    UIView *viewCaptureMode = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 100, self.view.bounds.size.height - 100, 70, 75)];
-    [viewCaptureMode setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+    NSLog(@"show toggle");
+    UIView *viewMode = (id)[self.view viewWithTag:100];
     
-    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewCaptureMode.frame.size.width, viewCaptureMode.frame.size.height)];
-    [viewShadow setBackgroundColor:[UIColor blackColor]];
-    [viewShadow setAlpha:0.3];
-    
-    UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 50, 20)];
-    [labelCaptureMode setTag: 100];
-    [labelCaptureMode setTextColor:[UIColor whiteColor]];
-    [labelCaptureMode setTextAlignment:NSTextAlignmentCenter];
-    
-    UISwitch *switchCaptureMode = [[UISwitch alloc] initWithFrame:CGRectMake(10, 35, 50, 20)];
-    [switchCaptureMode addTarget: self action: @selector(toggleCaptureMode:) forControlEvents:UIControlEventValueChanged];
-    
-    if(isVideo){
-        [labelCaptureMode setText:@"Video"];
-        [switchCaptureMode setOn: YES];
-    } else {
-        [labelCaptureMode setText:@"Photo"];
-        [switchCaptureMode setOn: NO];
+    if (!viewMode)
+    {
+        NSLog(@"add the toggle button");
+        UIView *viewCaptureMode = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 100, self.view.bounds.size.height - 100, 70, 75)];
+        [viewCaptureMode setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+        [viewCaptureMode setTag:100];
+        
+        UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewCaptureMode.frame.size.width, viewCaptureMode.frame.size.height)];
+        [viewShadow setBackgroundColor:[UIColor blackColor]];
+        [viewShadow setAlpha:0.3];
+        
+        UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 50, 20)];
+        [labelCaptureMode setTag: 101];
+        [labelCaptureMode setTextColor:[UIColor whiteColor]];
+        [labelCaptureMode setTextAlignment:NSTextAlignmentCenter];
+        
+        //UIImageView *imageVideo = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"videoicon"]];
+        //UIImageView *imageStill = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraicon"]];
+        
+        
+        UISwitch *switchCaptureMode = [[UISwitch alloc] initWithFrame:CGRectMake(10, 35, 50, 20)];
+        [switchCaptureMode addTarget: self action: @selector(toggleCaptureMode:) forControlEvents:UIControlEventValueChanged];
+        
+        if(isVideo){
+            [labelCaptureMode setText:@"Video"];
+            [switchCaptureMode setOn: YES];
+        } else {
+            [labelCaptureMode setText:@"Photo"];
+            [switchCaptureMode setOn: NO];
+        }
+        
+        [viewCaptureMode addSubview: viewShadow];
+        [viewCaptureMode addSubview: labelCaptureMode];
+        [viewCaptureMode addSubview: switchCaptureMode];
+        [self.view addSubview:viewCaptureMode];
+        
+        [self.view bringSubviewToFront:viewCaptureMode];
+        viewMode = viewCaptureMode;
     }
-    
-    [viewCaptureMode addSubview: viewShadow];
-    [viewCaptureMode addSubview: labelCaptureMode];
-    [viewCaptureMode addSubview: switchCaptureMode];
-    [self.view addSubview:viewCaptureMode];
-    
-    [self.view bringSubviewToFront:viewCaptureMode];
-    
+    [timerDimmer invalidate];
+    timerDimmer = nil;
+    [UIView animateWithDuration:0.2 delay:0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         viewMode.alpha = 1.0;
+                     }
+                     completion:^(BOOL complete){
+                         timerDimmer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(toggleTimerFired:) userInfo:nil repeats:NO];
+                     }];
+
+}
+
+- (void)toggleTimerFired:(NSTimer *)toggleTimer
+{
+    [self dimToggleButton:0.5 withAlpha:0.1];
 }
 
 - (void)hideToggleButton
 {
-    NSLog(@"remove the toggle button");
-    [self.view viewWithTag:100];
+    [self dimToggleButton:0 withAlpha:0];
+}
+
+
+- (void)dimToggleButton:(float)duration withAlpha:(float)alpha
+{
+    NSLog(@"dim the toggle button");
+    [timerDimmer invalidate];
+    timerDimmer = nil;
+    UIView *viewMode = [self.view viewWithTag:100];
+    [UIView animateWithDuration:duration delay:0.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         viewMode.alpha = alpha;
+                     }
+                     completion:^(BOOL complete){}];
 }
 
 - (IBAction) toggleCaptureMode: (id) sender {
+    [self showToggleButton];
     UISwitch *toggle = (UISwitch *) sender;
-    NSLog(@"%@", toggle.on ? @"On" : @"Off");
-    UILabel *toggleLabel = (id)[self.view viewWithTag:100];
+    NSLog(@"%@", toggle.on ? @"Video" : @"Still");
+    UILabel *toggleLabel = (id)[self.view viewWithTag:101];
     isVideo = toggle.on;
     id camera = stillCamera;
     if (toggle.on) {
@@ -289,6 +340,16 @@ bool isVideo = YES;
 
 - (void)startRecording
 {
+    [self hideToggleButton];
+    
+    // Show the red "record" light
+    UIImageView *imgRecord = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"record"]];
+    [imgRecord setFrame:CGRectMake(self.view.bounds.size.width - 45, 20, 25, 25)];
+    [imgRecord setAutoresizingMask: UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin];
+    [imgRecord setTag:102];
+    [self.view addSubview:imgRecord];
+
+    // start recording the movie
     didFinishEffect = NO;
     NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
     unlink([pathToMovie UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
@@ -312,9 +373,6 @@ bool isVideo = YES;
     };
     
     [finalFilter addTarget:movieWriter];
-    
-    //double delayToStartRecording = 0.1;
-    //dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, delayToStartRecording * NSEC_PER_SEC);
     
     dispatch_async(dispatch_get_main_queue(),
        ^{
@@ -348,12 +406,16 @@ bool isVideo = YES;
     [finalFilter removeTarget:movieWriter];
     [movieWriter finishRecording];
     NSLog(@"Movie completed");
+    [[self.view viewWithTag:102] removeFromSuperview]; // remove the "recording" light
+    [self dimToggleButton:0.5 withAlpha:0.1];
 }
 
 
 - (void)cameraViewTapAction:(UITapGestureRecognizer *)tgr
 {
     if (tgr.state == UIGestureRecognizerStateRecognized) {
+        
+        [self showToggleButton];
         
         CGPoint location = [tgr locationInView:uberView];
         
@@ -363,11 +425,14 @@ bool isVideo = YES;
             device = stillCamera.inputCamera;
         }
         
-        CGPoint pointOfInterest = CGPointMake(.5f, .5f);
-        NSLog(@"taplocation x = %f y = %f", location.x, location.y);
         CGSize frameSize = [uberView frame].size;
         
-        pointOfInterest = CGPointMake(location.y / frameSize.height, 1.f - (location.x / frameSize.width));
+        // translate the location to the position in the image coming from the device
+        CGPoint pointOfInterest = CGPointMake((1.f + scaleFactorX)/2 - location.x * scaleFactorX / frameSize.height, (1.f + scaleFactorY)/2 - location.y * scaleFactorY / frameSize.width);
+        
+        NSLog(@"frame width = %f height = %f", frameSize.width, frameSize.height);
+        NSLog(@"location x = %f y = %f", location.x, location.y);
+        NSLog(@"POI x = %f y = %f", pointOfInterest.x, pointOfInterest.y);
         
         if ([device isFocusPointOfInterestSupported] && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
             NSError *error;

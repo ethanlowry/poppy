@@ -30,6 +30,7 @@
 		9D5EE03617FB4FDB008EB372 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EE03117FB4FB6008EB372 /* libGPUImage.a */; };
 		9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D5EE03917FB521C008EB372 /* LiveViewController.m */; };
 		9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EE03D17FB6572008EB372 /* LiveView.xib */; };
+		9D761EE118242A94005412AC /* record@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D761EE018242A94005412AC /* record@2x.png */; };
 		9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D81FCC917FC8DDA00B74EF4 /* blank.png */; };
 /* End PBXBuildFile section */
 
@@ -94,6 +95,7 @@
 		9D5EE03817FB521C008EB372 /* LiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveViewController.h; sourceTree = "<group>"; };
 		9D5EE03917FB521C008EB372 /* LiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LiveViewController.m; sourceTree = "<group>"; };
 		9D5EE03D17FB6572008EB372 /* LiveView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LiveView.xib; sourceTree = "<group>"; };
+		9D761EE018242A94005412AC /* record@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "record@2x.png"; sourceTree = "<group>"; };
 		9D81FCC917FC8DDA00B74EF4 /* blank.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blank.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -184,6 +186,7 @@
 		9D5EDE4C17FB4386008EB372 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9D761EE018242A94005412AC /* record@2x.png */,
 				9D81FCC917FC8DDA00B74EF4 /* blank.png */,
 				9D5EDE8B17FB4692008EB372 /* Default-568h@2x.png */,
 				9D5EDE4D17FB4386008EB372 /* PoppyApp-Info.plist */,
@@ -322,6 +325,7 @@
 			files = (
 				9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */,
 				9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */,
+				9D761EE118242A94005412AC /* record@2x.png in Resources */,
 				9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */,
 				9D5EDE8C17FB4692008EB372 /* Default-568h@2x.png in Resources */,
 				9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */,
