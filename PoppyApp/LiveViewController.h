@@ -10,6 +10,8 @@
 #import "GPUImage.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "RBVolumeButtons.h"
+//#import <AudioToolbox/AudioToolbox.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 @interface LiveViewController : UIViewController
 {
@@ -17,10 +19,12 @@
     GPUImageStillCamera *stillCamera;
     GPUImageMovieWriter *movieWriter;
     GPUImageView *uberView;
+    UIImageView *imgView;
     GPUImagePicture *blankImage;
     GPUImageAddBlendFilter *finalFilter;
     RBVolumeButtons *buttonStealer;
     AVCaptureDevice *device;
+    MPMoviePlayerController *mainMoviePlayer;
 }
 
 @end
