@@ -36,7 +36,7 @@ NSTimer *timerDimmer;
 ALAssetsGroup *assetsGroup;
 ALAssetsLibrary *assetLibrary;
 
-SystemSoundID beep;
+SystemSoundID videoBeep;
 
 
 int currentIndex = -1;
@@ -88,7 +88,7 @@ int currentIndex = -1;
     [buttonStealer startStealingVolumeButtonEvents];
     
     NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"beep" ofType:@"wav"];
-    AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &beep);
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &videoBeep);
 }
 
 - (void) shutterPressed
@@ -613,7 +613,7 @@ int currentIndex = -1;
 
 - (void)playVideoStartSound
 {
-    AudioServicesPlaySystemSound (beep);
+    AudioServicesPlaySystemSound (videoBeep);
 }
 
 - (void)swipeScreenleft:(UITapGestureRecognizer *)tgr
