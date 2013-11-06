@@ -10,7 +10,7 @@
 #import "GPUImage.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "RBVolumeButtons.h"
-//#import <AudioToolbox/AudioToolbox.h>
+#import <AudioToolbox/AudioToolbox.h>
 #import <MediaPlayer/MediaPlayer.h>
 
 @interface LiveViewController : UIViewController

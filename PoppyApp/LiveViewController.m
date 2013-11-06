@@ -7,17 +7,16 @@
 //
 
 // TAGGED VIEWS:
-// 100 = the view containing the toggle switch
+// 100 = the view containing the camera (capture mode) controls
 // 101 = the toggle label
 // 102 = the "recording" light
 // 103 = the movie player view
-// 104 = the view containing the camera button
+// 104 = the view containing the view controls (camera button)
 
 #import "LiveViewController.h"
 #import "RBVolumeButtons.h"
 
 @interface LiveViewController ()
-
 @end
 
 @implementation LiveViewController
@@ -36,6 +35,9 @@ bool isWatching = NO;
 NSTimer *timerDimmer;
 ALAssetsGroup *assetsGroup;
 ALAssetsLibrary *assetLibrary;
+
+SystemSoundID beep;
+
 
 int currentIndex = -1;
 
@@ -71,32 +73,48 @@ int currentIndex = -1;
     buttonStealer.upBlock = ^{
         // + volume button pressed
         NSLog(@"VOLUME UP!");
-        currentIndex = -1;
-        if (isWatching) {
-            [self hideViewer];
-            [self showToggleButton];
-        } else {
-            if (isVideo) {
-                if (isRecording) {
-                    isRecording = NO;
-                    [self stopRecording];
-                } else {
-                    isRecording = YES;
-                    [self startRecording];
-                }
-            } else {
-                [self captureStill];
-            }
-        }
+        [self shutterPressed];
     };
     buttonStealer.downBlock = ^{
         // - volume button pressed
         NSLog(@"VOLUME DOWN!");
+        if (isRecording) {
+            [self stopRecording];
+        }
         [self showMedia:prev];
     };
     
     // NOTE: immediately steals volume button events. maybe we want to only do this in landscape mode
     [buttonStealer startStealingVolumeButtonEvents];
+    
+    NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"beep" ofType:@"wav"];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &beep);
+}
+
+- (void) shutterPressed
+{
+    NSLog(@"SHUTTER PRESSED");
+    currentIndex = -1;
+    if (isWatching) {
+        [self hideViewer];
+        [self showCameraControls];
+    } else {
+        if (isVideo) {
+            if (isRecording) {
+                [self stopRecording];
+            } else {
+                [self startRecording];
+            }
+        } else {
+            [self captureStill];
+        }
+    }
+}
+- (void) shutterButtonPressed: (id) sender
+{
+    NSLog(@"ON SCREEN SHUTTER BUTTON PRESSED");
+    [self showCameraControls];
+    [[MPMusicPlayerController applicationMusicPlayer] setVolume:1.0]; // this uses the volume button stealer as the trigger
 }
 
 - (void)hideViewer
@@ -123,7 +141,7 @@ int currentIndex = -1;
     [self.view addSubview:touchView];
     
     [self activateCamera];
-    [self showToggleButton];
+    [self showCameraControls];
 
 }
 
@@ -151,12 +169,11 @@ int currentIndex = -1;
     NSLog(@"album count %d", assetCount);
     if (assetCount > 0) {
         if (!isWatching) {
-            [self showCameraButton];
+            [self showViewerControls];
             [self dimView:0.0 withAlpha:0.1 withView:[self.view viewWithTag:104] withTimer:NO];
         }
         isWatching = YES; // we're in view mode, not capture mode
-        //[self hideToggleButton];
-        [self hideView:[self.view viewWithTag:100]];
+        [self hideView:[self.view viewWithTag:100]]; // hide the capture mode controls
         
         [mainMoviePlayer stop];
         [[self.view viewWithTag:103] removeFromSuperview];
@@ -347,21 +364,22 @@ int currentIndex = -1;
     return YES;
 }
 
-- (void) showToggleButton
+- (void) showCameraControls
 {
-    NSLog(@"show toggle");
+    NSLog(@"show camera controls");
     UIView *viewMode = (id)[self.view viewWithTag:100];
     
     if (!viewMode)
     {
-        NSLog(@"add the toggle button");
-        UIView *viewCaptureMode = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 200, self.view.bounds.size.height - 100, 170, 75)];
+        // add the toggle button
+        UIView *viewCaptureMode = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, self.view.bounds.size.height - 75, self.view.bounds.size.width/2, 75)];
         [viewCaptureMode setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
         [viewCaptureMode setTag:100];
         
         UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewCaptureMode.frame.size.width, viewCaptureMode.frame.size.height)];
         [viewShadow setBackgroundColor:[UIColor blackColor]];
         [viewShadow setAlpha:0.3];
+        [self addGestures:viewShadow];
         
         UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 50, 20)];
         [labelCaptureMode setTag: 101];
@@ -384,28 +402,46 @@ int currentIndex = -1;
         [viewCaptureMode addSubview: switchCaptureMode];
         [self.view addSubview:viewCaptureMode];
         
-        [self.view bringSubviewToFront:viewCaptureMode];
+        // add the switch to viewer button
+        NSLog(@"adding the viewer button");
+        UIButton *buttonViewer = [[UIButton alloc] initWithFrame: CGRectMake((viewCaptureMode.frame.size.width-210)/2 + 70, 0, 70, 75)];
+        [buttonViewer setImage:[UIImage imageNamed:@"play"] forState:UIControlStateNormal];
+        [buttonViewer addTarget:self action:@selector(switchToViewerMode:) forControlEvents:UIControlEventTouchUpInside];
+        [viewCaptureMode addSubview: buttonViewer];
+        [self.view addSubview:viewCaptureMode];
+        
+        // add the shutter button
+        NSLog(@"adding the shutter button");
+        UIButton *buttonShutter = [[UIButton alloc] initWithFrame: CGRectMake(viewCaptureMode.frame.size.width-70, 0, 70, 75)];
+        [buttonShutter setImage:[UIImage imageNamed:@"shutter"] forState:UIControlStateNormal];
+        [buttonShutter setImage:[UIImage imageNamed:@"shutterPressed"] forState:UIControlStateHighlighted];
+        [buttonShutter addTarget:self action:@selector(shutterButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        [viewCaptureMode addSubview: buttonShutter];
+        [self.view addSubview:viewCaptureMode];
+        
         viewMode = viewCaptureMode;
     }
+    [self.view bringSubviewToFront:viewMode];
     [self dimView:0.2 withAlpha:1.0 withView:viewMode withTimer:YES];
 
 }
 
-- (void) showCameraButton
+- (void) showViewerControls
 {
-    NSLog(@"show toggle");
+    NSLog(@"show show viewer controls");
     UIView *viewCamera = (id)[self.view viewWithTag:104];
     
     if (!viewCamera)
     {
         NSLog(@"add the camera button");
-        UIView *viewCameraMode = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 100, self.view.bounds.size.height - 100, 70, 75)];
+        UIView *viewCameraMode = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 70, self.view.bounds.size.height - 75, 70, 75)];
         [viewCameraMode setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
         [viewCameraMode setTag:104];
         
         UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewCameraMode.frame.size.width, viewCameraMode.frame.size.height)];
         [viewShadow setBackgroundColor:[UIColor blackColor]];
         [viewShadow setAlpha:0.3];
+        [self addGestures:viewShadow];
         
         UIButton *buttonCamera = [[UIButton alloc] initWithFrame: CGRectMake(0, 0, 70, 75)];
         [buttonCamera setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
@@ -414,9 +450,9 @@ int currentIndex = -1;
         [viewCameraMode addSubview: buttonCamera];
         [self.view addSubview:viewCameraMode];
         
-        [self.view bringSubviewToFront:viewCameraMode];
         viewCamera = viewCameraMode;
     }
+    [self.view bringSubviewToFront:viewCamera];
     [self dimView:0.2 withAlpha:1.0 withView:viewCamera withTimer:YES];
     
 }
@@ -425,18 +461,24 @@ int currentIndex = -1;
 {
     [self hideView:[self.view viewWithTag:104]];
     [self hideViewer];
-    [self showToggleButton];
+    [self showCameraControls];
 }
 
-- (void)cameraButtonTimerFired:(NSTimer *)toggleTimer
+- (void) switchToViewerMode: (id) sender
 {
-    [self dimView:0.5 withAlpha:0.1 withView:[self.view viewWithTag:104] withTimer:NO];
+    [self showMedia:prev];
 }
 
 - (void)dimmerTimerFired:(NSTimer *)timer
 {
-    [self dimView:0.5 withAlpha:0.1 withView:[self.view viewWithTag:104] withTimer:NO]; // hide the switch to camera button
-    [self dimView:0.5 withAlpha:0.1 withView:[self.view viewWithTag:100] withTimer:NO]; // hide the toggle view
+    UIView *cameraControlsView = [self.view viewWithTag:100];
+    UIView *viewerControlsView = [self.view viewWithTag:104];
+    if (cameraControlsView.alpha > 0.1) {
+        [self dimView:0.5 withAlpha:0.1 withView:cameraControlsView withTimer:NO];
+    }
+    if (viewerControlsView.alpha > 0.1) {
+        [self dimView:0.5 withAlpha:0.1 withView:viewerControlsView withTimer:NO];
+    }
 }
 
 - (void)hideView:(UIView *)view
@@ -446,7 +488,7 @@ int currentIndex = -1;
 
 - (void)dimView:(float)duration withAlpha:(float)alpha withView:(UIView *)view withTimer:(BOOL)showTimer
 {
-    NSLog(@"dim the toggle button");
+    NSLog(@"dim the view");
     [timerDimmer invalidate];
     timerDimmer = nil;
     [UIView animateWithDuration:duration delay:0.0
@@ -455,12 +497,14 @@ int currentIndex = -1;
                          view.alpha = alpha;
                      }
                      completion:^(BOOL complete){
-                         timerDimmer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
+                         if(showTimer){
+                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
+                         }
                      }];
 }
 
 - (void) toggleCaptureMode: (id) sender {
-    [self showToggleButton];
+    [self showCameraControls];
     UISwitch *toggle = (UISwitch *) sender;
     NSLog(@"%@", toggle.on ? @"Video" : @"Still");
     UILabel *toggleLabel = (id)[self.view viewWithTag:101];
@@ -505,18 +549,14 @@ int currentIndex = -1;
                                   NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
                               }];
              }
-             
-             runOnMainQueueWithoutDeadlocking(^{
-                 //[photoCaptureButton setEnabled:YES];
-             });
          }];
     }];
 }
 
 - (void)startRecording
 {
-    //[self hideToggleButton];
-    [self hideView:[self.view viewWithTag:100]];
+    isRecording = YES;
+    [self dimView:0.5 withAlpha:0.1 withView:[self.view viewWithTag:100] withTimer:NO];
     
     // Show the red "record" light
     UIImageView *imgRecord = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"record"]];
@@ -553,21 +593,27 @@ int currentIndex = -1;
     dispatch_async(dispatch_get_main_queue(),
        ^{
            NSLog(@"Start recording");
-           
+           [self playVideoStartSound];
            videoCamera.audioEncodingTarget = movieWriter;
            [movieWriter startRecording];
        });
+    
 }
 
--(void)stopRecording
+- (void)stopRecording
 {
+    isRecording = NO;
     videoCamera.audioEncodingTarget = nil;
     [finalFilter removeTarget:movieWriter];
     [movieWriter finishRecording];
     NSLog(@"Movie completed");
     [[self.view viewWithTag:102] removeFromSuperview]; // remove the "recording" light
-    [self dimView:0.5 withAlpha:0.1 withView:[self.view viewWithTag:100] withTimer:NO];
-    //[self dimToggleButton:0.5 withAlpha:0.1];
+    //[self dimView:0.5 withAlpha:0.1 withView:[self.view viewWithTag:100] withTimer:NO];
+}
+
+- (void)playVideoStartSound
+{
+    AudioServicesPlaySystemSound (beep);
 }
 
 - (void)swipeScreenleft:(UITapGestureRecognizer *)tgr
@@ -588,11 +634,11 @@ int currentIndex = -1;
         
         if (isWatching) {
             NSLog(@"VIEWER TAPPED!");
-            [self showCameraButton];
+            [self showViewerControls];
             
         } else {
             NSLog(@"CAMERA TAPPED!");
-            [self showToggleButton];
+            [self showCameraControls];
             CGPoint location = [tgr locationInView:uberView];
             [self setCameraFocus:location];
         }
@@ -667,6 +713,13 @@ int currentIndex = -1;
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft);
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    if (isRecording) {
+        [self stopRecording];
+    }
 }
 
 

@@ -35,6 +35,10 @@
 		9D761EE518245B50005412AC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D761EE418245B50005412AC /* AudioToolbox.framework */; };
 		9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D81FCC917FC8DDA00B74EF4 /* blank.png */; };
 		9DFCB1531828764400332D7C /* camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB1521828764400332D7C /* camera@2x.png */; };
+		9DFCB15B18297DB000332D7C /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB15A18297DB000332D7C /* beep.wav */; };
+		9DFCB15E182983FC00332D7C /* shutterPressed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */; };
+		9DFCB15F182983FC00332D7C /* shutter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB15D182983FC00332D7C /* shutter@2x.png */; };
+		9DFCB1611829C68200332D7C /* play@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB1601829C68200332D7C /* play@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +107,10 @@
 		9D761EE418245B50005412AC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		9D81FCC917FC8DDA00B74EF4 /* blank.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blank.png; sourceTree = "<group>"; };
 		9DFCB1521828764400332D7C /* camera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera@2x.png"; sourceTree = "<group>"; };
+		9DFCB15A18297DB000332D7C /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
+		9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shutterPressed@2x.png"; sourceTree = "<group>"; };
+		9DFCB15D182983FC00332D7C /* shutter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shutter@2x.png"; sourceTree = "<group>"; };
+		9DFCB1601829C68200332D7C /* play@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "play@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +204,10 @@
 		9D5EDE4C17FB4386008EB372 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9DFCB15A18297DB000332D7C /* beep.wav */,
+				9DFCB1601829C68200332D7C /* play@2x.png */,
+				9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */,
+				9DFCB15D182983FC00332D7C /* shutter@2x.png */,
 				9DFCB1521828764400332D7C /* camera@2x.png */,
 				9D761EE018242A94005412AC /* record@2x.png */,
 				9D81FCC917FC8DDA00B74EF4 /* blank.png */,
@@ -334,11 +346,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DFCB15B18297DB000332D7C /* beep.wav in Resources */,
 				9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */,
 				9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */,
+				9DFCB15E182983FC00332D7C /* shutterPressed@2x.png in Resources */,
+				9DFCB15F182983FC00332D7C /* shutter@2x.png in Resources */,
 				9D761EE118242A94005412AC /* record@2x.png in Resources */,
 				9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */,
 				9DFCB1531828764400332D7C /* camera@2x.png in Resources */,
+				9DFCB1611829C68200332D7C /* play@2x.png in Resources */,
 				9D5EDE8C17FB4692008EB372 /* Default-568h@2x.png in Resources */,
 				9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */,
 			);
