@@ -12,6 +12,7 @@
 // 102 = the "recording" light
 // 103 = the movie player view
 // 104 = the view containing the view controls (camera button)
+// 105 = the "no media available" label view
 
 #import "LiveViewController.h"
 #import "RBVolumeButtons.h"
@@ -54,6 +55,8 @@ int currentIndex = -1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    
     // Create a Poppy album if it doesn't already exist
     assetLibrary = [[ALAssetsLibrary alloc] init];
     [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
@@ -131,6 +134,7 @@ int currentIndex = -1;
 {
     imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
     [imgView setContentMode: UIViewContentModeScaleAspectFill];
+    
     [self.view addSubview:imgView];
     
     uberView = (GPUImageView *)self.view;
@@ -215,8 +219,54 @@ int currentIndex = -1;
                      *stop = YES;
                  }
              }];
+    } else {
+        NSLog(@"NO IMAGES IN THE ALBUM");
+        [self showNoMediaAlert];
     }
 
+}
+
+- (void)showNoMediaAlert
+{
+    UIView *viewNoMedia = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 150)/2, self.view.bounds.size.width/2, 75)];
+    [viewNoMedia setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+    [viewNoMedia setTag:105];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewNoMedia.frame.size.width, viewNoMedia.frame.size.height)];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.3];
+    
+    UILabel *labelNoMedia = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewNoMedia.frame.size.width, viewNoMedia.frame.size.height)];
+    [labelNoMedia setTextColor:[UIColor whiteColor]];
+    [labelNoMedia setTextAlignment:NSTextAlignmentCenter];
+    [labelNoMedia setText:@"Nothing to play!"];
+    
+    [viewNoMedia addSubview:viewShadow];
+    [viewNoMedia addSubview:labelNoMedia];
+    
+    [self.view addSubview:viewNoMedia];
+    
+    [UIView animateWithDuration:0.5 delay:0.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         //noMediaView.alpha = 1.0;
+                     }
+                     completion:^(BOOL complete){
+                         [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(noMediaTimerFired:) userInfo:nil repeats:NO];
+                     }];
+}
+
+- (void)noMediaTimerFired:(NSTimer *)timer
+{
+    UIView *noMediaView = [self.view viewWithTag:105];
+    [UIView animateWithDuration:0.5 delay:0.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         noMediaView.alpha = 0.0;
+                     }
+                     completion:^(BOOL complete){
+                         [noMediaView removeFromSuperview];
+                     }];
 }
 
 - (void)loadAlbumWithName:(NSString *)name
@@ -466,6 +516,7 @@ int currentIndex = -1;
 
 - (void) switchToViewerMode: (id) sender
 {
+    [self showCameraControls];
     [self showMedia:prev];
 }
 

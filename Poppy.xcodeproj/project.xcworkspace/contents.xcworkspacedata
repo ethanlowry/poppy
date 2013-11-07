@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:PoppyApp.xcodeproj">
+      location = "self:Poppy.xcodeproj">
    </FileRef>
 </Workspace>

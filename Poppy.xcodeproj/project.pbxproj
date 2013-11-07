@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9D10BC66182B0313008C8D1C /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC60182B0313008C8D1C /* AppIcon29x29.png */; };
+		9D10BC67182B0313008C8D1C /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC61182B0313008C8D1C /* AppIcon29x29@2x.png */; };
+		9D10BC68182B0313008C8D1C /* AppIcon40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC62182B0313008C8D1C /* AppIcon40x40.png */; };
+		9D10BC69182B0313008C8D1C /* AppIcon40x40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC63182B0313008C8D1C /* AppIcon40x40@2x.png */; };
+		9D10BC6A182B0313008C8D1C /* AppIcon60x60.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC64182B0313008C8D1C /* AppIcon60x60.png */; };
+		9D10BC6B182B0313008C8D1C /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC65182B0313008C8D1C /* AppIcon60x60@2x.png */; };
 		9D4F5F6B1821767B00542AE0 /* RBVolumeButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9D5EDE4617FB4386008EB372 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4517FB4386008EB372 /* Foundation.framework */; };
 		9D5EDE4817FB4386008EB372 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */; };
@@ -26,7 +32,6 @@
 		9D5EDE7B17FB4465008EB372 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7A17FB4465008EB372 /* CoreMedia.framework */; };
 		9D5EDE7D17FB4471008EB372 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7C17FB4471008EB372 /* CoreVideo.framework */; };
 		9D5EDE7F17FB4479008EB372 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7E17FB4479008EB372 /* AVFoundation.framework */; };
-		9D5EDE8C17FB4692008EB372 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EDE8B17FB4692008EB372 /* Default-568h@2x.png */; };
 		9D5EE03617FB4FDB008EB372 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EE03117FB4FB6008EB372 /* libGPUImage.a */; };
 		9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D5EE03917FB521C008EB372 /* LiveViewController.m */; };
 		9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EE03D17FB6572008EB372 /* LiveView.xib */; };
@@ -34,11 +39,18 @@
 		9D761EE318245A24005412AC /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D761EE218245A24005412AC /* MediaPlayer.framework */; };
 		9D761EE518245B50005412AC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D761EE418245B50005412AC /* AudioToolbox.framework */; };
 		9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D81FCC917FC8DDA00B74EF4 /* blank.png */; };
+		9DFA62F9182AE68400F1B262 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F7182AE68400F1B262 /* Default.png */; };
+		9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F8182AE68400F1B262 /* Default@2x.png */; };
+		9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FD182AECB400F1B262 /* Icon-Small.png */; };
+		9DFA6302182AECB400F1B262 /* Icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FE182AECB400F1B262 /* Icon-Small@2x.png */; };
+		9DFA6303182AECB400F1B262 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FF182AECB400F1B262 /* Icon.png */; };
+		9DFA6304182AECB400F1B262 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA6300182AECB400F1B262 /* Icon@2x.png */; };
 		9DFCB1531828764400332D7C /* camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB1521828764400332D7C /* camera@2x.png */; };
 		9DFCB15B18297DB000332D7C /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB15A18297DB000332D7C /* beep.wav */; };
 		9DFCB15E182983FC00332D7C /* shutterPressed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */; };
 		9DFCB15F182983FC00332D7C /* shutter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB15D182983FC00332D7C /* shutter@2x.png */; };
 		9DFCB1611829C68200332D7C /* play@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB1601829C68200332D7C /* play@2x.png */; };
+		9DFCB163182ACA4300332D7C /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFCB162182ACA4300332D7C /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,20 +85,26 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9D10BC60182B0313008C8D1C /* AppIcon29x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon29x29.png; sourceTree = "<group>"; };
+		9D10BC61182B0313008C8D1C /* AppIcon29x29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon29x29@2x.png"; sourceTree = "<group>"; };
+		9D10BC62182B0313008C8D1C /* AppIcon40x40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon40x40.png; sourceTree = "<group>"; };
+		9D10BC63182B0313008C8D1C /* AppIcon40x40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon40x40@2x.png"; sourceTree = "<group>"; };
+		9D10BC64182B0313008C8D1C /* AppIcon60x60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon60x60.png; sourceTree = "<group>"; };
+		9D10BC65182B0313008C8D1C /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@2x.png"; sourceTree = "<group>"; };
 		9D4F5F691821767B00542AE0 /* RBVolumeButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBVolumeButtons.h; sourceTree = "<group>"; };
 		9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBVolumeButtons.m; sourceTree = "<group>"; };
-		9D5EDE4217FB4386008EB372 /* PoppyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PoppyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D5EDE4217FB4386008EB372 /* Poppy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Poppy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D5EDE4517FB4386008EB372 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		9D5EDE4917FB4386008EB372 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		9D5EDE4D17FB4386008EB372 /* PoppyApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PoppyApp-Info.plist"; sourceTree = "<group>"; };
+		9D5EDE4D17FB4386008EB372 /* Poppy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Poppy-Info.plist"; sourceTree = "<group>"; };
 		9D5EDE4F17FB4386008EB372 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		9D5EDE5117FB4386008EB372 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		9D5EDE5317FB4386008EB372 /* PoppyApp-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PoppyApp-Prefix.pch"; sourceTree = "<group>"; };
+		9D5EDE5317FB4386008EB372 /* Poppy-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Poppy-Prefix.pch"; sourceTree = "<group>"; };
 		9D5EDE5417FB4386008EB372 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9D5EDE5517FB4386008EB372 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9D5EDE5717FB4386008EB372 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		9D5EDE5D17FB4386008EB372 /* PoppyAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PoppyAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D5EDE5D17FB4386008EB372 /* PoppyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PoppyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D5EDE5E17FB4386008EB372 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		9D5EDE6617FB4386008EB372 /* PoppyAppTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PoppyAppTests-Info.plist"; sourceTree = "<group>"; };
 		9D5EDE6817FB4386008EB372 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -97,7 +115,6 @@
 		9D5EDE7A17FB4465008EB372 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		9D5EDE7C17FB4471008EB372 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		9D5EDE7E17FB4479008EB372 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		9D5EDE8B17FB4692008EB372 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		9D5EE02A17FB4FB6008EB372 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		9D5EE03817FB521C008EB372 /* LiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveViewController.h; sourceTree = "<group>"; };
 		9D5EE03917FB521C008EB372 /* LiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LiveViewController.m; sourceTree = "<group>"; };
@@ -106,11 +123,18 @@
 		9D761EE218245A24005412AC /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		9D761EE418245B50005412AC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		9D81FCC917FC8DDA00B74EF4 /* blank.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blank.png; sourceTree = "<group>"; };
+		9DFA62F7182AE68400F1B262 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		9DFA62F8182AE68400F1B262 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		9DFA62FD182AECB400F1B262 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
+		9DFA62FE182AECB400F1B262 /* Icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small@2x.png"; sourceTree = "<group>"; };
+		9DFA62FF182AECB400F1B262 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		9DFA6300182AECB400F1B262 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		9DFCB1521828764400332D7C /* camera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera@2x.png"; sourceTree = "<group>"; };
 		9DFCB15A18297DB000332D7C /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
 		9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shutterPressed@2x.png"; sourceTree = "<group>"; };
 		9DFCB15D182983FC00332D7C /* shutter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shutter@2x.png"; sourceTree = "<group>"; };
 		9DFCB1601829C68200332D7C /* play@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "play@2x.png"; sourceTree = "<group>"; };
+		9DFCB162182ACA4300332D7C /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,8 +183,8 @@
 		9D5EDE4317FB4386008EB372 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9D5EDE4217FB4386008EB372 /* PoppyApp.app */,
-				9D5EDE5D17FB4386008EB372 /* PoppyAppTests.xctest */,
+				9D5EDE4217FB4386008EB372 /* Poppy.app */,
+				9D5EDE5D17FB4386008EB372 /* PoppyTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -211,11 +235,23 @@
 				9DFCB1521828764400332D7C /* camera@2x.png */,
 				9D761EE018242A94005412AC /* record@2x.png */,
 				9D81FCC917FC8DDA00B74EF4 /* blank.png */,
-				9D5EDE8B17FB4692008EB372 /* Default-568h@2x.png */,
-				9D5EDE4D17FB4386008EB372 /* PoppyApp-Info.plist */,
+				9D5EDE4D17FB4386008EB372 /* Poppy-Info.plist */,
 				9D5EDE4E17FB4386008EB372 /* InfoPlist.strings */,
 				9D5EDE5117FB4386008EB372 /* main.m */,
-				9D5EDE5317FB4386008EB372 /* PoppyApp-Prefix.pch */,
+				9D5EDE5317FB4386008EB372 /* Poppy-Prefix.pch */,
+				9DFCB162182ACA4300332D7C /* Default-568h@2x.png */,
+				9DFA62F7182AE68400F1B262 /* Default.png */,
+				9DFA62F8182AE68400F1B262 /* Default@2x.png */,
+				9D10BC60182B0313008C8D1C /* AppIcon29x29.png */,
+				9D10BC61182B0313008C8D1C /* AppIcon29x29@2x.png */,
+				9D10BC62182B0313008C8D1C /* AppIcon40x40.png */,
+				9D10BC63182B0313008C8D1C /* AppIcon40x40@2x.png */,
+				9D10BC64182B0313008C8D1C /* AppIcon60x60.png */,
+				9D10BC65182B0313008C8D1C /* AppIcon60x60@2x.png */,
+				9DFA62FD182AECB400F1B262 /* Icon-Small.png */,
+				9DFA62FE182AECB400F1B262 /* Icon-Small@2x.png */,
+				9DFA62FF182AECB400F1B262 /* Icon.png */,
+				9DFA6300182AECB400F1B262 /* Icon@2x.png */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -250,9 +286,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		9D5EDE4117FB4386008EB372 /* PoppyApp */ = {
+		9D5EDE4117FB4386008EB372 /* Poppy */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9D5EDE6E17FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyApp" */;
+			buildConfigurationList = 9D5EDE6E17FB4386008EB372 /* Build configuration list for PBXNativeTarget "Poppy" */;
 			buildPhases = (
 				9D5EDE3E17FB4386008EB372 /* Sources */,
 				9D5EDE3F17FB4386008EB372 /* Frameworks */,
@@ -263,14 +299,14 @@
 			dependencies = (
 				9D5EE03517FB4FBD008EB372 /* PBXTargetDependency */,
 			);
-			name = PoppyApp;
+			name = Poppy;
 			productName = PoppyApp;
-			productReference = 9D5EDE4217FB4386008EB372 /* PoppyApp.app */;
+			productReference = 9D5EDE4217FB4386008EB372 /* Poppy.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9D5EDE5C17FB4386008EB372 /* PoppyAppTests */ = {
+		9D5EDE5C17FB4386008EB372 /* PoppyTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9D5EDE7117FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyAppTests" */;
+			buildConfigurationList = 9D5EDE7117FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyTests" */;
 			buildPhases = (
 				9D5EDE5917FB4386008EB372 /* Sources */,
 				9D5EDE5A17FB4386008EB372 /* Frameworks */,
@@ -281,9 +317,9 @@
 			dependencies = (
 				9D5EDE6317FB4386008EB372 /* PBXTargetDependency */,
 			);
-			name = PoppyAppTests;
+			name = PoppyTests;
 			productName = PoppyAppTests;
-			productReference = 9D5EDE5D17FB4386008EB372 /* PoppyAppTests.xctest */;
+			productReference = 9D5EDE5D17FB4386008EB372 /* PoppyTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -300,7 +336,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9D5EDE3D17FB4386008EB372 /* Build configuration list for PBXProject "PoppyApp" */;
+			buildConfigurationList = 9D5EDE3D17FB4386008EB372 /* Build configuration list for PBXProject "Poppy" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -318,8 +354,8 @@
 			);
 			projectRoot = "";
 			targets = (
-				9D5EDE4117FB4386008EB372 /* PoppyApp */,
-				9D5EDE5C17FB4386008EB372 /* PoppyAppTests */,
+				9D5EDE4117FB4386008EB372 /* Poppy */,
+				9D5EDE5C17FB4386008EB372 /* PoppyTests */,
 			);
 		};
 /* End PBXProject section */
@@ -347,16 +383,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				9DFCB15B18297DB000332D7C /* beep.wav in Resources */,
+				9DFCB163182ACA4300332D7C /* Default-568h@2x.png in Resources */,
 				9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */,
+				9DFA6302182AECB400F1B262 /* Icon-Small@2x.png in Resources */,
+				9DFA6303182AECB400F1B262 /* Icon.png in Resources */,
 				9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */,
+				9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */,
 				9DFCB15E182983FC00332D7C /* shutterPressed@2x.png in Resources */,
 				9DFCB15F182983FC00332D7C /* shutter@2x.png in Resources */,
+				9D10BC69182B0313008C8D1C /* AppIcon40x40@2x.png in Resources */,
 				9D761EE118242A94005412AC /* record@2x.png in Resources */,
+				9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */,
+				9D10BC6B182B0313008C8D1C /* AppIcon60x60@2x.png in Resources */,
+				9D10BC66182B0313008C8D1C /* AppIcon29x29.png in Resources */,
+				9DFA62F9182AE68400F1B262 /* Default.png in Resources */,
+				9D10BC67182B0313008C8D1C /* AppIcon29x29@2x.png in Resources */,
 				9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */,
+				9DFA6304182AECB400F1B262 /* Icon@2x.png in Resources */,
 				9DFCB1531828764400332D7C /* camera@2x.png in Resources */,
+				9D10BC68182B0313008C8D1C /* AppIcon40x40.png in Resources */,
 				9DFCB1611829C68200332D7C /* play@2x.png in Resources */,
-				9D5EDE8C17FB4692008EB372 /* Default-568h@2x.png in Resources */,
 				9D81FCCA17FC8DDA00B74EF4 /* blank.png in Resources */,
+				9D10BC6A182B0313008C8D1C /* AppIcon60x60.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,7 +443,7 @@
 /* Begin PBXTargetDependency section */
 		9D5EDE6317FB4386008EB372 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9D5EDE4117FB4386008EB372 /* PoppyApp */;
+			target = 9D5EDE4117FB4386008EB372 /* Poppy */;
 			targetProxy = 9D5EDE6217FB4386008EB372 /* PBXContainerItemProxy */;
 		};
 		9D5EE03517FB4FBD008EB372 /* PBXTargetDependency */ = {
@@ -499,11 +547,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "PoppyApp/PoppyApp-Prefix.pch";
+				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
 				HEADER_SEARCH_PATHS = "../**";
-				INFOPLIST_FILE = "PoppyApp/PoppyApp-Info.plist";
+				INFOPLIST_FILE = "PoppyApp/Poppy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Poppy;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -514,11 +563,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "PoppyApp/PoppyApp-Prefix.pch";
+				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
 				HEADER_SEARCH_PATHS = "../**";
-				INFOPLIST_FILE = "PoppyApp/PoppyApp-Info.plist";
+				INFOPLIST_FILE = "PoppyApp/Poppy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Poppy;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -539,7 +589,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "PoppyAppTests/PoppyAppTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = PoppyTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -557,7 +607,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/PoppyApp-Prefix.pch";
 				INFOPLIST_FILE = "PoppyAppTests/PoppyAppTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = PoppyTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -566,7 +616,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9D5EDE3D17FB4386008EB372 /* Build configuration list for PBXProject "PoppyApp" */ = {
+		9D5EDE3D17FB4386008EB372 /* Build configuration list for PBXProject "Poppy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9D5EDE6C17FB4386008EB372 /* Debug */,
@@ -575,7 +625,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9D5EDE6E17FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyApp" */ = {
+		9D5EDE6E17FB4386008EB372 /* Build configuration list for PBXNativeTarget "Poppy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9D5EDE6F17FB4386008EB372 /* Debug */,
@@ -584,7 +634,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9D5EDE7117FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyAppTests" */ = {
+		9D5EDE7117FB4386008EB372 /* Build configuration list for PBXNativeTarget "PoppyTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9D5EDE7217FB4386008EB372 /* Debug */,
