@@ -32,6 +32,7 @@ bool didFinishEffect = NO;
 bool isRecording = NO;
 bool isVideo = YES;
 bool isWatching = NO;
+bool ignoreVolumeDown = NO;
 
 NSTimer *timerDimmer;
 ALAssetsGroup *assetsGroup;
@@ -81,10 +82,9 @@ int currentIndex = -1;
     buttonStealer.downBlock = ^{
         // - volume button pressed
         NSLog(@"VOLUME DOWN!");
-        if (isRecording) {
-            [self stopRecording];
+        if (!ignoreVolumeDown) {
+            [self showMedia:prev];
         }
-        [self showMedia:prev];
     };
     
     // NOTE: immediately steals volume button events. maybe we want to only do this in landscape mode
@@ -117,7 +117,8 @@ int currentIndex = -1;
 {
     NSLog(@"ON SCREEN SHUTTER BUTTON PRESSED");
     [self showCameraControls];
-    [[MPMusicPlayerController applicationMusicPlayer] setVolume:1.0]; // this uses the volume button stealer as the trigger
+    //[[MPMusicPlayerController applicationMusicPlayer] setVolume:1.0]; // this uses the volume button stealer as the trigger
+    buttonStealer.upBlock();
 }
 
 - (void)hideViewer
@@ -417,6 +418,7 @@ int currentIndex = -1;
 - (void) showCameraControls
 {
     NSLog(@"show camera controls");
+    
     UIView *viewMode = (id)[self.view viewWithTag:100];
     
     if (!viewMode)
@@ -479,6 +481,11 @@ int currentIndex = -1;
 - (void) showViewerControls
 {
     NSLog(@"show show viewer controls");
+    
+    if (isRecording) {
+        [self stopRecording];
+    }
+    
     UIView *viewCamera = (id)[self.view viewWithTag:104];
     
     if (!viewCamera)
@@ -607,6 +614,11 @@ int currentIndex = -1;
 - (void)startRecording
 {
     isRecording = YES;
+    
+    // HACK. volume down is getting triggered inadvertently by the button stealer. ignore that if it's soon after we started recording.
+    ignoreVolumeDown = YES;
+    [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(activateVolumeDown:) userInfo:nil repeats:NO];
+    
     [self dimView:0.5 withAlpha:0.1 withView:[self.view viewWithTag:100] withTimer:NO];
     
     // Show the red "record" light
@@ -640,11 +652,10 @@ int currentIndex = -1;
     };
     
     [finalFilter addTarget:movieWriter];
-    
+    [self playVideoStartSound];
     dispatch_async(dispatch_get_main_queue(),
        ^{
            NSLog(@"Start recording");
-           [self playVideoStartSound];
            videoCamera.audioEncodingTarget = movieWriter;
            [movieWriter startRecording];
        });
@@ -659,7 +670,13 @@ int currentIndex = -1;
     [movieWriter finishRecording];
     NSLog(@"Movie completed");
     [[self.view viewWithTag:102] removeFromSuperview]; // remove the "recording" light
-    //[self dimView:0.5 withAlpha:0.1 withView:[self.view viewWithTag:100] withTimer:NO];
+}
+
+
+- (void)activateVolumeDown:(NSTimer *)timer
+{
+    NSLog(@"reactivate the volume down button");
+    ignoreVolumeDown = NO;
 }
 
 - (void)playVideoStartSound
