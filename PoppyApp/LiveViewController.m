@@ -25,8 +25,9 @@
 int next = 1;
 int prev = -1;
 
-float scaleFactorX = 0.6;
-float scaleFactorY = 0.7;
+float cropFactorX = 0.6;
+float cropFactorY = 0.7;
+float perspectiveFactor = 0.4;
 
 bool didFinishEffect = NO;
 bool isRecording = NO;
@@ -134,11 +135,12 @@ int currentIndex = -1;
 - (void)viewDidAppear:(BOOL)animated
 {
     imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-    [imgView setContentMode: UIViewContentModeScaleAspectFill];
+    //[imgView setContentMode: UIViewContentModeScaleAspectFill];
     
     [self.view addSubview:imgView];
     
     uberView = (GPUImageView *)self.view;
+    //[uberView setContentMode: UIViewContentModeScaleAspectFill];
     
     // set up gestures
     UIView *touchView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
@@ -239,6 +241,7 @@ int currentIndex = -1;
     
     UILabel *labelNoMedia = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewNoMedia.frame.size.width, viewNoMedia.frame.size.height)];
     [labelNoMedia setTextColor:[UIColor whiteColor]];
+    [labelNoMedia setBackgroundColor:[UIColor clearColor]];
     [labelNoMedia setTextAlignment:NSTextAlignmentCenter];
     [labelNoMedia setText:@"Nothing to play!"];
     
@@ -325,7 +328,7 @@ int currentIndex = -1;
         [videoCamera startCameraCapture];
     } else {
         //still camera setup
-        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
+        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];//AVCaptureSessionPresetPhoto
         stillCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
         stillCamera.horizontallyMirrorRearFacingCamera = NO;
         [self applyFilters:stillCamera];
@@ -339,23 +342,23 @@ int currentIndex = -1;
     
     // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
     CATransform3D perspectiveTransformLeft = CATransform3DIdentity;
-    perspectiveTransformLeft.m34 = .4;
-    perspectiveTransformLeft = CATransform3DRotate(perspectiveTransformLeft, 0.4, 0.0, 1.0, 0.0);
+    perspectiveTransformLeft.m34 = perspectiveFactor;
+    perspectiveTransformLeft = CATransform3DRotate(perspectiveTransformLeft, perspectiveFactor, 0.0, 1.0, 0.0);
     GPUImageTransformFilter *filterLeft = [[GPUImageTransformFilter alloc] init];
     [filterLeft setTransform3D:perspectiveTransformLeft];
     
     GPUImageTransformFilter *filterRight = [[GPUImageTransformFilter alloc] init];
     CATransform3D perspectiveTransformRight = CATransform3DIdentity;
-    perspectiveTransformRight.m34 = .4;
-    perspectiveTransformRight = CATransform3DRotate(perspectiveTransformRight, -0.4, 0.0, 1.0, 0.0);
+    perspectiveTransformRight.m34 = perspectiveFactor;
+    perspectiveTransformRight = CATransform3DRotate(perspectiveTransformRight, -perspectiveFactor, 0.0, 1.0, 0.0);
     [(GPUImageTransformFilter *)filterRight setTransform3D:perspectiveTransformRight];
     
     //CROP THE IMAGE INTO A LEFT AND RIGHT HALF
     GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] init];
     GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] init];
     
-    CGRect cropRectLeft = CGRectMake((1.0 - scaleFactorX)/2, (1.0 - scaleFactorY)/2, scaleFactorX/2, scaleFactorY);
-    CGRect cropRectRight = CGRectMake(.5, (1.0 - scaleFactorY)/2, scaleFactorX/2, scaleFactorY);
+    CGRect cropRectLeft = CGRectMake((1.0 - cropFactorX)/2, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
+    CGRect cropRectRight = CGRectMake(.5, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
     
     cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectLeft];
     cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectRight];
@@ -370,16 +373,24 @@ int currentIndex = -1;
     transformRight.affineTransform = landscapeTransformRight;
     
     //CREATE A DUMMY FULL-WIDTH IMAGE
-    UIImage *blankPic = [UIImage imageNamed:@"blank"];
+    UIImage *blankPic = [UIImage imageNamed:@"blank-568h"];
     blankImage = [[GPUImagePicture alloc] initWithImage: blankPic];
     GPUImageAddBlendFilter *blendImages = [[GPUImageAddBlendFilter alloc] init];
     
+    //Dumb down the camera to work with the iPhone 4s
+    //[camera forceProcessingAtSize:CGSizeMake(1280.0, 960.0)];
+    //GPUImageCropFilter *initialCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.125, 0.0, 0.75, 1.0)];
+    
     //STACK ALL THESE FILTERS TOGETHER
     [camera addTarget:filterLeft];
+    [camera addTarget:filterRight];
+
+    //[camera addTarget:initialCrop];
+    //[initialCrop addTarget:filterLeft];
+    //[initialCrop addTarget:filterRight];
+    
     [filterLeft addTarget:cropLeft];
     [cropLeft addTarget:transformLeft];
-    
-    [camera addTarget:filterRight];
     [filterRight addTarget:cropRight];
     [cropRight addTarget:transformRight];
     
@@ -390,6 +401,7 @@ int currentIndex = -1;
     finalFilter = [[GPUImageAddBlendFilter alloc] init];
     [blendImages addTarget:finalFilter];
     [transformRight addTarget:finalFilter];
+    
 }
 
 
@@ -436,6 +448,7 @@ int currentIndex = -1;
         UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 50, 20)];
         [labelCaptureMode setTag: 101];
         [labelCaptureMode setTextColor:[UIColor whiteColor]];
+        [labelCaptureMode setBackgroundColor:[UIColor clearColor]];
         [labelCaptureMode setTextAlignment:NSTextAlignmentCenter];
         
         UISwitch *switchCaptureMode = [[UISwitch alloc] initWithFrame:CGRectMake(10, 35, 50, 20)];
@@ -586,8 +599,9 @@ int currentIndex = -1;
 - (void)captureStill
 {
     NSLog(@"CAPTURING STILL");
+    //[finalFilter removeTarget:uberView];
     [stillCamera capturePhotoAsJPEGProcessedUpToFilter:finalFilter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
-        
+        //[finalFilter addTarget:uberView];
         // Save to assets library
         [assetLibrary writeImageDataToSavedPhotosAlbum:processedJPEG metadata:stillCamera.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
          {
@@ -725,7 +739,7 @@ int currentIndex = -1;
     CGSize frameSize = [uberView frame].size;
     
     // translate the location to the position in the image coming from the device
-    CGPoint pointOfInterest = CGPointMake((1.f + scaleFactorX)/2 - location.x * scaleFactorX / frameSize.height, (1.f + scaleFactorY)/2 - location.y * scaleFactorY / frameSize.width);
+    CGPoint pointOfInterest = CGPointMake((1.f + cropFactorX)/2 - location.x * cropFactorX / frameSize.height, (1.f + cropFactorY)/2 - location.y * cropFactorY / frameSize.width);
     
     NSLog(@"frame width = %f height = %f", frameSize.width, frameSize.height);
     NSLog(@"location x = %f y = %f", location.x, location.y);
