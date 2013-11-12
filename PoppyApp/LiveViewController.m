@@ -343,9 +343,6 @@ int currentIndex = -1;
         [stillCamera startCameraCapture];
     }
     
-    //GPUImageCropFilter *finalCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, .1)];
-    //[finalFilter addTarget:finalCrop];
-    //[finalCrop addTarget:uberView];
     [finalFilter addTarget:uberView];
 }
 
@@ -377,23 +374,21 @@ int currentIndex = -1;
     
     //SHIFT THE LEFT AND RIGHT HALVES OVER SO THAT THEY CAN BE OVERLAID
     CGAffineTransform landscapeTransformLeft = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), -1.0, 0.0);
-    GPUImageTransformFilter *transformLeft = [[GPUImageTransformFilter alloc] init];
+    transformLeft = [[GPUImageTransformFilter alloc] init];
     transformLeft.affineTransform = landscapeTransformLeft;
     
     CGAffineTransform landscapeTransformRight = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), 1.0, 0.0);
-    GPUImageTransformFilter *transformRight = [[GPUImageTransformFilter alloc] init];
+    transformRight = [[GPUImageTransformFilter alloc] init];
     transformRight.affineTransform = landscapeTransformRight;
     
     //CREATE A DUMMY FULL-WIDTH IMAGE
     UIImage *blankPic = [[UIImage alloc] init];
     if([camera isKindOfClass:[GPUImageStillCamera class]]) {
-        blankPic = [UIImage imageNamed:@"blank-1632"];
+        //[camera forceProcessingAtSize:CGSizeMake(1632.0, 1224.0)];
+        blankPic = [UIImage imageNamed:@"blank-1280"];
     } else {
         blankPic = [UIImage imageNamed:@"blank-1280"];
     }
-
-    blankImage = [[GPUImagePicture alloc] initWithImage: blankPic];
-    GPUImageAddBlendFilter *blendImages = [[GPUImageAddBlendFilter alloc] init];
     
     //Dumb down the camera to work with the iPhone 4s
     //[camera forceProcessingAtSize:CGSizeMake(1280.0, 960.0)];
@@ -413,6 +408,9 @@ int currentIndex = -1;
     [filterRight addTarget:cropRight];
     [cropRight addTarget:transformRight];
     
+    //for previewing
+    blankImage = [[GPUImagePicture alloc] initWithImage: blankPic];
+    GPUImageAddBlendFilter *blendImages = [[GPUImageAddBlendFilter alloc] init];
     [blankImage addTarget:blendImages];
     [blankImage processImage];
     [transformLeft addTarget:blendImages];
@@ -618,8 +616,21 @@ int currentIndex = -1;
 - (void)captureStill
 {
     NSLog(@"CAPTURING STILL");
+    //setup full size image
+    UIImage *saveBlankPic = [[UIImage alloc] init];
+    saveBlankPic = [UIImage imageNamed:@"blank-3264"];
+    saveBlankImage = [[GPUImagePicture alloc] initWithImage: saveBlankPic];
+    GPUImageAddBlendFilter *saveBlendImages = [[GPUImageAddBlendFilter alloc] init];
+    [saveBlankImage addTarget:saveBlendImages];
+    [saveBlankImage processImage];
+    [transformLeft addTarget:saveBlendImages];
+    saveFinalFilter = [[GPUImageAddBlendFilter alloc] init];
+    [saveBlendImages addTarget:saveFinalFilter];
+    [transformRight addTarget:saveFinalFilter];
+    
+    
     [finalFilter removeTarget:uberView];
-    [stillCamera capturePhotoAsJPEGProcessedUpToFilter:finalFilter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
+    [stillCamera capturePhotoAsJPEGProcessedUpToFilter:saveFinalFilter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
         // Save to assets library
         [assetLibrary writeImageDataToSavedPhotosAlbum:processedJPEG metadata:stillCamera.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
          {

@@ -21,10 +21,16 @@
     GPUImageView *uberView;
     UIImageView *imgView;
     GPUImagePicture *blankImage;
+    GPUImagePicture *saveBlankImage;
     GPUImageAddBlendFilter *finalFilter;
+    GPUImageAddBlendFilter *saveFinalFilter;
     RBVolumeButtons *buttonStealer;
     AVCaptureDevice *device;
     MPMoviePlayerController *mainMoviePlayer;
+    
+    
+    GPUImageTransformFilter *transformRight;
+    GPUImageTransformFilter *transformLeft;
 }
 
 @end
