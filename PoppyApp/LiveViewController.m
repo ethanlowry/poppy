@@ -25,7 +25,7 @@
 int next = 1;
 int prev = -1;
 
-float cropFactorX = 0.6;
+float cropFactorX = 0.7;
 float cropFactorY = 0.7;
 float perspectiveFactor = 0.4;
 
@@ -58,6 +58,13 @@ int currentIndex = -1;
 {
     [super viewDidLoad];
 
+    //MPVolumeView *slide = [MPVolumeView new];
+    //[[NSNotificationCenter defaultCenter]
+    // addObserver:self
+    // selector:@selector(volumeChanged:)
+    // name:@"AVSystemController_SystemVolumeDidChangeNotification"
+    // object:nil];
+    
     
     // Create a Poppy album if it doesn't already exist
     assetLibrary = [[ALAssetsLibrary alloc] init];
@@ -90,9 +97,6 @@ int currentIndex = -1;
     
     // NOTE: immediately steals volume button events. maybe we want to only do this in landscape mode
     [buttonStealer startStealingVolumeButtonEvents];
-    
-    NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"beep" ofType:@"wav"];
-    AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &videoBeep);
 }
 
 - (void) shutterPressed
@@ -135,11 +139,12 @@ int currentIndex = -1;
 - (void)viewDidAppear:(BOOL)animated
 {
     imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-    //[imgView setContentMode: UIViewContentModeScaleAspectFill];
+    [imgView setContentMode: UIViewContentModeScaleAspectFill];
     
     [self.view addSubview:imgView];
     
     uberView = (GPUImageView *)self.view;
+    uberView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     //[uberView setContentMode: UIViewContentModeScaleAspectFill];
     
     // set up gestures
@@ -149,6 +154,9 @@ int currentIndex = -1;
     
     [self activateCamera];
     [self showCameraControls];
+
+    NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"beep" ofType:@"wav"];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &videoBeep);
 
 }
 
@@ -328,12 +336,16 @@ int currentIndex = -1;
         [videoCamera startCameraCapture];
     } else {
         //still camera setup
-        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];//AVCaptureSessionPresetPhoto
+        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto  cameraPosition:AVCaptureDevicePositionBack];//AVCaptureSessionPreset1280x720
         stillCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
         stillCamera.horizontallyMirrorRearFacingCamera = NO;
         [self applyFilters:stillCamera];
         [stillCamera startCameraCapture];
     }
+    
+    //GPUImageCropFilter *finalCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, .1)];
+    //[finalFilter addTarget:finalCrop];
+    //[finalCrop addTarget:uberView];
     [finalFilter addTarget:uberView];
 }
 
@@ -373,13 +385,20 @@ int currentIndex = -1;
     transformRight.affineTransform = landscapeTransformRight;
     
     //CREATE A DUMMY FULL-WIDTH IMAGE
-    UIImage *blankPic = [UIImage imageNamed:@"blank-568h"];
+    UIImage *blankPic = [[UIImage alloc] init];
+    if([camera isKindOfClass:[GPUImageStillCamera class]]) {
+        blankPic = [UIImage imageNamed:@"blank-1632"];
+    } else {
+        blankPic = [UIImage imageNamed:@"blank-1280"];
+    }
+
     blankImage = [[GPUImagePicture alloc] initWithImage: blankPic];
     GPUImageAddBlendFilter *blendImages = [[GPUImageAddBlendFilter alloc] init];
     
     //Dumb down the camera to work with the iPhone 4s
     //[camera forceProcessingAtSize:CGSizeMake(1280.0, 960.0)];
     //GPUImageCropFilter *initialCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.125, 0.0, 0.75, 1.0)];
+    //[camera addTarget:initialCrop];
     
     //STACK ALL THESE FILTERS TOGETHER
     [camera addTarget:filterLeft];
@@ -401,7 +420,7 @@ int currentIndex = -1;
     finalFilter = [[GPUImageAddBlendFilter alloc] init];
     [blendImages addTarget:finalFilter];
     [transformRight addTarget:finalFilter];
-    
+
 }
 
 
@@ -599,9 +618,8 @@ int currentIndex = -1;
 - (void)captureStill
 {
     NSLog(@"CAPTURING STILL");
-    //[finalFilter removeTarget:uberView];
+    [finalFilter removeTarget:uberView];
     [stillCamera capturePhotoAsJPEGProcessedUpToFilter:finalFilter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
-        //[finalFilter addTarget:uberView];
         // Save to assets library
         [assetLibrary writeImageDataToSavedPhotosAlbum:processedJPEG metadata:stillCamera.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
          {
@@ -621,6 +639,7 @@ int currentIndex = -1;
                                   NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
                               }];
              }
+             [finalFilter addTarget:uberView];
          }];
     }];
 }
@@ -666,10 +685,11 @@ int currentIndex = -1;
     };
     
     [finalFilter addTarget:movieWriter];
-    [self playVideoStartSound];
+    
     dispatch_async(dispatch_get_main_queue(),
        ^{
            NSLog(@"Start recording");
+           [self playVideoStartSound];
            videoCamera.audioEncodingTarget = movieWriter;
            [movieWriter startRecording];
        });
@@ -803,6 +823,5 @@ int currentIndex = -1;
         [self stopRecording];
     }
 }
-
 
 @end

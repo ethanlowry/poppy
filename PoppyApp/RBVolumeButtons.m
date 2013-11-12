@@ -59,9 +59,29 @@ void volumeListenerCallback (
     
 }
 
+- (void)volumeChanged:(NSNotification *)notification
+{
+    float volume =
+    [[[notification userInfo]
+      objectForKey:@"AVSystemController_AudioVolumeNotificationParameter"]
+     floatValue];
+    
+    NSLog(@"GOT A VOL CHANGE: %f", volume);
+    if( volume > launchVolume )
+    {
+        [self volumeUp];
+    }
+    else if( volume < launchVolume )
+    {
+        [self volumeDown];
+    }
+    
+}
+
 -(void)volumeDown
 {
-    AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_CurrentHardwareOutputVolume, volumeListenerCallback, self);
+    //AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_CurrentHardwareOutputVolume, volumeListenerCallback, self);
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [[MPMusicPlayerController applicationMusicPlayer] setVolume:launchVolume];
     
@@ -76,7 +96,8 @@ void volumeListenerCallback (
 
 -(void)volumeUp
 {
-    AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_CurrentHardwareOutputVolume, volumeListenerCallback, self);
+    //AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_CurrentHardwareOutputVolume, volumeListenerCallback, self);
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [[MPMusicPlayerController applicationMusicPlayer] setVolume:launchVolume];
     
@@ -104,7 +125,6 @@ void volumeListenerCallback (
 -(void)startStealingVolumeButtonEvents
 {
     NSAssert([[NSThread currentThread] isMainThread], @"This must be called from the main thread");
-    
     if(self.isStealingVolumeButtons) {
         return;
     }
@@ -135,11 +155,6 @@ void volumeListenerCallback (
             }
         });
     }
-    
-    CGRect frame = CGRectMake(0, -100, 10, 0);
-    self.volumeView = [[[MPVolumeView alloc] initWithFrame:frame] autorelease];
-    [self.volumeView sizeToFit];
-    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] addSubview:self.volumeView];
     
     [self initializeVolumeButtonStealer];
     
@@ -224,7 +239,21 @@ void volumeListenerCallback (
 
 -(void)initializeVolumeButtonStealer
 {
-    AudioSessionAddPropertyListener(kAudioSessionProperty_CurrentHardwareOutputVolume, volumeListenerCallback, self);
+    //AudioSessionAddPropertyListener(kAudioSessionProperty_CurrentHardwareOutputVolume, volumeListenerCallback, self);
+    
+    if (!self.volumeView){
+        CGRect frame = CGRectMake(0, -100, 10, 0);
+        self.volumeView = [[[MPVolumeView alloc] initWithFrame:frame] autorelease];
+        [self.volumeView sizeToFit];
+        [[[[UIApplication sharedApplication] windows] objectAtIndex:0] addSubview:self.volumeView];
+    }
+    
+    
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+        selector:@selector(volumeChanged:)
+        name:@"AVSystemController_SystemVolumeDidChangeNotification"
+        object:nil];
 }
 
 @end
