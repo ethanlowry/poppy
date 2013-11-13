@@ -27,10 +27,6 @@
     RBVolumeButtons *buttonStealer;
     AVCaptureDevice *device;
     MPMoviePlayerController *mainMoviePlayer;
-    
-    
-    GPUImageTransformFilter *transformRight;
-    GPUImageTransformFilter *transformLeft;
 }
 
 @end
