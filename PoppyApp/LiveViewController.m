@@ -58,6 +58,14 @@ int currentIndex = -1;
 {
     [super viewDidLoad];
 
+    //MPVolumeView *slide = [MPVolumeView new];
+    //[[NSNotificationCenter defaultCenter]
+    // addObserver:self
+    // selector:@selector(volumeChanged:)
+    // name:@"AVSystemController_SystemVolumeDidChangeNotification"
+    // object:nil];
+    
+    
     // Create a Poppy album if it doesn't already exist
     assetLibrary = [[ALAssetsLibrary alloc] init];
     [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
@@ -73,19 +81,17 @@ int currentIndex = -1;
                                      NSLog(@"error adding album");
                                  }];
     
-    __weak typeof(self) weakSelf = self;
-    
     buttonStealer = [[RBVolumeButtons alloc] init];
     buttonStealer.upBlock = ^{
         // + volume button pressed
         NSLog(@"VOLUME UP!");
-        [weakSelf shutterPressed];
+        [self shutterPressed];
     };
     buttonStealer.downBlock = ^{
         // - volume button pressed
         NSLog(@"VOLUME DOWN!");
         if (!ignoreVolumeDown) {
-            [weakSelf showMedia:prev];
+            [self showMedia:prev];
         }
     };
     
@@ -318,6 +324,104 @@ int currentIndex = -1;
     [[self.view viewWithTag:103] removeFromSuperview];
 }
 
+
+- (void)activateCamera
+{
+    if (isVideo) {
+        // video camera setup
+        videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
+        videoCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
+        videoCamera.horizontallyMirrorRearFacingCamera = NO;
+        [self applyFilters:videoCamera];
+        [videoCamera startCameraCapture];
+    } else {
+        //still camera setup
+        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto  cameraPosition:AVCaptureDevicePositionBack];//AVCaptureSessionPreset1280x720
+        stillCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
+        stillCamera.horizontallyMirrorRearFacingCamera = NO;
+        [self applyFilters:stillCamera];
+        [stillCamera startCameraCapture];
+    }
+    
+    [finalFilter addTarget:uberView];
+}
+
+- (void)applyFilters:(id)camera
+{
+    
+    // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
+    CATransform3D perspectiveTransformLeft = CATransform3DIdentity;
+    perspectiveTransformLeft.m34 = perspectiveFactor;
+    perspectiveTransformLeft = CATransform3DRotate(perspectiveTransformLeft, perspectiveFactor, 0.0, 1.0, 0.0);
+    GPUImageTransformFilter *filterLeft = [[GPUImageTransformFilter alloc] init];
+    [filterLeft setTransform3D:perspectiveTransformLeft];
+    
+    GPUImageTransformFilter *filterRight = [[GPUImageTransformFilter alloc] init];
+    CATransform3D perspectiveTransformRight = CATransform3DIdentity;
+    perspectiveTransformRight.m34 = perspectiveFactor;
+    perspectiveTransformRight = CATransform3DRotate(perspectiveTransformRight, -perspectiveFactor, 0.0, 1.0, 0.0);
+    [(GPUImageTransformFilter *)filterRight setTransform3D:perspectiveTransformRight];
+    
+    //CROP THE IMAGE INTO A LEFT AND RIGHT HALF
+    GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] init];
+    GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] init];
+    
+    CGRect cropRectLeft = CGRectMake((1.0 - cropFactorX)/2, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
+    CGRect cropRectRight = CGRectMake(.5, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
+    
+    cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectLeft];
+    cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectRight];
+    
+    //SHIFT THE LEFT AND RIGHT HALVES OVER SO THAT THEY CAN BE OVERLAID
+    CGAffineTransform landscapeTransformLeft = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), -1.0, 0.0);
+    transformLeft = [[GPUImageTransformFilter alloc] init];
+    transformLeft.affineTransform = landscapeTransformLeft;
+    
+    CGAffineTransform landscapeTransformRight = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), 1.0, 0.0);
+    transformRight = [[GPUImageTransformFilter alloc] init];
+    transformRight.affineTransform = landscapeTransformRight;
+    
+    //CREATE A DUMMY FULL-WIDTH IMAGE
+    UIImage *blankPic = [[UIImage alloc] init];
+    if([camera isKindOfClass:[GPUImageStillCamera class]]) {
+        //[camera forceProcessingAtSize:CGSizeMake(1632.0, 1224.0)];
+        blankPic = [UIImage imageNamed:@"blank-1280"];
+    } else {
+        blankPic = [UIImage imageNamed:@"blank-1280"];
+    }
+    
+    //Dumb down the camera to work with the iPhone 4s
+    //[camera forceProcessingAtSize:CGSizeMake(1280.0, 960.0)];
+    //GPUImageCropFilter *initialCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.125, 0.0, 0.75, 1.0)];
+    //[camera addTarget:initialCrop];
+    
+    //STACK ALL THESE FILTERS TOGETHER
+    [camera addTarget:filterLeft];
+    [camera addTarget:filterRight];
+
+    //[camera addTarget:initialCrop];
+    //[initialCrop addTarget:filterLeft];
+    //[initialCrop addTarget:filterRight];
+    
+    [filterLeft addTarget:cropLeft];
+    [cropLeft addTarget:transformLeft];
+    [filterRight addTarget:cropRight];
+    [cropRight addTarget:transformRight];
+    
+    //for previewing
+    blankImage = [[GPUImagePicture alloc] initWithImage: blankPic];
+    GPUImageAddBlendFilter *blendImages = [[GPUImageAddBlendFilter alloc] init];
+    [blankImage addTarget:blendImages];
+    [blankImage processImage];
+    [transformLeft addTarget:blendImages];
+    
+    finalFilter = [[GPUImageAddBlendFilter alloc] init];
+    [blendImages addTarget:finalFilter];
+    [transformRight addTarget:finalFilter];
+
+}
+
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -509,159 +613,24 @@ int currentIndex = -1;
     });
 }
 
-- (void)activateCamera
-{
-    if (isVideo) {
-        // video camera setup
-        videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
-        videoCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
-        videoCamera.horizontallyMirrorRearFacingCamera = NO;
-        [self applyFilters:videoCamera];
-        [finalFilter prepareForImageCapture];
-        [videoCamera startCameraCapture];
-    } else {
-        //still camera setup
-        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:AVCaptureDevicePositionBack];//AVCaptureSessionPreset1280x720
-        stillCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
-        stillCamera.horizontallyMirrorRearFacingCamera = NO;
-        [self applyFilters:stillCamera];
-        [finalFilter prepareForImageCapture];
-        [stillCamera startCameraCapture];
-    }
-    
-    [finalFilter addTarget:uberView];
-}
-
-- (void)applyFilters:(id)camera
-{
-    @autoreleasepool {
-        // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
-        CATransform3D perspectiveTransformLeft = CATransform3DIdentity;
-        perspectiveTransformLeft.m34 = perspectiveFactor;
-        perspectiveTransformLeft = CATransform3DRotate(perspectiveTransformLeft, perspectiveFactor, 0.0, 1.0, 0.0);
-        GPUImageTransformFilter *filterLeft = [[GPUImageTransformFilter alloc] init];
-        [filterLeft setTransform3D:perspectiveTransformLeft];
-        
-        GPUImageTransformFilter *filterRight = [[GPUImageTransformFilter alloc] init];
-        CATransform3D perspectiveTransformRight = CATransform3DIdentity;
-        perspectiveTransformRight.m34 = perspectiveFactor;
-        perspectiveTransformRight = CATransform3DRotate(perspectiveTransformRight, -perspectiveFactor, 0.0, 1.0, 0.0);
-        [(GPUImageTransformFilter *)filterRight setTransform3D:perspectiveTransformRight];
-        
-        //CROP THE IMAGE INTO A LEFT AND RIGHT HALF
-        GPUImageCropFilter *cropLeft;
-        GPUImageCropFilter *cropRight;
-        
-        CGRect cropRectLeft = CGRectMake((1.0 - cropFactorX)/2, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
-        CGRect cropRectRight = CGRectMake(.5, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
-        
-        cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectLeft];
-        cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectRight];
-        
-        //SHIFT THE LEFT AND RIGHT HALVES OVER SO THAT THEY CAN BE OVERLAID
-        GPUImageTransformFilter *transformRight;
-        GPUImageTransformFilter *transformLeft;
-        CGAffineTransform landscapeTransformLeft = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), -1.0, 0.0);
-        transformLeft = [[GPUImageTransformFilter alloc] init];
-        transformLeft.affineTransform = landscapeTransformLeft;
-        
-        CGAffineTransform landscapeTransformRight = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), 1.0, 0.0);
-        transformRight = [[GPUImageTransformFilter alloc] init];
-        transformRight.affineTransform = landscapeTransformRight;
-        
-        //CREATE A DUMMY FULL-WIDTH IMAGE
-        //UIImage *blankPic = [UIImage imageNamed:@"blank-1632"];
-        //if([camera isKindOfClass:[GPUImageStillCamera class]]) {
-        //[camera forceProcessingAtSize:CGSizeMake(1632.0, 1224.0)];
-        //    blankPic = [UIImage imageNamed:@"blank-1280"];
-        //} else {
-        //    blankPic = [UIImage imageNamed:@"blank-1280"];
-        //}
-        
-        //Dumb down the camera to work with the iPhone 4s
-        //[camera forceProcessingAtSize:CGSizeMake(1280.0, 960.0)];
-        //GPUImageCropFilter *initialCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.125, 0.0, 0.75, 1.0)];
-        //[camera addTarget:initialCrop];
-        //[camera addTarget:initialCrop];
-        //[initialCrop addTarget:filterLeft];
-        //[initialCrop addTarget:filterRight];
-        
-        
-        //GPUImageFilter *initialFilter = [[GPUImageFilter alloc] init];
-        //[initialFilter forceProcessingAtSize:CGSizeMake(1280, 720)];
-        
-        //STACK ALL THESE FILTERS TOGETHER
-        //[camera addTarget:initialFilter];
-        
-        //3d filter first
-        
-        [camera addTarget:filterLeft];
-        [camera addTarget:filterRight];
-        [filterLeft addTarget:cropLeft];
-        [cropLeft addTarget:transformLeft];
-        [filterRight addTarget:cropRight];
-        [cropRight addTarget:transformRight];
-        
-        //crop first
-        /*
-         [initialFilter addTarget:cropLeft];
-         [initialFilter addTarget:cropRight];
-         [cropLeft addTarget:filterLeft];
-         [cropRight addTarget:filterRight];
-         [filterLeft addTarget:transformLeft];
-         [filterRight addTarget:transformRight];
-         */
-        
-        //for previewing
-        @autoreleasepool {
-            UIImage *blankPic;
-            if([camera isKindOfClass:[GPUImageStillCamera class]]) {
-                //[initialFilter forceProcessingAtSize:CGSizeMake(1920, 1080)]; //shrinking incoming photos
-                blankPic = [UIImage imageNamed:@"blank-3264"];
-            } else {
-                //[initialFilter forceProcessingAtSize:CGSizeMake(1280, 720)];
-                blankPic = [UIImage imageNamed:@"blank-1280"];
-            }
-            blankImage = [[GPUImagePicture alloc] initWithImage: blankPic];
-        }
-        @autoreleasepool {
-            GPUImageAddBlendFilter *blendImages = [[GPUImageAddBlendFilter alloc] init];
-            [blankImage addTarget:blendImages];
-            [blankImage processImage];
-            [transformLeft addTarget:blendImages];
-            
-            finalFilter = [[GPUImageAddBlendFilter alloc] init];
-            [blendImages addTarget:finalFilter];
-        }
-        [transformRight addTarget:finalFilter];
-    }
-}
-
-
 - (void)captureStill
 {
     NSLog(@"CAPTURING STILL");
-    [finalFilter removeTarget:uberView];
-    
     //setup full size image
-    /*
-    GPUImageAddBlendFilter *saveBlendImages;
-    @autoreleasepool {
-        UIImage *saveBlankPic;
-        saveBlankPic = [UIImage imageNamed:@"blank-1280"];
-        saveBlankImage = [[GPUImagePicture alloc] initWithImage: saveBlankPic];
-        saveBlendImages = [[GPUImageAddBlendFilter alloc] init];
-        [saveBlankImage addTarget:saveBlendImages];
-        [saveBlankImage processImage];
-    }
-        [transformLeft addTarget:saveBlendImages];
-        saveFinalFilter = [[GPUImageAddBlendFilter alloc] init];
-        [saveBlendImages addTarget:saveFinalFilter];
-        [transformRight addTarget:saveFinalFilter];
-     */
+    UIImage *saveBlankPic = [[UIImage alloc] init];
+    saveBlankPic = [UIImage imageNamed:@"blank-3264"];
+    saveBlankImage = [[GPUImagePicture alloc] initWithImage: saveBlankPic];
+    GPUImageAddBlendFilter *saveBlendImages = [[GPUImageAddBlendFilter alloc] init];
+    [saveBlankImage addTarget:saveBlendImages];
+    [saveBlankImage processImage];
+    [transformLeft addTarget:saveBlendImages];
+    saveFinalFilter = [[GPUImageAddBlendFilter alloc] init];
+    [saveBlendImages addTarget:saveFinalFilter];
+    [transformRight addTarget:saveFinalFilter];
     
     
-    [stillCamera capturePhotoAsJPEGProcessedUpToFilter:finalFilter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
+    [finalFilter removeTarget:uberView];
+    [stillCamera capturePhotoAsJPEGProcessedUpToFilter:saveFinalFilter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
         // Save to assets library
         [assetLibrary writeImageDataToSavedPhotosAlbum:processedJPEG metadata:stillCamera.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
          {
@@ -711,7 +680,7 @@ int currentIndex = -1;
     movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(1280.0, 720.0)];
     
     
-    __weak typeof(self) weakSelf = self;
+    //__unsafe_unretained typeof(self) weakSelf = self;
     
     movieWriter.completionBlock = ^{
         NSLog(@"in the completion block");
@@ -722,7 +691,7 @@ int currentIndex = -1;
         {
             didFinishEffect = YES;
             NSLog(@"GPU FILTER complete");
-            [weakSelf writeMovieToLibraryWithPath:movieURL];
+            [self writeMovieToLibraryWithPath:movieURL];
         }
     };
     
