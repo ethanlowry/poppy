@@ -621,10 +621,9 @@ int currentIndex = -1;
     
     
     [finalFilter removeTarget:uberView];
-    [stillCamera capturePhotoAsJPEGProcessedUpToFilter:saveFinalFilter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
+    [stillCamera capturePhotoAsImageProcessedUpToFilter:saveFinalFilter withCompletionHandler:^(UIImage *processedImage, NSError *error) {
         // Save to assets library
-        [assetLibrary writeImageDataToSavedPhotosAlbum:processedJPEG metadata:stillCamera.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
-         {
+        [assetLibrary writeImageToSavedPhotosAlbum:processedImage.CGImage metadata:stillCamera.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2) {
              if (error2) {
                  NSLog(@"ERROR: the image failed to be written");
              }
