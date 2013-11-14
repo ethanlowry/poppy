@@ -81,17 +81,19 @@ int currentIndex = -1;
                                      NSLog(@"error adding album");
                                  }];
     
+    __weak typeof(self) weakSelf = self;
+    
     buttonStealer = [[RBVolumeButtons alloc] init];
     buttonStealer.upBlock = ^{
         // + volume button pressed
         NSLog(@"VOLUME UP!");
-        [self shutterPressed];
+        [weakSelf shutterPressed];
     };
     buttonStealer.downBlock = ^{
         // - volume button pressed
         NSLog(@"VOLUME DOWN!");
         if (!ignoreVolumeDown) {
-            [self showMedia:prev];
+            [weakSelf showMedia:prev];
         }
     };
     
@@ -680,8 +682,7 @@ int currentIndex = -1;
     movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(1280.0, 720.0)];
     
     
-    //__unsafe_unretained typeof(self) weakSelf = self;
-    
+    __weak typeof(self) weakSelf = self;
     movieWriter.completionBlock = ^{
         NSLog(@"in the completion block");
         if (didFinishEffect)
@@ -691,7 +692,7 @@ int currentIndex = -1;
         {
             didFinishEffect = YES;
             NSLog(@"GPU FILTER complete");
-            [self writeMovieToLibraryWithPath:movieURL];
+            [weakSelf writeMovieToLibraryWithPath:movieURL];
         }
     };
     
