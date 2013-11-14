@@ -390,18 +390,10 @@ int currentIndex = -1;
         blankPic = [UIImage imageNamed:@"blank-1280"];
     }
     
-    //Dumb down the camera to work with the iPhone 4s
-    //[camera forceProcessingAtSize:CGSizeMake(1280.0, 960.0)];
-    //GPUImageCropFilter *initialCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.125, 0.0, 0.75, 1.0)];
-    //[camera addTarget:initialCrop];
     
     //STACK ALL THESE FILTERS TOGETHER
     [camera addTarget:filterLeft];
     [camera addTarget:filterRight];
-
-    //[camera addTarget:initialCrop];
-    //[initialCrop addTarget:filterLeft];
-    //[initialCrop addTarget:filterRight];
     
     [filterLeft addTarget:cropLeft];
     [cropLeft addTarget:transformLeft];
