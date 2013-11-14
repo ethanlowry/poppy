@@ -365,14 +365,11 @@ int currentIndex = -1;
     [(GPUImageTransformFilter *)filterRight setTransform3D:perspectiveTransformRight];
     
     //CROP THE IMAGE INTO A LEFT AND RIGHT HALF
-    GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] init];
-    GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] init];
-    
     CGRect cropRectLeft = CGRectMake((1.0 - cropFactorX)/2, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
     CGRect cropRectRight = CGRectMake(.5, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
     
-    cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectLeft];
-    cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectRight];
+    GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectLeft];
+    GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectRight];
     
     //SHIFT THE LEFT AND RIGHT HALVES OVER SO THAT THEY CAN BE OVERLAID
     CGAffineTransform landscapeTransformLeft = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), -1.0, 0.0);
@@ -384,7 +381,7 @@ int currentIndex = -1;
     transformRight.affineTransform = landscapeTransformRight;
     
     //CREATE A DUMMY FULL-WIDTH IMAGE
-    UIImage *blankPic = [[UIImage alloc] init];
+    UIImage *blankPic;
     if([camera isKindOfClass:[GPUImageStillCamera class]]) {
         //[camera forceProcessingAtSize:CGSizeMake(1632.0, 1224.0)];
         blankPic = [UIImage imageNamed:@"blank-1280"];
@@ -619,8 +616,7 @@ int currentIndex = -1;
 {
     NSLog(@"CAPTURING STILL");
     //setup full size image
-    UIImage *saveBlankPic = [[UIImage alloc] init];
-    saveBlankPic = [UIImage imageNamed:@"blank-3264"];
+    UIImage *saveBlankPic = [UIImage imageNamed:@"blank-3264"];
     saveBlankImage = [[GPUImagePicture alloc] initWithImage: saveBlankPic];
     GPUImageAddBlendFilter *saveBlendImages = [[GPUImageAddBlendFilter alloc] init];
     [saveBlankImage addTarget:saveBlendImages];
