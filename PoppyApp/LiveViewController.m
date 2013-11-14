@@ -17,6 +17,13 @@
 #import "LiveViewController.h"
 #import "RBVolumeButtons.h"
 
+CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
+    CATransform3D transform = CATransform3DIdentity;
+    transform.m34 = factor;
+    return CATransform3DRotate(transform, factor, 0.0, 1.0, 0.0);
+}
+
+
 @interface LiveViewController ()
 @end
 
@@ -352,17 +359,11 @@ int currentIndex = -1;
 {
     
     // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
-    CATransform3D perspectiveTransformLeft = CATransform3DIdentity;
-    perspectiveTransformLeft.m34 = perspectiveFactor;
-    perspectiveTransformLeft = CATransform3DRotate(perspectiveTransformLeft, perspectiveFactor, 0.0, 1.0, 0.0);
     GPUImageTransformFilter *filterLeft = [[GPUImageTransformFilter alloc] init];
-    [filterLeft setTransform3D:perspectiveTransformLeft];
+    filterLeft.transform3D = CATransform3DRotatedWithPerspectiveFactor(perspectiveFactor);
     
     GPUImageTransformFilter *filterRight = [[GPUImageTransformFilter alloc] init];
-    CATransform3D perspectiveTransformRight = CATransform3DIdentity;
-    perspectiveTransformRight.m34 = perspectiveFactor;
-    perspectiveTransformRight = CATransform3DRotate(perspectiveTransformRight, -perspectiveFactor, 0.0, 1.0, 0.0);
-    [(GPUImageTransformFilter *)filterRight setTransform3D:perspectiveTransformRight];
+    filterRight.transform3D = CATransform3DRotatedWithPerspectiveFactor(-perspectiveFactor);
     
     //CROP THE IMAGE INTO A LEFT AND RIGHT HALF
     CGRect cropRectLeft = CGRectMake((1.0 - cropFactorX)/2, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
