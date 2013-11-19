@@ -243,7 +243,7 @@ void volumeListenerCallback (
     
     if (!self.volumeView){
         CGRect frame = CGRectMake(0, -100, 10, 0);
-        self.volumeView = [[[MPVolumeView alloc] initWithFrame:frame] autorelease];
+        self.volumeView = [[MPVolumeView alloc] initWithFrame:frame];
         [self.volumeView sizeToFit];
         [[[[UIApplication sharedApplication] windows] objectAtIndex:0] addSubview:self.volumeView];
     }

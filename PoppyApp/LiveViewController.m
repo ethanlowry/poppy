@@ -17,11 +17,13 @@
 #import "LiveViewController.h"
 #import "RBVolumeButtons.h"
 
+/*
 CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
     CATransform3D transform = CATransform3DIdentity;
     transform.m34 = factor;
     return CATransform3DRotate(transform, factor, 0.0, 1.0, 0.0);
 }
+*/
 
 
 @interface LiveViewController ()
@@ -64,14 +66,6 @@ int currentIndex = -1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    //MPVolumeView *slide = [MPVolumeView new];
-    //[[NSNotificationCenter defaultCenter]
-    // addObserver:self
-    // selector:@selector(volumeChanged:)
-    // name:@"AVSystemController_SystemVolumeDidChangeNotification"
-    // object:nil];
-    
     
     // Create a Poppy album if it doesn't already exist
     assetLibrary = [[ALAssetsLibrary alloc] init];
@@ -154,7 +148,6 @@ int currentIndex = -1;
     
     uberView = (GPUImageView *)self.view;
     uberView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
-    //[uberView setContentMode: UIViewContentModeScaleAspectFill];
     
     // set up gestures
     UIView *touchView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
@@ -357,62 +350,71 @@ int currentIndex = -1;
 
 - (void)applyFilters:(id)camera
 {
+    CGRect finalCropRect = CGRectMake((1.0 - cropFactorX)/2, (1.0 - cropFactorY)/2, cropFactorX, cropFactorY);
+    finalFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
+
+    GPUImageFilter *initialFilter = [[GPUImageFilter alloc] init];
+    if([camera isKindOfClass:[GPUImageStillCamera class]]) {
+        [initialFilter forceProcessingAtSize:CGSizeMake(2048.0, 1152.0)];
+        //[initialFilter forceProcessingAtSize:CGSizeMake(3264, 1836)];
+    } else {
+        [initialFilter forceProcessingAtSize:CGSizeMake(1280.0, 720.0)];
+    }
+    
+    // SPLIT THE IMAGE IN HALF
+    GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
+    GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
     
     // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
+    CATransform3D perspectiveTransformLeft = CATransform3DIdentity;
+    perspectiveTransformLeft.m34 = perspectiveFactor;
+    perspectiveTransformLeft = CATransform3DRotate(perspectiveTransformLeft, perspectiveFactor, 0.0, 1.0, 0.0);
+    
     GPUImageTransformFilter *filterLeft = [[GPUImageTransformFilter alloc] init];
-    filterLeft.transform3D = CATransform3DRotatedWithPerspectiveFactor(perspectiveFactor);
+    [filterLeft setTransform3D:perspectiveTransformLeft];
+    //filterLeft.transform3D = CATransform3DRotatedWithPerspectiveFactor(perspectiveFactor);
+    
+    CATransform3D perspectiveTransformRight = CATransform3DIdentity;
+    perspectiveTransformRight.m34 = perspectiveFactor;
+    perspectiveTransformRight = CATransform3DRotate(perspectiveTransformRight, -perspectiveFactor, 0.0, 1.0, 0.0);
     
     GPUImageTransformFilter *filterRight = [[GPUImageTransformFilter alloc] init];
-    filterRight.transform3D = CATransform3DRotatedWithPerspectiveFactor(-perspectiveFactor);
-    
-    //CROP THE IMAGE INTO A LEFT AND RIGHT HALF
-    CGRect cropRectLeft = CGRectMake((1.0 - cropFactorX)/2, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
-    CGRect cropRectRight = CGRectMake(.5, (1.0 - cropFactorY)/2, cropFactorX/2, cropFactorY);
-    
-    GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectLeft];
-    GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:cropRectRight];
+    [(GPUImageTransformFilter *)filterRight setTransform3D:perspectiveTransformRight];
+    //filterRight.transform3D = CATransform3DRotatedWithPerspectiveFactor(-perspectiveFactor);
     
     //SHIFT THE LEFT AND RIGHT HALVES OVER SO THAT THEY CAN BE OVERLAID
     CGAffineTransform landscapeTransformLeft = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), -1.0, 0.0);
-    transformLeft = [[GPUImageTransformFilter alloc] init];
+    GPUImageTransformFilter *transformLeft = [[GPUImageTransformFilter alloc] init];
     transformLeft.affineTransform = landscapeTransformLeft;
     
     CGAffineTransform landscapeTransformRight = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), 1.0, 0.0);
-    transformRight = [[GPUImageTransformFilter alloc] init];
+    GPUImageTransformFilter *transformRight = [[GPUImageTransformFilter alloc] init];
     transformRight.affineTransform = landscapeTransformRight;
     
-    //CREATE A DUMMY FULL-WIDTH IMAGE
-    UIImage *blankPic;
-    if([camera isKindOfClass:[GPUImageStillCamera class]]) {
-        //[camera forceProcessingAtSize:CGSizeMake(1632.0, 1224.0)];
-        blankPic = [UIImage imageNamed:@"blank-1280"];
-    } else {
-        blankPic = [UIImage imageNamed:@"blank-1280"];
-    }
-    
-    
-    //STACK ALL THESE FILTERS TOGETHER
-    [camera addTarget:filterLeft];
-    [camera addTarget:filterRight];
-    
-    [filterLeft addTarget:cropLeft];
-    [cropLeft addTarget:transformLeft];
-    [filterRight addTarget:cropRight];
-    [cropRight addTarget:transformRight];
-    
-    //for previewing
-    blankImage = [[GPUImagePicture alloc] initWithImage: blankPic];
+    // BLEND FIRST WITH A BLANK IMAGE, THEN WITH THE RIGHT HALF
+    GPUImageBrightnessFilter *blankFilter = [[GPUImageBrightnessFilter alloc] init];
+    blankFilter.brightness = -1.0;
     GPUImageAddBlendFilter *blendImages = [[GPUImageAddBlendFilter alloc] init];
-    [blankImage addTarget:blendImages];
-    [blankImage processImage];
+    GPUImageAddBlendFilter *finalBlend = [[GPUImageAddBlendFilter alloc] init];
+    
+    //FILTER CHAIN: STACK ALL THESE FILTERS TOGETHER
+    [camera addTarget:initialFilter];
+    [initialFilter addTarget:cropLeft];
+    [initialFilter addTarget:cropRight];
+    
+    [cropLeft addTarget:filterLeft];
+    [filterLeft addTarget:transformLeft];
+    [cropRight addTarget:filterRight];
+    [filterRight addTarget:transformRight];
+    
+    [initialFilter addTarget:blankFilter];
+    [blankFilter addTarget:blendImages];
     [transformLeft addTarget:blendImages];
     
-    finalFilter = [[GPUImageAddBlendFilter alloc] init];
-    [blendImages addTarget:finalFilter];
-    [transformRight addTarget:finalFilter];
-
+    [blendImages addTarget:finalBlend];
+    [transformRight addTarget:finalBlend];
+    [finalBlend addTarget:finalFilter];
 }
-
 
 - (void)didReceiveMemoryWarning
 {
@@ -608,20 +610,9 @@ int currentIndex = -1;
 - (void)captureStill
 {
     NSLog(@"CAPTURING STILL");
-    //setup full size image
-    UIImage *saveBlankPic = [UIImage imageNamed:@"blank-3264"];
-    saveBlankImage = [[GPUImagePicture alloc] initWithImage: saveBlankPic];
-    GPUImageAddBlendFilter *saveBlendImages = [[GPUImageAddBlendFilter alloc] init];
-    [saveBlankImage addTarget:saveBlendImages];
-    [saveBlankImage processImage];
-    [transformLeft addTarget:saveBlendImages];
-    saveFinalFilter = [[GPUImageAddBlendFilter alloc] init];
-    [saveBlendImages addTarget:saveFinalFilter];
-    [transformRight addTarget:saveFinalFilter];
-    
-    
     [finalFilter removeTarget:uberView];
-    [stillCamera capturePhotoAsImageProcessedUpToFilter:saveFinalFilter withCompletionHandler:^(UIImage *processedImage, NSError *error) {
+    
+    [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:^(UIImage *processedImage, NSError *error) {
         // Save to assets library
         [assetLibrary writeImageToSavedPhotosAlbum:processedImage.CGImage metadata:stillCamera.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2) {
              if (error2) {
@@ -629,7 +620,7 @@ int currentIndex = -1;
              }
              else {
                  NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
-                 
+                 [finalFilter addTarget:uberView];
                  [assetLibrary assetForURL:assetURL
                                resultBlock:^(ALAsset *asset) {
                                    // assign the photo to the album
@@ -640,7 +631,7 @@ int currentIndex = -1;
                                   NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
                               }];
              }
-             [finalFilter addTarget:uberView];
+            
          }];
     }];
 }
