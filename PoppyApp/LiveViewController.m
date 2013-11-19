@@ -16,6 +16,8 @@
 
 #import "LiveViewController.h"
 #import "RBVolumeButtons.h"
+#import <sys/utsname.h>
+
 
 /*
 CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
@@ -353,12 +355,19 @@ int currentIndex = -1;
     CGRect finalCropRect = CGRectMake((1.0 - cropFactorX)/2, (1.0 - cropFactorY)/2, cropFactorX, cropFactorY);
     finalFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
 
+    NSLog(@"MODEL: %@", [self deviceModelName]);
+    
     GPUImageFilter *initialFilter = [[GPUImageFilter alloc] init];
     if([camera isKindOfClass:[GPUImageStillCamera class]]) {
-        [initialFilter forceProcessingAtSize:CGSizeMake(2048.0, 1152.0)];
+        //[initialFilter forceProcessingAtSize:CGSizeMake(1848, 1386)];
+        [initialFilter forceProcessingAtSize:CGSizeMake(2048, 1536)];
+        //initialFilter.cropRegion = CGRectMake(0.0, 0.125, 1.0, 0.75);
+        //[initialFilter forceProcessingAtSize:CGSizeMake(2048.0, 1152.0)];
         //[initialFilter forceProcessingAtSize:CGSizeMake(3264, 1836)];
+        //[initialFilter forceProcessingAtSize:CGSizeMake(2048, 1536);
     } else {
         [initialFilter forceProcessingAtSize:CGSizeMake(1280.0, 720.0)];
+        //initialFilter.cropRegion = CGRectMake(0.0, 0.0, 1.0, 1.0);
     }
     
     // SPLIT THE IMAGE IN HALF
@@ -626,6 +635,7 @@ int currentIndex = -1;
                                    // assign the photo to the album
                                    [assetsGroup addAsset:asset];
                                    NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [assetsGroup valueForProperty:ALAssetsGroupPropertyName]);
+                                   NSLog(@"SIZE: %f : %f", [asset defaultRepresentation].dimensions.height, [asset defaultRepresentation].dimensions.width);
                                }
                               failureBlock:^(NSError* error) {
                                   NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
@@ -795,6 +805,7 @@ int currentIndex = -1;
                                                           // assign the photo to the album
                                                           [assetsGroup addAsset:asset];
                                                           NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [assetsGroup valueForProperty:ALAssetsGroupPropertyName]);
+                                                          NSLog(@"SIZE: %f : %f", [asset defaultRepresentation].dimensions.height, [asset defaultRepresentation].dimensions.width);
                                                       }
                                                      failureBlock:^(NSError* error) {
                                                          NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
@@ -813,6 +824,40 @@ int currentIndex = -1;
     if (isRecording) {
         [self stopRecording];
     }
+}
+
+- (NSString*)deviceModelName {
+    
+    struct utsname systemInfo;
+    
+    uname(&systemInfo);
+    
+    NSString *machineName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    
+    
+    NSDictionary *commonNamesDictionary =
+    @{
+      @"iPhone3,1":    @"iPhone 4",
+      @"iPhone3,2":    @"iPhone 4(Rev A)",
+      @"iPhone3,3":    @"iPhone 4(CDMA)",
+      @"iPhone4,1":    @"iPhone 4S",
+      @"iPhone5,1":    @"iPhone 5(GSM)",
+      @"iPhone5,2":    @"iPhone 5(GSM+CDMA)",
+      @"iPhone5,3":    @"iPhone 5c(GSM)",
+      @"iPhone5,4":    @"iPhone 5c(GSM+CDMA)",
+      @"iPhone6,1":    @"iPhone 5s(GSM)",
+      @"iPhone6,2":    @"iPhone 5s(GSM+CDMA)",
+      @"iPod5,1":  @"iPod 5th Gen",
+      
+      };
+    
+    NSString *deviceName = commonNamesDictionary[machineName];
+    
+    if (deviceName == nil) {
+        deviceName = machineName;
+    }
+    
+    return deviceName;
 }
 
 @end
