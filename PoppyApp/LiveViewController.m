@@ -398,26 +398,13 @@ int currentIndex = -1;
         if([camera isKindOfClass:[GPUImageStillCamera class]]) {
             // SPLIT THE IMAGE IN HALF
             NSLog(@"still output");
-            
-            if ([self deviceModelNumber] == 40) {
-                cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, .125, 0.5, .75)];
-                cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, .125, 0.5, .75)];
-            } else {
-                cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, .125, 0.5, .75)];
-                cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, .125, 0.5, .75)];
-            }
-
+            cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, .125, 0.5, .75)];
+            cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, .125, 0.5, .75)];
         } else {
             NSLog(@"video output");
             // SPLIT THE IMAGE IN HALF
-            if ([self deviceModelNumber] == 40) {
-                cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
-                cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
-
-            } else {
-                cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
-                cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
-            }
+            cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
+            cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
         }
 
         // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
@@ -639,6 +626,7 @@ int currentIndex = -1;
     [self hideView:[self.view viewWithTag:104]];
     [self hideViewer];
     [self showCameraControls];
+    currentIndex = -1;
 }
 
 - (void) switchToViewerMode: (id) sender
