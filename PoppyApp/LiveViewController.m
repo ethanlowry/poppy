@@ -309,6 +309,7 @@ int currentIndex = -1;
     [mainMoviePlayer setFullscreen:YES animated:YES];
     [mainMoviePlayer prepareToPlay];
     [mainMoviePlayer.view setFrame: CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+    [mainMoviePlayer setScalingMode:MPMovieScalingModeAspectFill];
     [mainMoviePlayer.view setTag:103];
     [self.view addSubview: mainMoviePlayer.view];
     mainMoviePlayer.repeatMode = MPMovieRepeatModeOne;
