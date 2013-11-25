@@ -35,8 +35,7 @@ CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
 int next = 1;
 int prev = -1;
 
-float cropFactorX = 0.7;
-float cropFactorY = 0.7;
+float cropFactor = 0.7;
 float perspectiveFactor = 0.25;
 
 bool didFinishEffect = NO;
@@ -335,13 +334,22 @@ int currentIndex = -1;
 {
     if (isVideo) {
         // video camera setup
-        videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
+        if ([self deviceModelNumber] == 40) {
+            videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetiFrame960x540 cameraPosition:AVCaptureDevicePositionBack];
+        } else {
+            videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
+        }
         videoCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
         videoCamera.horizontallyMirrorRearFacingCamera = NO;
         [self applyFilters:videoCamera forPreview:YES];
     } else {
         //still camera setup
-        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto  cameraPosition:AVCaptureDevicePositionBack];
+        if ([self deviceModelNumber] == 40) {
+            stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 cameraPosition:AVCaptureDevicePositionBack];
+        } else {
+            stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto  cameraPosition:AVCaptureDevicePositionBack];
+        }
+
         stillCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
         stillCamera.horizontallyMirrorRearFacingCamera = NO;
         [self applyFilters:stillCamera forPreview:YES];
@@ -353,10 +361,13 @@ int currentIndex = -1;
 - (void)applyFilters:(id)camera forPreview:(BOOL)isPreview
 {
     @autoreleasepool {
-        CGRect finalCropRect = CGRectMake((1.0 - cropFactorX)/2, (1.0 - cropFactorY)/2, cropFactorX, cropFactorY);
+        
+        cropFactor = [self setCropFactor];
+        
+        //if([camera isKindOfClass:[GPUImageStillCamera class]]) { }
+        
+        CGRect finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
         finalFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
-
-        NSLog(@"MODEL: %@", [self deviceModelName]);
         
         GPUImageFilter *initialFilter = [[GPUImageFilter alloc] init];
         GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] init];
@@ -364,15 +375,22 @@ int currentIndex = -1;
         
         
         if(isPreview) {
-            [initialFilter forceProcessingAtSize:CGSizeMake(1280.0, 720.0)];
-
-        } else {
+            if ([self deviceModelNumber] == 40) {
+                [initialFilter forceProcessingAtSize:CGSizeMake(640, 360)];
+            } else {
+                [initialFilter forceProcessingAtSize:CGSizeMake(1280.0, 720.0)];
+            }
             
+        } else {
+            if ([self deviceModelNumber] == 40) {
+                [initialFilter forceProcessingAtSize:CGSizeMake(640, 360)];
+            } else {
+                [initialFilter forceProcessingAtSize:CGSizeMake(2048.0, 1152.0)];
+            }
             //[initialFilter forceProcessingAtSize:CGSizeMake(1280.0, 720.0)];
             //[initialFilter forceProcessingAtSize:CGSizeMake(2048, 1536)];
             //[initialFilter forceProcessingAtSize:CGSizeMake(1848, 1386)];
             //initialFilter.cropRegion = CGRectMake(0.0, 0.125, 1.0, 0.75);
-            [initialFilter forceProcessingAtSize:CGSizeMake(2048.0, 1152.0)];
             //[initialFilter forceProcessingAtSize:CGSizeMake(3264, 1836)];
             //[initialFilter forceProcessingAtSize:CGSizeMake(2048, 1536);
         }
@@ -380,13 +398,26 @@ int currentIndex = -1;
         if([camera isKindOfClass:[GPUImageStillCamera class]]) {
             // SPLIT THE IMAGE IN HALF
             NSLog(@"still output");
-            cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, .125, 0.5, .75)];
-            cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, .125, 0.5, .75)];
+            
+            if ([self deviceModelNumber] == 40) {
+                cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, .125, 0.5, .75)];
+                cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, .125, 0.5, .75)];
+            } else {
+                cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, .125, 0.5, .75)];
+                cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, .125, 0.5, .75)];
+            }
+
         } else {
             NSLog(@"video output");
             // SPLIT THE IMAGE IN HALF
-            cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
-            cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
+            if ([self deviceModelNumber] == 40) {
+                cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
+                cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
+
+            } else {
+                cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
+                cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
+            }
         }
 
         // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
@@ -427,14 +458,41 @@ int currentIndex = -1;
         [blendImages addTarget:finalBlend];
         [transformRight addTarget:finalBlend];
         [finalBlend addTarget:finalFilter];
-        
-        if([camera isKindOfClass:[GPUImageStillCamera class]]) {
-            //finalFilter.cropRegion = CGRectMake(0.125, 0.125, 0.75, 0.75);
-            finalFilter.cropRegion = CGRectMake(0, 0, 1, 1);
-        }
     }
     
     [camera startCameraCapture];
+}
+
+- (float)setCropFactor
+{
+    NSLog(@"MODEL: %i", [self deviceModelNumber]);
+    int phoneModel = [self deviceModelNumber];
+    float modelCropFactor;
+    
+    switch (phoneModel) {
+        case 40:
+            modelCropFactor = 0.8;
+            break;
+        case 41:
+            modelCropFactor = 0.8;
+            break;
+        case 50:
+            modelCropFactor = 0.7;
+            break;
+        case 51:
+            modelCropFactor = 0.7;
+            break;
+        case 52:
+            modelCropFactor = 0.7;
+            break;
+        case 99:
+            modelCropFactor = 0.8;
+            break;
+        default:
+            modelCropFactor = 0.7;
+            break;
+    }
+    return modelCropFactor;
 }
 
 - (void)didReceiveMemoryWarning
@@ -651,6 +709,7 @@ int currentIndex = -1;
     [stillCamera removeAllTargets];
 
     [self applyFilters:stillCamera forPreview:NO];
+    [finalFilter prepareForImageCapture];
     
     [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:^(UIImage *processedImage, NSError *error) {
         // Save to assets library
@@ -849,7 +908,7 @@ int currentIndex = -1;
     CGSize frameSize = [uberView frame].size;
     
     // translate the location to the position in the image coming from the device
-    CGPoint pointOfInterest = CGPointMake((1.f + cropFactorX)/2 - location.x * cropFactorX / frameSize.height, (1.f + cropFactorY)/2 - location.y * cropFactorY / frameSize.width);
+    CGPoint pointOfInterest = CGPointMake((1.f + cropFactor)/2 - location.x * cropFactor / frameSize.height, (1.f + cropFactor)/2 - location.y * cropFactor / frameSize.width);
     
     NSLog(@"frame width = %f height = %f", frameSize.width, frameSize.height);
     NSLog(@"location x = %f y = %f", location.x, location.y);
@@ -915,7 +974,7 @@ int currentIndex = -1;
     }
 }
 
-- (NSString*)deviceModelName {
+- (int)deviceModelNumber {
     
     struct utsname systemInfo;
     
@@ -923,30 +982,39 @@ int currentIndex = -1;
     
     NSString *machineName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
     
-    
     NSDictionary *commonNamesDictionary =
     @{
-      @"iPhone3,1":    @"iPhone 4",
-      @"iPhone3,2":    @"iPhone 4(Rev A)",
-      @"iPhone3,3":    @"iPhone 4(CDMA)",
-      @"iPhone4,1":    @"iPhone 4S",
-      @"iPhone5,1":    @"iPhone 5(GSM)",
-      @"iPhone5,2":    @"iPhone 5(GSM+CDMA)",
-      @"iPhone5,3":    @"iPhone 5c(GSM)",
-      @"iPhone5,4":    @"iPhone 5c(GSM+CDMA)",
-      @"iPhone6,1":    @"iPhone 5s(GSM)",
-      @"iPhone6,2":    @"iPhone 5s(GSM+CDMA)",
-      @"iPod5,1":  @"iPod 5th Gen",
+      @"iPhone3,1":    @"40",
+      @"iPhone3,2":    @"40",
+      @"iPhone3,3":    @"40",
+      @"iPhone4,1":    @"41",
+      @"iPhone5,1":    @"50",
+      @"iPhone5,2":    @"50",
+      @"iPhone5,3":    @"51",
+      @"iPhone5,4":    @"51",
+      @"iPhone6,1":    @"52",
+      @"iPhone6,2":    @"53",
+      @"iPod5,1":  @"99",
+      
+      /*
+       @"iPhone3,1":    @"iPhone 4",
+       @"iPhone3,2":    @"iPhone 4(Rev A)",
+       @"iPhone3,3":    @"iPhone 4(CDMA)",
+       @"iPhone4,1":    @"iPhone 4S",
+       @"iPhone5,1":    @"iPhone 5(GSM)",
+       @"iPhone5,2":    @"iPhone 5(GSM+CDMA)",
+       @"iPhone5,3":    @"iPhone 5c(GSM)",
+       @"iPhone5,4":    @"iPhone 5c(GSM+CDMA)",
+       @"iPhone6,1":    @"iPhone 5s(GSM)",
+       @"iPhone6,2":    @"iPhone 5s(GSM+CDMA)",
+       @"iPod5,1":  @"iPod 5th Gen",
+      */
       
       };
     
-    NSString *deviceName = commonNamesDictionary[machineName];
+    NSString *deviceNumber = commonNamesDictionary[machineName];
     
-    if (deviceName == nil) {
-        deviceName = machineName;
-    }
-    
-    return deviceName;
+    return deviceNumber.intValue;
 }
 
 @end
