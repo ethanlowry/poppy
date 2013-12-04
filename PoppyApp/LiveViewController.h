@@ -21,6 +21,7 @@
     GPUImageView *uberView;
     UIImageView *imgView;
     GPUImageCropFilter *finalFilter;
+    GPUImageCropFilter *displayFilter;
     RBVolumeButtons *buttonStealer;
     AVCaptureDevice *device;
     MPMoviePlayerController *mainMoviePlayer;

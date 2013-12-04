@@ -14,6 +14,7 @@
 // 104 = the view containing the view controls (camera button)
 // 105 = the "no media available" label view
 // 106 = the "saving" label view
+// 107 = the "welcome" label view
 
 #import "LiveViewController.h"
 #import "RBVolumeButtons.h"
@@ -88,13 +89,15 @@ int currentIndex = -1;
     buttonStealer = [[RBVolumeButtons alloc] init];
     buttonStealer.upBlock = ^{
         // + volume button pressed
-        NSLog(@"VOLUME UP!");
-        [weakSelf shutterPressed];
+        if (!ignoreVolumeDown) {
+            NSLog(@"VOLUME UP!");
+            [weakSelf shutterPressed];
+        }
     };
     buttonStealer.downBlock = ^{
         // - volume button pressed
-        NSLog(@"VOLUME DOWN!");
         if (!ignoreVolumeDown) {
+            NSLog(@"VOLUME DOWN!");
             [weakSelf showMedia:prev];
         }
     };
@@ -152,17 +155,20 @@ int currentIndex = -1;
     uberView = (GPUImageView *)self.view;
     uberView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     
+    // set crop factor based on device
+    cropFactor = [self setCropFactor];
+    
     // set up gestures
     UIView *touchView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
     [self addGestures:touchView];
     [self.view addSubview:touchView];
     
     [self activateCamera];
-    [self showCameraControls];
 
     NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"beep" ofType:@"wav"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &videoBeep);
 
+    [self showWelcomeAlert];
 }
 
 - (void)addGestures:(UIView *)touchView
@@ -286,6 +292,53 @@ int currentIndex = -1;
                      }];
 }
 
+- (void)showWelcomeAlert
+{
+    UIView *viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 75)/2, self.view.bounds.size.width, 75)];
+    [viewWelcome setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+    [viewWelcome setTag:107];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewWelcome.frame.size.width, viewWelcome.frame.size.height)];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.3];
+    
+    UILabel *labelWelcome = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewWelcome.frame.size.width, viewWelcome.frame.size.height)];
+    [labelWelcome setTextColor:[UIColor whiteColor]];
+    [labelWelcome setBackgroundColor:[UIColor clearColor]];
+    [labelWelcome setTextAlignment:NSTextAlignmentCenter];
+    [labelWelcome setFont:[UIFont boldSystemFontOfSize:32]];
+    [labelWelcome setTextAlignment:NSTextAlignmentCenter];
+    [labelWelcome setText:@"Put me in Poppy!"];
+    
+    [viewWelcome addSubview:viewShadow];
+    [viewWelcome addSubview:labelWelcome];
+    
+    [self.view addSubview:viewWelcome];
+    
+    [UIView animateWithDuration:0.5 delay:0.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         viewWelcome.alpha = 1.0;
+                     }
+                     completion:^(BOOL complete){
+                         [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(welcomeTimerFired:) userInfo:nil repeats:NO];
+                     }];
+}
+
+- (void)welcomeTimerFired:(NSTimer *)timer
+{
+    UIView *welcomeView = [self.view viewWithTag:107];
+    [UIView animateWithDuration:0.5 delay:0.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         welcomeView.alpha = 0.0;
+                     }
+                     completion:^(BOOL complete){
+                         [self showCameraControls];
+                         [welcomeView removeFromSuperview];
+                     }];
+}
+
 - (void)loadAlbumWithName:(NSString *)name
 {
     [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAlbum
@@ -336,77 +389,65 @@ int currentIndex = -1;
     if (isVideo) {
         // video camera setup
         if ([self deviceModelNumber] == 40) {
-            videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetiFrame960x540 cameraPosition:AVCaptureDevicePositionBack];
+            videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
         } else {
             videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
         }
         videoCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
         videoCamera.horizontallyMirrorRearFacingCamera = NO;
-        [self applyFilters:videoCamera forPreview:YES];
+        [self showFilteredDisplay:videoCamera];
     } else {
         //still camera setup
         if ([self deviceModelNumber] == 40) {
-            stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 cameraPosition:AVCaptureDevicePositionBack];
+            stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionBack];
         } else {
             stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto  cameraPosition:AVCaptureDevicePositionBack];
         }
 
         stillCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
         stillCamera.horizontallyMirrorRearFacingCamera = NO;
-        [self applyFilters:stillCamera forPreview:YES];
+        [self showFilteredDisplay:stillCamera];
     }
-    
-    [finalFilter addTarget:uberView];
 }
 
-- (void)applyFilters:(id)camera forPreview:(BOOL)isPreview
+- (void)showFilteredDisplay:(id)camera
+{
+    CGRect finalCropRect;
+    if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
+        finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
+    } else {
+        finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
+    }
+    displayFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
+    [camera addTarget:displayFilter];
+    [displayFilter addTarget:uberView];
+    [camera startCameraCapture];
+}
+
+- (void)applyFilters:(id)camera
 {
     @autoreleasepool {
+        CGRect finalCropRect;
+        if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
+            finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
+        } else {
+            finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
+        }
         
-        cropFactor = [self setCropFactor];
-        
-        //if([camera isKindOfClass:[GPUImageStillCamera class]]) { }
-        
-        CGRect finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
         finalFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
         
         GPUImageFilter *initialFilter = [[GPUImageFilter alloc] init];
         GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] init];
         GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] init];
         
-        
-        if(isPreview) {
-            if ([self deviceModelNumber] == 40) {
-                [initialFilter forceProcessingAtSize:CGSizeMake(640, 360)];
-            } else {
-                [initialFilter forceProcessingAtSize:CGSizeMake(1280.0, 720.0)];
-            }
-            
-        } else {
-            if ([self deviceModelNumber] == 40) {
-                [initialFilter forceProcessingAtSize:CGSizeMake(640, 360)];
-            } else {
-                [initialFilter forceProcessingAtSize:CGSizeMake(2048.0, 1152.0)];
-            }
-            //[initialFilter forceProcessingAtSize:CGSizeMake(1280.0, 720.0)];
-            //[initialFilter forceProcessingAtSize:CGSizeMake(2048, 1536)];
-            //[initialFilter forceProcessingAtSize:CGSizeMake(1848, 1386)];
-            //initialFilter.cropRegion = CGRectMake(0.0, 0.125, 1.0, 0.75);
-            //[initialFilter forceProcessingAtSize:CGSizeMake(3264, 1836)];
-            //[initialFilter forceProcessingAtSize:CGSizeMake(2048, 1536);
+        if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
+            NSLog(@"still output for iPhone 4S");
+            [initialFilter forceProcessingAtSize:CGSizeMake(1920, 1440)];
         }
-        
-        if([camera isKindOfClass:[GPUImageStillCamera class]]) {
-            // SPLIT THE IMAGE IN HALF
-            NSLog(@"still output");
-            cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, .125, 0.5, .75)];
-            cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, .125, 0.5, .75)];
-        } else {
-            NSLog(@"video output");
-            // SPLIT THE IMAGE IN HALF
-            cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
-            cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
-        }
+
+        // SPLIT THE IMAGE IN HALF
+        cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
+        cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
 
         // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
         GPUImageTransformFilter *filterLeft = [[GPUImageTransformFilter alloc] init];
@@ -430,6 +471,7 @@ int currentIndex = -1;
         GPUImageAddBlendFilter *finalBlend = [[GPUImageAddBlendFilter alloc] init];
         
         //FILTER CHAIN: STACK ALL THESE FILTERS TOGETHER
+        
         [camera addTarget:initialFilter];
         [initialFilter addTarget:cropLeft];
         [initialFilter addTarget:cropRight];
@@ -445,10 +487,10 @@ int currentIndex = -1;
         
         [blendImages addTarget:finalBlend];
         [transformRight addTarget:finalBlend];
+         
         [finalBlend addTarget:finalFilter];
+
     }
-    
-    [camera startCameraCapture];
 }
 
 - (float)setCropFactor
@@ -517,8 +559,6 @@ int currentIndex = -1;
         UIView *viewCameraControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, self.view.bounds.size.width, 75)];
         
         [viewCameraControls setTag:100];
-
-        //[viewCaptureMode setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
         
         [self addCameraControlsContentWithView:viewCameraControls];
         
@@ -540,13 +580,13 @@ int currentIndex = -1;
     [viewShadow setAlpha:0.3];
     [self addGestures:viewShadow];
     
-    UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 50, 20)];
+    UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 240, 10, 50, 20)];
     [labelCaptureMode setTag: 101];
     [labelCaptureMode setTextColor:[UIColor whiteColor]];
     [labelCaptureMode setBackgroundColor:[UIColor clearColor]];
     [labelCaptureMode setTextAlignment:NSTextAlignmentCenter];
     
-    UISwitch *switchCaptureMode = [[UISwitch alloc] initWithFrame:CGRectMake(10, 35, 50, 20)];
+    UISwitch *switchCaptureMode = [[UISwitch alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 240, 35, 50, 20)];
     [switchCaptureMode addTarget: self action: @selector(toggleCaptureMode:) forControlEvents:UIControlEventValueChanged];
     
     if(isVideo){
@@ -563,14 +603,14 @@ int currentIndex = -1;
     
     // add the switch to viewer button
     NSLog(@"adding the viewer button");
-    UIButton *buttonViewer = [[UIButton alloc] initWithFrame: CGRectMake((controlsView.frame.size.width-210)/2 + 70, 0, 70, 75)];
+    UIButton *buttonViewer = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 160, 0, 70, 75)];
     [buttonViewer setImage:[UIImage imageNamed:@"play"] forState:UIControlStateNormal];
     [buttonViewer addTarget:self action:@selector(switchToViewerMode:) forControlEvents:UIControlEventTouchUpInside];
     [controlsView addSubview: buttonViewer];
     
     // add the shutter button
     NSLog(@"adding the shutter button");
-    UIButton *buttonShutter = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width-70, 0, 70, 75)];
+    UIButton *buttonShutter = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 70, 0, 70, 75)];
     [buttonShutter setImage:[UIImage imageNamed:@"shutter"] forState:UIControlStateNormal];
     [buttonShutter setImage:[UIImage imageNamed:@"shutterPressed"] forState:UIControlStateHighlighted];
     [buttonShutter addTarget:self action:@selector(shutterButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -658,6 +698,7 @@ int currentIndex = -1;
     NSLog(@"dim the view");
     [timerDimmer invalidate];
     timerDimmer = nil;
+
     [UIView animateWithDuration:duration delay:0.0
                         options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
                      animations:^{
@@ -670,7 +711,7 @@ int currentIndex = -1;
                      }];
 }
 
-- (void) toggleCaptureMode: (id) sender {
+- (void)toggleCaptureMode: (id) sender {
     [self showCameraControls];
     UISwitch *toggle = (UISwitch *) sender;
     NSLog(@"%@", toggle.on ? @"Video" : @"Still");
@@ -693,11 +734,11 @@ int currentIndex = -1;
     isSaving = YES;
     [self showSavingAlert];
     
-    [finalFilter removeAllTargets];
-    finalFilter = nil;
+    [displayFilter removeAllTargets];
+    displayFilter = nil;
     [stillCamera removeAllTargets];
 
-    [self applyFilters:stillCamera forPreview:NO];
+    [self applyFilters:stillCamera];
     [finalFilter prepareForImageCapture];
     
     [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:^(UIImage *processedImage, NSError *error) {
@@ -733,8 +774,7 @@ int currentIndex = -1;
     [finalFilter removeAllTargets];
     finalFilter = nil;
     [stillCamera removeAllTargets];
-    [self applyFilters:stillCamera forPreview:YES];
-    [finalFilter addTarget:uberView];
+    [self showFilteredDisplay:stillCamera];
     isSaving = NO;
     [self hideSavingAlert];
 }
@@ -799,6 +839,7 @@ int currentIndex = -1;
     [imgRecord setAutoresizingMask: UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin];
     [imgRecord setTag:102];
     [self.view addSubview:imgRecord];
+    NSLog(@"SHOWED THE RED LIGHT");
 
     // start recording the movie
     didFinishEffect = NO;
@@ -821,7 +862,7 @@ int currentIndex = -1;
             [weakSelf writeMovieToLibraryWithPath:movieURL];
         }
     };
-    
+    [self applyFilters:videoCamera];
     [finalFilter addTarget:movieWriter];
     
     dispatch_async(dispatch_get_main_queue(),
