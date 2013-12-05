@@ -50,6 +50,8 @@ NSTimer *timerDimmer;
 ALAssetsGroup *assetsGroup;
 ALAssetsLibrary *assetLibrary;
 
+UIImageView *imgFocusSquare;
+
 SystemSoundID videoBeep;
 
 
@@ -579,6 +581,8 @@ int currentIndex = -1;
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.3];
     [self addGestures:viewShadow];
+    UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleShadowTapAction:)];
+    [viewShadow addGestureRecognizer:handleTap];
     
     UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 240, 10, 50, 20)];
     [labelCaptureMode setTag: 101];
@@ -921,8 +925,16 @@ int currentIndex = -1;
             NSLog(@"CAMERA TAPPED!");
             [self showCameraControls];
             CGPoint location = [tgr locationInView:uberView];
+            [self showFocusSquare:location];
             [self setCameraFocus:location];
         }
+    }
+}
+
+- (void)handleShadowTapAction:(UITapGestureRecognizer *)tgr
+{
+    if (tgr.state == UIGestureRecognizerStateRecognized) {
+        [self showCameraControls];
     }
 }
 
@@ -966,6 +978,47 @@ int currentIndex = -1;
         }
     }
 }
+
+- (void)showFocusSquare:(CGPoint)location
+{
+    if (imgFocusSquare) {
+        [imgFocusSquare removeFromSuperview];
+    }
+    imgFocusSquare = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"focus"]];
+    float x = location.x - 65/2;
+    float y = location.y - 65/2;
+    x = x > 0 ? x : 0;
+    x = (x > (uberView.frame.size.height - 65) ? uberView.frame.size.height - 65 : x);
+    y = y > 0 ? y : 0;
+    y = (y > (uberView.frame.size.width - 140) ? (uberView.frame.size.width - 140) : y);
+    
+    [imgFocusSquare setFrame:CGRectMake(x, y, 65, 65)];
+    [uberView addSubview:imgFocusSquare];
+    NSLog(@"uber size: %f, %f", uberView.frame.size.width, uberView.frame.size.height);
+    NSLog(@"focus position: %f, %f", x, y);
+
+    [UIView animateWithDuration:0.5 delay:0.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         imgFocusSquare.alpha = 1.0;
+                     }
+                     completion:^(BOOL complete){
+                         [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(focusTimerFired:) userInfo:nil repeats:NO];
+                     }];
+}
+
+- (void)focusTimerFired:(NSTimer *)timer
+{
+    [UIView animateWithDuration:0.5 delay:0.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         imgFocusSquare.alpha = 0.0;
+                     }
+                     completion:^(BOOL complete){
+                         [imgFocusSquare removeFromSuperview];
+                     }];
+}
+
 
 - (void)writeMovieToLibraryWithPath:(NSURL *)path
 {
