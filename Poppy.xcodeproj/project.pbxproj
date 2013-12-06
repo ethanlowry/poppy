@@ -46,6 +46,8 @@
 		9D8FC077184D5107007D0D53 /* AppIcon57x57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D8FC076184D5107007D0D53 /* AppIcon57x57@2x.png */; };
 		9D8FC07B184D53C8007D0D53 /* AppIcon57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D8FC07A184D53C8007D0D53 /* AppIcon57x57.png */; };
 		9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576E6184FE5930048A6D6 /* focus@2x.png */; };
+		9DE576EA1850039C0048A6D6 /* CalibrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DE576E91850039C0048A6D6 /* CalibrationViewController.m */; };
+		9DE576EF18510EF20048A6D6 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576EE18510EF20048A6D6 /* Settings.bundle */; };
 		9DFA62F9182AE68400F1B262 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F7182AE68400F1B262 /* Default.png */; };
 		9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F8182AE68400F1B262 /* Default@2x.png */; };
 		9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FD182AECB400F1B262 /* Icon-Small.png */; };
@@ -137,6 +139,9 @@
 		9D8FC076184D5107007D0D53 /* AppIcon57x57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon57x57@2x.png"; sourceTree = "<group>"; };
 		9D8FC07A184D53C8007D0D53 /* AppIcon57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon57x57.png; sourceTree = "<group>"; };
 		9DE576E6184FE5930048A6D6 /* focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "focus@2x.png"; sourceTree = "<group>"; };
+		9DE576E81850039C0048A6D6 /* CalibrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalibrationViewController.h; sourceTree = "<group>"; };
+		9DE576E91850039C0048A6D6 /* CalibrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalibrationViewController.m; sourceTree = "<group>"; };
+		9DE576EE18510EF20048A6D6 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		9DFA62F7182AE68400F1B262 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		9DFA62F8182AE68400F1B262 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		9DFA62FD182AECB400F1B262 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
@@ -228,6 +233,8 @@
 			children = (
 				9D5EDE5417FB4386008EB372 /* AppDelegate.h */,
 				9D5EDE5517FB4386008EB372 /* AppDelegate.m */,
+				9DE576E81850039C0048A6D6 /* CalibrationViewController.h */,
+				9DE576E91850039C0048A6D6 /* CalibrationViewController.m */,
 				9D5EE03817FB521C008EB372 /* LiveViewController.h */,
 				9D5EE03917FB521C008EB372 /* LiveViewController.m */,
 				9D4F5F691821767B00542AE0 /* RBVolumeButtons.h */,
@@ -235,6 +242,7 @@
 				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
 				9D5EDE5717FB4386008EB372 /* Images.xcassets */,
 				9D5EDE4C17FB4386008EB372 /* Supporting Files */,
+				9DE576EE18510EF20048A6D6 /* Settings.bundle */,
 			);
 			path = PoppyApp;
 			sourceTree = "<group>";
@@ -431,6 +439,7 @@
 				9DFA6304182AECB400F1B262 /* Icon@2x.png in Resources */,
 				9DFCB1531828764400332D7C /* camera@2x.png in Resources */,
 				9D8E3F1718318C3E00232172 /* blank-1280.png in Resources */,
+				9DE576EF18510EF20048A6D6 /* Settings.bundle in Resources */,
 				9D10BC68182B0313008C8D1C /* AppIcon40x40.png in Resources */,
 				9D037A86182C6C5C00CD1452 /* blank.png in Resources */,
 				9DFCB1611829C68200332D7C /* play@2x.png in Resources */,
@@ -457,6 +466,7 @@
 				9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */,
 				9D5EDE5617FB4386008EB372 /* AppDelegate.m in Sources */,
 				9D5EDE5217FB4386008EB372 /* main.m in Sources */,
+				9DE576EA1850039C0048A6D6 /* CalibrationViewController.m in Sources */,
 				9D4F5F6B1821767B00542AE0 /* RBVolumeButtons.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

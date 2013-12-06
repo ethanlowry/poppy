@@ -12,8 +12,10 @@
 #import "RBVolumeButtons.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <CalibrationViewController.h>
 
 @interface LiveViewController : UIViewController
+
 {
     GPUImageVideoCamera *videoCamera;
     GPUImageStillCamera *stillCamera;
@@ -23,8 +25,13 @@
     GPUImageCropFilter *finalFilter;
     GPUImageCropFilter *displayFilter;
     RBVolumeButtons *buttonStealer;
-    AVCaptureDevice *device;
     MPMoviePlayerController *mainMoviePlayer;
 }
+
+@property (nonatomic) BOOL isViewActive;
+@property (nonatomic) float xOffset;
+@property (nonatomic) BOOL calibrateFirst;
+
+-(void)activateView;
 
 @end

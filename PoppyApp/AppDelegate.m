@@ -8,17 +8,33 @@
 
 #import "AppDelegate.h"
 #import "LiveViewController.h"
+#import "CalibrationViewController.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+{    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
     self.window.backgroundColor = [UIColor whiteColor];
-    [self.window setRootViewController:[[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil]];
+    //[self.window setRootViewController:[[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil]];
+    
+
+    LiveViewController *lvc = [[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    [self.window setRootViewController:lvc];
     [self.window makeKeyAndVisible];
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults boolForKey:@"isCalibrated"]) {
+        [defaults setFloat:0.0 forKey:@"xOffset"];
+        [defaults synchronize];
+        lvc.calibrateFirst = YES;
+        lvc.isViewActive = NO;
+    } else {
+        lvc.isViewActive = YES;
+    }
+    
     return YES;
 }
 

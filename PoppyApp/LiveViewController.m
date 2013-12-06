@@ -33,6 +33,10 @@ CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
 
 @implementation LiveViewController
 
+@synthesize isViewActive;
+@synthesize xOffset;
+@synthesize calibrateFirst;
+
 int next = 1;
 int prev = -1;
 
@@ -45,6 +49,7 @@ bool isVideo = YES;
 bool isWatching = NO;
 bool isSaving = NO;
 bool ignoreVolumeDown = NO;
+bool isViewActive;
 
 NSTimer *timerDimmer;
 ALAssetsGroup *assetsGroup;
@@ -70,42 +75,7 @@ int currentIndex = -1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    // Create a Poppy album if it doesn't already exist
-    assetLibrary = [[ALAssetsLibrary alloc] init];
-    [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
-                                  resultBlock:^(ALAssetsGroup *group) {
-                                      if (group) {
-                                          NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
-                                      } else {
-                                          NSLog(@"no group created, probably because it already exists");
-                                      }
-                                      [self loadAlbumWithName:@"Poppy"];
-                                  }
-                                 failureBlock:^(NSError *error) {
-                                     NSLog(@"error adding album");
-                                 }];
-    
-    __weak typeof(self) weakSelf = self;
-    
-    buttonStealer = [[RBVolumeButtons alloc] init];
-    buttonStealer.upBlock = ^{
-        // + volume button pressed
-        if (!ignoreVolumeDown) {
-            NSLog(@"VOLUME UP!");
-            [weakSelf shutterPressed];
-        }
-    };
-    buttonStealer.downBlock = ^{
-        // - volume button pressed
-        if (!ignoreVolumeDown) {
-            NSLog(@"VOLUME DOWN!");
-            [weakSelf showMedia:prev];
-        }
-    };
-    
-    // NOTE: immediately steals volume button events. maybe we want to only do this in landscape mode
-    [buttonStealer startStealingVolumeButtonEvents];
+    xOffset = [[NSUserDefaults standardUserDefaults] floatForKey:@"xOffset"];
 }
 
 - (void) shutterPressed
@@ -147,8 +117,45 @@ int currentIndex = -1;
     [[self.view viewWithTag:104] removeFromSuperview]; //remove the camera button
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)activateView
 {
+    // Create a Poppy album if it doesn't already exist
+    assetLibrary = [[ALAssetsLibrary alloc] init];
+    [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
+                                  resultBlock:^(ALAssetsGroup *group) {
+                                      if (group) {
+                                          NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
+                                      } else {
+                                          NSLog(@"no group created, probably because it already exists");
+                                      }
+                                      [self loadAlbumWithName:@"Poppy"];
+                                  }
+                                 failureBlock:^(NSError *error) {
+                                     NSLog(@"error adding album");
+                                 }];
+    
+    __weak typeof(self) weakSelf = self;
+    
+    buttonStealer = [[RBVolumeButtons alloc] init];
+    buttonStealer.upBlock = ^{
+        // + volume button pressed
+        if (!ignoreVolumeDown) {
+            NSLog(@"VOLUME UP!");
+            [weakSelf shutterPressed];
+        }
+    };
+    buttonStealer.downBlock = ^{
+        // - volume button pressed
+        if (!ignoreVolumeDown) {
+            NSLog(@"VOLUME DOWN!");
+            [weakSelf showMedia:prev];
+        }
+    };
+    
+    // NOTE: immediately steals volume button events. maybe we want to only do this in landscape mode
+    [buttonStealer startStealingVolumeButtonEvents];
+
+    
     imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
     [imgView setContentMode: UIViewContentModeScaleAspectFill];
     
@@ -166,11 +173,27 @@ int currentIndex = -1;
     [self.view addSubview:touchView];
     
     [self activateCamera];
-
+    
     NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"beep" ofType:@"wav"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &videoBeep);
+}
 
-    [self showWelcomeAlert];
+- (void)viewDidAppear:(BOOL)animated
+{
+    if (isViewActive) {
+        [self activateView];
+        if (!calibrateFirst) {
+            [self showWelcomeAlert];
+            calibrateFirst = NO;
+        } else {
+            [self showCameraControls];
+        }
+    } else {
+        //make the default view less ugly
+        [self.view setBackgroundColor:[UIColor blackColor]];
+        CalibrationViewController *cvc = [[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+        [self presentViewController:cvc animated:NO completion:nil];
+    }
 }
 
 - (void)addGestures:(UIView *)touchView
@@ -308,7 +331,7 @@ int currentIndex = -1;
     [labelWelcome setTextColor:[UIColor whiteColor]];
     [labelWelcome setBackgroundColor:[UIColor clearColor]];
     [labelWelcome setTextAlignment:NSTextAlignmentCenter];
-    [labelWelcome setFont:[UIFont boldSystemFontOfSize:32]];
+    [labelWelcome setFont:[UIFont boldSystemFontOfSize:24]];
     [labelWelcome setTextAlignment:NSTextAlignmentCenter];
     [labelWelcome setText:@"Put me in Poppy!"];
     
@@ -414,12 +437,14 @@ int currentIndex = -1;
 
 - (void)showFilteredDisplay:(id)camera
 {
+
     CGRect finalCropRect;
     if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
-        finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
+        finalCropRect = CGRectMake(xOffset + (1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
     } else {
-        finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
+        finalCropRect = CGRectMake(xOffset + (1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
     }
+    
     displayFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
     [camera addTarget:displayFilter];
     [displayFilter addTarget:uberView];
@@ -448,9 +473,16 @@ int currentIndex = -1;
         }
 
         // SPLIT THE IMAGE IN HALF
-        cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 0.5, 1.0)];
-        cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5, 0.0, 0.5, 1.0)];
-
+        //take into account the xOffset
+        NSLog(@"XOFFSET: %f", xOffset);
+        
+        float frameWidth = 0.5 - fabs(xOffset);
+        if (xOffset > 0) {
+            cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, frameWidth, 1.0)];
+        } else {
+            cropLeft = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0 - 2*xOffset, 0.0, frameWidth, 1.0)];
+        }
+        cropRight = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.5 - xOffset, 0.0, frameWidth, 1.0)];
         // SKEW THE IMAGE FROM BOTH A LEFT AND RIGHT PERSPECTIVE
         GPUImageTransformFilter *filterLeft = [[GPUImageTransformFilter alloc] init];
         filterLeft.transform3D = CATransform3DRotatedWithPerspectiveFactor(perspectiveFactor);
@@ -458,11 +490,11 @@ int currentIndex = -1;
         filterRight.transform3D = CATransform3DRotatedWithPerspectiveFactor(-perspectiveFactor);
         
         //SHIFT THE LEFT AND RIGHT HALVES OVER SO THAT THEY CAN BE OVERLAID
-        CGAffineTransform landscapeTransformLeft = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), -1.0, 0.0);
+        CGAffineTransform landscapeTransformLeft = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, frameWidth, 1.0), -1.0, 0.0);
         GPUImageTransformFilter *transformLeft = [[GPUImageTransformFilter alloc] init];
         transformLeft.affineTransform = landscapeTransformLeft;
         
-        CGAffineTransform landscapeTransformRight = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 1.0), 1.0, 0.0);
+        CGAffineTransform landscapeTransformRight = CGAffineTransformTranslate (CGAffineTransformScale(CGAffineTransformIdentity, frameWidth, 1.0), 1.0, 0.0);
         GPUImageTransformFilter *transformRight = [[GPUImageTransformFilter alloc] init];
         transformRight.affineTransform = landscapeTransformRight;
         
@@ -485,13 +517,15 @@ int currentIndex = -1;
         
         [initialFilter addTarget:blankFilter];
         [blankFilter addTarget:blendImages];
+        
+        //[transformRight addTarget:blendImages];
         [transformLeft addTarget:blendImages];
         
         [blendImages addTarget:finalBlend];
         [transformRight addTarget:finalBlend];
          
         [finalBlend addTarget:finalFilter];
-
+        //[blendImages addTarget:finalFilter];
     }
 }
 
@@ -584,13 +618,13 @@ int currentIndex = -1;
     UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleShadowTapAction:)];
     [viewShadow addGestureRecognizer:handleTap];
     
-    UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 240, 10, 50, 20)];
+    UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 230, 10, 50, 20)];
     [labelCaptureMode setTag: 101];
     [labelCaptureMode setTextColor:[UIColor whiteColor]];
     [labelCaptureMode setBackgroundColor:[UIColor clearColor]];
     [labelCaptureMode setTextAlignment:NSTextAlignmentCenter];
     
-    UISwitch *switchCaptureMode = [[UISwitch alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 240, 35, 50, 20)];
+    UISwitch *switchCaptureMode = [[UISwitch alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 230, 35, 50, 20)];
     [switchCaptureMode addTarget: self action: @selector(toggleCaptureMode:) forControlEvents:UIControlEventValueChanged];
     
     if(isVideo){
@@ -607,7 +641,7 @@ int currentIndex = -1;
     
     // add the switch to viewer button
     NSLog(@"adding the viewer button");
-    UIButton *buttonViewer = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 160, 0, 70, 75)];
+    UIButton *buttonViewer = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 150, 0, 70, 75)];
     [buttonViewer setImage:[UIImage imageNamed:@"play"] forState:UIControlStateNormal];
     [buttonViewer addTarget:self action:@selector(switchToViewerMode:) forControlEvents:UIControlEventTouchUpInside];
     [controlsView addSubview: buttonViewer];
@@ -941,6 +975,7 @@ int currentIndex = -1;
 
 - (void)setCameraFocus:(CGPoint)location
 {
+    AVCaptureDevice *device;
     if (isVideo) {
         device = videoCamera.inputCamera;
     } else {
