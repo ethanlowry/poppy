@@ -591,7 +591,10 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
-				HEADER_SEARCH_PATHS = "../**";
+				HEADER_SEARCH_PATHS = (
+					"../**",
+					"$(inherited)/**",
+				);
 				INFOPLIST_FILE = "PoppyApp/Poppy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-ObjC";
@@ -610,7 +613,10 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
-				HEADER_SEARCH_PATHS = "../**";
+				HEADER_SEARCH_PATHS = (
+					"../**",
+					"$(inherited)/**",
+				);
 				INFOPLIST_FILE = "PoppyApp/Poppy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-ObjC";
