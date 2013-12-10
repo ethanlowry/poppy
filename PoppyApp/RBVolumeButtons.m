@@ -248,7 +248,6 @@ void volumeListenerCallback (
         [[[[UIApplication sharedApplication] windows] objectAtIndex:0] addSubview:self.volumeView];
     }
     
-    
     [[NSNotificationCenter defaultCenter]
         addObserver:self
         selector:@selector(volumeChanged:)

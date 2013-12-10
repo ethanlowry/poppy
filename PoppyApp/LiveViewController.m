@@ -37,6 +37,15 @@ CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
 @synthesize xOffset;
 @synthesize calibrateFirst;
 
+@synthesize mainMoviePlayer;
+@synthesize videoCamera;
+@synthesize stillCamera;
+@synthesize movieWriter;
+@synthesize uberView;
+@synthesize imgView;
+@synthesize finalFilter;
+@synthesize displayFilter;
+
 int next = 1;
 int prev = -1;
 
@@ -76,6 +85,21 @@ int currentIndex = -1;
 {
     [super viewDidLoad];
     xOffset = [[NSUserDefaults standardUserDefaults] floatForKey:@"xOffset"];
+    // Create a Poppy album if it doesn't already exist
+    assetLibrary = [[ALAssetsLibrary alloc] init];
+    [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
+                                  resultBlock:^(ALAssetsGroup *group) {
+                                      if (group) {
+                                          NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
+                                      } else {
+                                          NSLog(@"no group created, probably because it already exists");
+                                      }
+                                      [self loadAlbumWithName:@"Poppy"];
+                                  }
+                                 failureBlock:^(NSError *error) {
+                                     NSLog(@"error adding album");
+                                 }];
+    
 }
 
 - (void) shutterPressed
@@ -90,7 +114,9 @@ int currentIndex = -1;
             if (isRecording) {
                 [self stopRecording];
             } else {
-                [self startRecording];
+                if(!isSaving) {
+                    [self startRecording];
+                }
             }
         } else {
             if(!isSaving) {
@@ -113,28 +139,13 @@ int currentIndex = -1;
     isWatching = NO;
     [imgView setHidden:YES];
     [mainMoviePlayer stop];
-    mainMoviePlayer = nil;
+    self.mainMoviePlayer = nil;
     [[self.view viewWithTag:103] removeFromSuperview]; //remove the movie player
     [[self.view viewWithTag:104] removeFromSuperview]; //remove the camera button
 }
 
 - (void)activateView
 {
-    // Create a Poppy album if it doesn't already exist
-    assetLibrary = [[ALAssetsLibrary alloc] init];
-    [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
-                                  resultBlock:^(ALAssetsGroup *group) {
-                                      if (group) {
-                                          NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
-                                      } else {
-                                          NSLog(@"no group created, probably because it already exists");
-                                      }
-                                      [self loadAlbumWithName:@"Poppy"];
-                                  }
-                                 failureBlock:^(NSError *error) {
-                                     NSLog(@"error adding album");
-                                 }];
-    
     __weak typeof(self) weakSelf = self;
     
     buttonStealer = [[RBVolumeButtons alloc] init];
@@ -226,9 +237,9 @@ int currentIndex = -1;
             [self dimView:0.0 withAlpha:0.1 withView:[self.view viewWithTag:104] withTimer:NO];
             //tear down everything about capture mode
             [videoCamera stopCameraCapture];
-            videoCamera = nil;
+            self.videoCamera = nil;
             [stillCamera stopCameraCapture];
-            stillCamera = nil;
+            self.stillCamera = nil;
             [finalFilter removeAllTargets];
             [displayFilter removeAllTargets];
             [self hideView:[self.view viewWithTag:100]]; // hide the capture mode controls
@@ -345,7 +356,6 @@ int currentIndex = -1;
     [labelWelcome setBackgroundColor:[UIColor clearColor]];
     [labelWelcome setTextAlignment:NSTextAlignmentCenter];
     [labelWelcome setFont:[UIFont boldSystemFontOfSize:24]];
-    [labelWelcome setTextAlignment:NSTextAlignmentCenter];
     [labelWelcome setText:@"Put me in Poppy!"];
     
     [viewWelcome addSubview:viewShadow];
@@ -477,8 +487,8 @@ int currentIndex = -1;
         finalFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
         
         GPUImageFilter *initialFilter = [[GPUImageFilter alloc] init];
-        GPUImageCropFilter *cropLeft = [[GPUImageCropFilter alloc] init];
-        GPUImageCropFilter *cropRight = [[GPUImageCropFilter alloc] init];
+        GPUImageCropFilter *cropLeft;
+        GPUImageCropFilter *cropRight;
         
         if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
             NSLog(@"still output for iPhone 4S");
@@ -778,8 +788,8 @@ int currentIndex = -1;
     [camera stopCameraCapture];
     [displayFilter removeAllTargets];
     [finalFilter removeAllTargets];
-    displayFilter = nil;
-    finalFilter = nil;
+    self.displayFilter = nil;
+    self.finalFilter = nil;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
     ^{
@@ -794,7 +804,7 @@ int currentIndex = -1;
     [self showSavingAlert];
     
     [displayFilter removeAllTargets];
-    displayFilter = nil;
+    self.displayFilter = nil;
     [stillCamera removeAllTargets];
 
     [self applyFilters:stillCamera];
@@ -811,6 +821,7 @@ int currentIndex = -1;
         [assetLibrary writeImageToSavedPhotosAlbum:processedImage.CGImage metadata:captureMetadata completionBlock:^(NSURL *assetURL, NSError *error2) {
              if (error2) {
                  NSLog(@"ERROR: the image failed to be written");
+                 [self restartPreview];
              }
              else {
                  NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
@@ -837,7 +848,7 @@ int currentIndex = -1;
 - (void)restartPreview
 {
     [finalFilter removeAllTargets];
-    finalFilter = nil;
+    self.finalFilter = nil;
     [stillCamera removeAllTargets];
     [self showFilteredDisplay:stillCamera];
     isSaving = NO;
@@ -943,11 +954,14 @@ int currentIndex = -1;
 - (void)stopRecording
 {
     isRecording = NO;
-    videoCamera.audioEncodingTarget = nil;
-    [finalFilter removeTarget:movieWriter];
-    [movieWriter finishRecording];
-    NSLog(@"Movie completed");
-    [[self.view viewWithTag:102] removeFromSuperview]; // remove the "recording" light
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       videoCamera.audioEncodingTarget = nil;
+                       [finalFilter removeTarget:movieWriter];
+                       [movieWriter finishRecording];
+                       NSLog(@"Movie completed");
+                       [[self.view viewWithTag:102] removeFromSuperview]; // remove the "recording" light
+                   });
 }
 
 
@@ -960,15 +974,16 @@ int currentIndex = -1;
 - (void)playVideoStartSound
 {
     AudioServicesPlaySystemSound (videoBeep);
+
 }
 
-- (void)swipeScreenleft:(UITapGestureRecognizer *)tgr
+- (void)swipeScreenleft:(UISwipeGestureRecognizer *)sgr
 {
     NSLog(@"SWIPED LEFT");
     [self showMedia:next];
 }
 
-- (void)swipeScreenRight:(UITapGestureRecognizer *)tgr
+- (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr
 {
     NSLog(@"SWIPED RIGHT");
     [self showMedia:prev];

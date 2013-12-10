@@ -17,16 +17,17 @@
 @interface LiveViewController : UIViewController
 
 {
-    GPUImageVideoCamera *videoCamera;
-    GPUImageStillCamera *stillCamera;
-    GPUImageMovieWriter *movieWriter;
-    GPUImageView *uberView;
-    UIImageView *imgView;
-    GPUImageCropFilter *finalFilter;
-    GPUImageCropFilter *displayFilter;
     RBVolumeButtons *buttonStealer;
-    MPMoviePlayerController *mainMoviePlayer;
 }
+
+@property (nonatomic, retain) MPMoviePlayerController *mainMoviePlayer;
+@property (nonatomic, retain) GPUImageVideoCamera *videoCamera;
+@property (nonatomic, retain) GPUImageStillCamera *stillCamera;
+@property (nonatomic, retain) GPUImageMovieWriter *movieWriter;
+@property (nonatomic, retain) GPUImageView *uberView;
+@property (nonatomic, retain) UIImageView *imgView;
+@property (nonatomic, retain) GPUImageCropFilter *finalFilter;
+@property (nonatomic, retain) GPUImageCropFilter *displayFilter;
 
 @property (nonatomic) BOOL isViewActive;
 @property (nonatomic) float xOffset;

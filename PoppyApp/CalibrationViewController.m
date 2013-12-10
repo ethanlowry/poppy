@@ -8,6 +8,7 @@
 
 #import "CalibrationViewController.h"
 #import "LiveViewController.h"
+#import "WelcomeViewController.h"
 #import <sys/utsname.h>
 
 @interface CalibrationViewController ()
@@ -20,6 +21,8 @@ float calibrationCropFactor;
 UIView *viewWelcome;
 
 @implementation CalibrationViewController
+
+@synthesize showOOBE;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -35,6 +38,7 @@ UIView *viewWelcome;
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    showOOBE = YES;
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     cropPosition = [defaults floatForKey:@"xOffset"];
@@ -50,37 +54,44 @@ UIView *viewWelcome;
     buttonStealer = [[RBVolumeButtons alloc] init];
     buttonStealer.upBlock = ^{
         // + volume button pressed
-        cropPosition = cropPosition + 0.005;
-        cropPosition = (cropPosition < (1.0 - calibrationCropFactor)/2 ? cropPosition : (1.0 - calibrationCropFactor)/2);
-        NSLog(@"%f", cropPosition);
-        [weakSelf applyFilter];
+        [weakSelf calibrateRight:weakSelf];
     };
     buttonStealer.downBlock = ^{
         // - volume button pressed
-        cropPosition = cropPosition - 0.005;
-        cropPosition = (cropPosition > -(1.0 - calibrationCropFactor)/2 ? cropPosition : -(1.0 - calibrationCropFactor)/2);
-        NSLog(@"%f", cropPosition);
-        [weakSelf applyFilter];
+        [weakSelf calibrateLeft:weakSelf];
     };
     
     [buttonStealer startStealingVolumeButtonEvents];
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)calibrateLeft: (id) sender
 {
-    mainView = (GPUImageView *)self.view;
-    mainView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
-
-    // set up gestures
-    /*
-    UIView *touchView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-    [self addGestures:touchView];
-    [self.view addSubview:touchView];
-    */
-    [self activateCamera];
-    [self showWelcomeAlert];
+    cropPosition = cropPosition - 0.005;
+    cropPosition = (cropPosition > -(1.0 - calibrationCropFactor)/2 ? cropPosition : -(1.0 - calibrationCropFactor)/2);
+    NSLog(@"%f", cropPosition);
+    [self applyFilter];
 }
 
+- (void)calibrateRight: (id) sender
+{
+    cropPosition = cropPosition + 0.005;
+    cropPosition = (cropPosition < (1.0 - calibrationCropFactor)/2 ? cropPosition : (1.0 - calibrationCropFactor)/2);
+    NSLog(@"%f", cropPosition);
+    [self applyFilter];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    if (showOOBE) {
+        WelcomeViewController *wvc = [[WelcomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+        [self presentViewController:wvc animated:NO completion:nil];
+    } else {
+        [self showWelcomeAlert];
+        mainView = (GPUImageView *)self.view;
+        mainView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+        [self activateCamera];
+    }
+}
 
 - (void)activateCamera
 {
@@ -102,22 +113,33 @@ UIView *viewWelcome;
     [displayFilter addTarget:mainView];
 }
 
-- (void) showDoneButton
+- (void) showControls
 {
-    UIView *viewControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, self.view.bounds.size.width, 75)];
+    UIView *viewControls = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, self.view.bounds.size.height - 75,self.view.bounds.size.width/2, 75)];
     
-    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(viewControls.frame.size.width/2,0,viewControls.frame.size.width/2,75)];
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewControls.frame.size.width,75)];
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.3];
     
-    UIButton *buttonDone = [[UIButton alloc] initWithFrame: CGRectMake(viewControls.frame.size.width/2,0,viewControls.frame.size.width/2,75)];
-    [buttonDone setTitle:@"Tap here when calibrated" forState:UIControlStateNormal];
-    [buttonDone addTarget:self action:@selector(calibrationComplete:) forControlEvents:UIControlEventTouchUpInside];
-    [viewControls addSubview: viewShadow];
-    [viewControls addSubview: buttonDone];
+    UIButton *buttonLeft = [[UIButton alloc] initWithFrame: CGRectMake(viewControls.frame.size.width - 230, 0, 70, 75)];
+    [buttonLeft setImage:[UIImage imageNamed:@"arrow-left"] forState:UIControlStateNormal];
+    [buttonLeft addTarget:self action:@selector(calibrateLeft:) forControlEvents:UIControlEventTouchUpInside];
     
-    [self.view addSubview:viewControls];
-    [self.view bringSubviewToFront:viewControls];
+    UIButton *buttonDone = [[UIButton alloc] initWithFrame: CGRectMake(viewControls.frame.size.width - 150, 0, 70, 75)];
+    [buttonDone setTitle:@"Done" forState:UIControlStateNormal];
+    [buttonDone addTarget:self action:@selector(calibrationComplete:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton *buttonRight = [[UIButton alloc] initWithFrame: CGRectMake(viewControls.frame.size.width - 70, 0, 70, 75)];
+    [buttonRight setImage:[UIImage imageNamed:@"arrow-right"] forState:UIControlStateNormal];
+    [buttonRight addTarget:self action:@selector(calibrateRight:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [viewControls addSubview: viewShadow];
+    [viewControls addSubview: buttonLeft];
+    [viewControls addSubview: buttonDone];
+    [viewControls addSubview: buttonRight];
+    
+    [mainView addSubview:viewControls];
+    [mainView bringSubviewToFront:viewControls];
 }
 
 - (void)showWelcomeAlert
@@ -133,11 +155,9 @@ UIView *viewWelcome;
     [labelWelcome setTextColor:[UIColor whiteColor]];
     [labelWelcome setBackgroundColor:[UIColor clearColor]];
     [labelWelcome setTextAlignment:NSTextAlignmentCenter];
-    //[labelWelcome setFont:[UIFont boldSystemFontOfSize:24]];
-    [labelWelcome setTextAlignment:NSTextAlignmentCenter];
     labelWelcome.lineBreakMode = NSLineBreakByWordWrapping;
     labelWelcome.numberOfLines = 0;
-    [labelWelcome setText:@"Put me in Poppy\nThen use the phone's +/- volume buttons to calibrate"];
+    [labelWelcome setText:@"Put me in Poppy\nThen move the image left or right to calibrate"];
     
     [viewWelcome addSubview:viewShadow];
     [viewWelcome addSubview:labelWelcome];
@@ -163,7 +183,7 @@ UIView *viewWelcome;
                      }
                      completion:^(BOOL complete){
                          [viewWelcome removeFromSuperview];
-                         [self showDoneButton];
+                         [self showControls];
                      }];
 }
 

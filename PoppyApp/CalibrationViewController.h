@@ -17,4 +17,7 @@
     GPUImageCropFilter *displayFilter;
     RBVolumeButtons *buttonStealer;
 }
+
+@property (nonatomic) BOOL showOOBE;
+
 @end

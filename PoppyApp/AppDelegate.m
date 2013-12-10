@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "LiveViewController.h"
 #import "CalibrationViewController.h"
+#import "WelcomeViewController.h"
 
 @implementation AppDelegate
 
@@ -18,9 +19,7 @@
     // Override point for customization after application launch.
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
     self.window.backgroundColor = [UIColor whiteColor];
-    //[self.window setRootViewController:[[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil]];
-    
-
+    //WelcomeViewController *wvc = [[WelcomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     LiveViewController *lvc = [[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     [self.window setRootViewController:lvc];
     [self.window makeKeyAndVisible];
