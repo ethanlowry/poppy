@@ -78,10 +78,8 @@ UIView *touchView;
     // Welcome
     UIView *welcomeView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
     [welcomeView setBackgroundColor:[UIColor whiteColor]];
-    
     UIImageView *logoImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo"]];
     [logoImgView setFrame:CGRectMake((self.view.bounds.size.width - 350)/2,35,350,69)];
-    
     [welcomeView addSubview:[self makeLabel:@"Welcome to Poppy! This app will help you\ncapture and view 3D photos and clips." withFrame:CGRectMake(0,0,welcomeView.frame.size.width, welcomeView.frame.size.height) withAlignment:NSTextAlignmentCenter withSize:20]];
     [welcomeView addSubview:logoImgView];
     [frameArray addObject:welcomeView];
@@ -91,7 +89,6 @@ UIView *touchView;
     [adapterView setBackgroundColor:[UIColor whiteColor]];
     UIImageView *adapterImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"adapter"]];
     [adapterImgView setFrame:CGRectMake(self.view.bounds.size.width - 190,(self.view.bounds.size.height - 275)/2,150,200)];
-    
     [adapterView addSubview:[self makeLabel:@"Choose the right adapter for your iPhone, and load it into Poppy." withFrame:CGRectMake(40,0,self.view.bounds.size.width - 270, self.view.bounds.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
     [adapterView addSubview:adapterImgView];
     [frameArray addObject:adapterView];
@@ -99,7 +96,6 @@ UIView *touchView;
     // Open Poppy to capture footage
     UIView *rotatePoppyView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
     [rotatePoppyView setBackgroundColor:[UIColor whiteColor]];
-    
     UIImageView *rotateImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"twist"]];
     [rotateImgView setFrame:CGRectMake(self.view.bounds.size.width - 220,(self.view.bounds.size.height - 275)/2,200,200)];
     [rotatePoppyView addSubview:[self makeLabel:@"Twist Poppy open to shoot video or photos." withFrame:CGRectMake(40,0,self.view.bounds.size.width - 280, self.view.bounds.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
@@ -109,7 +105,6 @@ UIView *touchView;
     // Use thumbholes to access controls
     UIView *thumbholeView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
     [thumbholeView setBackgroundColor:[UIColor whiteColor]];
-    
     UIImageView *thumbsImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"thumbs"]];
     [thumbsImgView setFrame:CGRectMake(self.view.bounds.size.width - 220,(self.view.bounds.size.height - 275)/2,200,200)];
     [thumbholeView addSubview:[self makeLabel:@"Use the thumb holes on the bottom of Poppy to access screen controls, or to slide your phone out of Poppy." withFrame:CGRectMake(40,0,self.view.bounds.size.width - 280, self.view.bounds.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
@@ -119,10 +114,8 @@ UIView *touchView;
     // On screen controls
     UIView *screenView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
     [screenView setBackgroundColor:[UIColor whiteColor]];
-    
     UIImageView *screenImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"screencontrols"]];
     [screenImgView setFrame:CGRectMake((self.view.bounds.size.width - 245)/2,(self.view.bounds.size.height - 140)/2,245,120)];
-    
     [screenView addSubview:[self makeLabel:@"Screen Controls" withFrame:CGRectMake(0,20,self.view.bounds.size.width,25) withAlignment:NSTextAlignmentCenter withSize:20]];
     [screenView addSubview:[self makeLabel:@"Take either video or photos" withFrame:CGRectMake(0,68,self.view.bounds.size.width/2,25) withAlignment:NSTextAlignmentCenter withSize:16]];
     [screenView addSubview:[self makeLabel:@"Start or stop recording" withFrame:CGRectMake(self.view.bounds.size.width/2,68,self.view.bounds.size.width/2,25) withAlignment:NSTextAlignmentCenter withSize:16]];
@@ -130,10 +123,19 @@ UIView *touchView;
     [screenView addSubview:screenImgView];
     [frameArray addObject:screenView];
     
+    // Playback controls
+    
+    UIView *playbackView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
+    [playbackView setBackgroundColor:[UIColor whiteColor]];
+    UIImageView *playbackImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"screencontrolscamera"]];
+    [playbackImgView setFrame:CGRectMake(self.view.bounds.size.width - 126,(self.view.bounds.size.height - 135)/2,66,60)];
+    [playbackView addSubview:[self makeLabel:@"Swipe left and right to see images you’ve taken. Tap the camera button to switch back to taking pictures." withFrame:CGRectMake(40,0,self.view.bounds.size.width - 200, self.view.bounds.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
+    [playbackView addSubview:playbackImgView];
+    [frameArray addObject:playbackView];
+    
     // Calibration
     UIView *calibrateView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
     [calibrateView setBackgroundColor:[UIColor whiteColor]];
- 
     [calibrateView addSubview:[self makeLabel:@"Now use Poppy to take a look around. If the image doesn't look 3D, calibrate your camera by moving the image left or right until it does." withFrame:CGRectMake(40,0,calibrateView.frame.size.width - 80, calibrateView.frame.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
     [frameArray addObject:calibrateView];
 }

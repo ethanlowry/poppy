@@ -51,6 +51,7 @@
 		9DE57704185672AB0048A6D6 /* twist@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE57703185672AB0048A6D6 /* twist@2x.png */; };
 		9DE57706185679140048A6D6 /* thumbs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE57705185679140048A6D6 /* thumbs@2x.png */; };
 		9DE5770A185681A20048A6D6 /* screencontrols@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE57709185681A20048A6D6 /* screencontrols@2x.png */; };
+		9DE5770C185786B70048A6D6 /* screencontrolscamera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */; };
 		9DFA62F9182AE68400F1B262 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F7182AE68400F1B262 /* Default.png */; };
 		9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F8182AE68400F1B262 /* Default@2x.png */; };
 		9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FD182AECB400F1B262 /* Icon-Small.png */; };
@@ -149,6 +150,7 @@
 		9DE57703185672AB0048A6D6 /* twist@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "twist@2x.png"; sourceTree = "<group>"; };
 		9DE57705185679140048A6D6 /* thumbs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "thumbs@2x.png"; sourceTree = "<group>"; };
 		9DE57709185681A20048A6D6 /* screencontrols@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screencontrols@2x.png"; sourceTree = "<group>"; };
+		9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screencontrolscamera@2x.png"; sourceTree = "<group>"; };
 		9DFA62F7182AE68400F1B262 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		9DFA62F8182AE68400F1B262 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		9DFA62FD182AECB400F1B262 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 				9DE57703185672AB0048A6D6 /* twist@2x.png */,
 				9DE57705185679140048A6D6 /* thumbs@2x.png */,
 				9DE57709185681A20048A6D6 /* screencontrols@2x.png */,
+				9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */,
 				9DE576F61853DCEB0048A6D6 /* arrow-left@2x.png */,
 				9DE576F71853DCEB0048A6D6 /* arrow-right@2x.png */,
 				9DFCB15A18297DB000332D7C /* beep.wav */,
@@ -372,7 +375,7 @@
 				ORGANIZATIONNAME = "Ethan Lowry";
 				TargetAttributes = {
 					9D5EDE4117FB4386008EB372 = {
-						DevelopmentTeam = 4F57887W7E;
+						DevelopmentTeam = TDD7PUZN8B;
 					};
 					9D5EDE5C17FB4386008EB372 = {
 						TestTargetID = 9D5EDE4117FB4386008EB372;
@@ -444,6 +447,7 @@
 				9D8FC077184D5107007D0D53 /* AppIcon57x57@2x.png in Resources */,
 				9D761EE118242A94005412AC /* record@2x.png in Resources */,
 				9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */,
+				9DE5770C185786B70048A6D6 /* screencontrolscamera@2x.png in Resources */,
 				9D10BC6B182B0313008C8D1C /* AppIcon60x60@2x.png in Resources */,
 				9DE576F81853DCEB0048A6D6 /* arrow-left@2x.png in Resources */,
 				9D10BC66182B0313008C8D1C /* AppIcon29x29.png in Resources */,
@@ -613,7 +617,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "B2F5C503-064B-4EC8-B4F6-79CE1A03F21A";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -624,7 +628,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Hack Things LLC (TDD7PUZN8B)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -635,7 +639,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "B2F5C503-064B-4EC8-B4F6-79CE1A03F21A";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
