@@ -85,21 +85,63 @@ int currentIndex = -1;
 {
     [super viewDidLoad];
     xOffset = [[NSUserDefaults standardUserDefaults] floatForKey:@"xOffset"];
-    // Create a Poppy album if it doesn't already exist
-    assetLibrary = [[ALAssetsLibrary alloc] init];
-    [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
-                                  resultBlock:^(ALAssetsGroup *group) {
-                                      if (group) {
-                                          NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
-                                      } else {
-                                          NSLog(@"no group created, probably because it already exists");
-                                      }
-                                      [self loadAlbumWithName:@"Poppy"];
-                                  }
-                                 failureBlock:^(NSError *error) {
-                                     NSLog(@"error adding album");
-                                 }];
     
+    ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
+    
+    // this is just a test to trigger asking for user permission to access photos
+    [lib enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+        NSLog(@"%i",[group numberOfAssets]);
+    } failureBlock:^(NSError *error) {
+        if (error.code == ALAssetsLibraryAccessUserDeniedError) {
+            NSLog(@"user denied access, code: %i",error.code);
+        }else{
+            NSLog(@"Other error code: %i",error.code);
+        }
+    }];
+    
+    lib = nil;
+    
+    [self authorizeAccess:AVMediaTypeVideo]; // apparently permission is needed in some regions for video
+    [self authorizeAccess:AVMediaTypeAudio]; // asks the user for permission to use the microphone
+    
+}
+
+- (void) authorizeAccess:(NSString *)mediaType
+{
+    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:mediaType];
+    
+    // This status is normally not visible—the AVCaptureDevice class methods for discovering devices do not return devices the user is restricted from accessing.
+    if(authStatus == AVAuthorizationStatusRestricted){
+        NSLog(@"Restricted");
+    }
+    
+    // The user has explicitly denied permission for media capture.
+    else if(authStatus == AVAuthorizationStatusDenied){
+        NSLog(@"Denied");
+    }
+    
+    // The user has explicitly granted permission for media capture, or explicit user permission is not necessary for the media type in question.
+    else if(authStatus == AVAuthorizationStatusAuthorized){
+        NSLog(@"Authorized");
+    }
+    
+    // Explicit user permission is required for media capture, but the user has not yet granted or denied such permission.
+    else if(authStatus == AVAuthorizationStatusNotDetermined){
+        
+        [AVCaptureDevice requestAccessForMediaType:mediaType completionHandler:^(BOOL granted) {
+            if(granted){
+                NSLog(@"Granted access to %@", mediaType);
+            }
+            else {
+                NSLog(@"Not granted access to %@", mediaType);
+            }
+        }];
+        
+    }
+    
+    else {
+        NSLog(@"Unknown authorization status");
+    }
 }
 
 - (void) shutterPressed
@@ -146,8 +188,22 @@ int currentIndex = -1;
 
 - (void)activateView
 {
-    __weak typeof(self) weakSelf = self;
+    // Create a Poppy album if it doesn't already exist
+    assetLibrary = [[ALAssetsLibrary alloc] init];
+    [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
+                                  resultBlock:^(ALAssetsGroup *group) {
+                                      if (group) {
+                                          NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
+                                      } else {
+                                          NSLog(@"no group created, probably because it already exists");
+                                      }
+                                      [self loadAlbumWithName:@"Poppy"];
+                                  }
+                                 failureBlock:^(NSError *error) {
+                                     NSLog(@"error adding album");
+                                 }];
     
+    __weak typeof(self) weakSelf = self;
     buttonStealer = [[RBVolumeButtons alloc] init];
     buttonStealer.upBlock = ^{
         // + volume button pressed

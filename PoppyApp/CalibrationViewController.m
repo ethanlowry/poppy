@@ -45,7 +45,6 @@ UIView *viewWelcome;
     if (!cropPosition) {
         cropPosition = 0;
     }
-    NSLog(@"CROP POSITION: %f", cropPosition);
     
     calibrationCropFactor = [self setCropFactor];
     
@@ -68,7 +67,6 @@ UIView *viewWelcome;
 {
     cropPosition = cropPosition - 0.005;
     cropPosition = (cropPosition > -(1.0 - calibrationCropFactor)/2 ? cropPosition : -(1.0 - calibrationCropFactor)/2);
-    NSLog(@"%f", cropPosition);
     [self applyFilter];
 }
 
@@ -76,7 +74,6 @@ UIView *viewWelcome;
 {
     cropPosition = cropPosition + 0.005;
     cropPosition = (cropPosition < (1.0 - calibrationCropFactor)/2 ? cropPosition : (1.0 - calibrationCropFactor)/2);
-    NSLog(@"%f", cropPosition);
     [self applyFilter];
 }
 

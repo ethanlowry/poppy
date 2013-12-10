@@ -41,11 +41,9 @@ UIView *touchView;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    NSLog(@"we are appearing");
     [self createFrames];
     [self createTouchView];
     [self showFrame:0];
-    
 }
 
 - (void)createTouchView
@@ -202,7 +200,6 @@ UIView *touchView;
 {
     if (frame < frameArray.count){
         for(int i=0;i < frameArray.count; i++){
-            NSLog(@"%d", i);
             UIView *currentFrameView = [frameArray objectAtIndex:i];
             if (i == frame) {
                 [self.view addSubview:currentFrameView];
