@@ -221,10 +221,8 @@ int currentIndex = -1;
         }
          */
     };
-    
-    // NOTE: immediately steals volume button events. maybe we want to only do this in landscape mode
-    [buttonStealer startStealingVolumeButtonEvents];
 
+    [buttonStealer startStealingVolumeButtonEvents];
     
     imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
     [imgView setContentMode: UIViewContentModeScaleAspectFill];
@@ -839,8 +837,13 @@ int currentIndex = -1;
     UISwitch *toggle = (UISwitch *) sender;
     NSLog(@"%@", toggle.on ? @"Video" : @"Still");
     UILabel *toggleLabel = (id)[self.view viewWithTag:101];
-    isVideo = toggle.on;
     
+    if (isRecording) {
+        [self stopRecording];
+    }
+    
+    isVideo = toggle.on;
+
     id camera = toggle.on ? stillCamera : videoCamera;
     [toggleLabel setText: toggle.on ? @"Video" : @"Photo"];
     [camera stopCameraCapture];
@@ -848,6 +851,9 @@ int currentIndex = -1;
     [finalFilter removeAllTargets];
     self.displayFilter = nil;
     self.finalFilter = nil;
+    
+    self.stillCamera = nil;
+    self.videoCamera = nil;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
     ^{
