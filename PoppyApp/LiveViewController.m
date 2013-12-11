@@ -50,7 +50,7 @@ int next = 1;
 int prev = -1;
 
 float cropFactor = 0.7;
-float perspectiveFactor = 0.25;
+float perspectiveFactor = 0.267;
 
 bool didFinishEffect = NO;
 bool isRecording = NO;
@@ -878,11 +878,12 @@ int currentIndex = -1;
         // Save to assets library
         NSMutableDictionary *captureMetadata = [stillCamera.currentCaptureMetadata mutableCopy];
         // correct the orientation, as it represents the orientation when the photo was taken, and our processed image has a different orientation
-        //captureMetadata[ALAssetPropertyOrientation] = @(ALAssetOrientationUp);
+        captureMetadata[ALAssetPropertyOrientation] = @(ALAssetOrientationUp);
         captureMetadata[@"Orientation"] = @(UIImageOrientationUp);
         
         // Save to assets library
-        [assetLibrary writeImageToSavedPhotosAlbum:processedImage.CGImage metadata:captureMetadata completionBlock:^(NSURL *assetURL, NSError *error2) {
+        [assetLibrary writeImageToSavedPhotosAlbum:processedImage.CGImage metadata:captureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
+        {
              if (error2) {
                  NSLog(@"ERROR: the image failed to be written");
                  [self restartPreview];
