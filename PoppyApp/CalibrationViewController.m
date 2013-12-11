@@ -48,6 +48,7 @@ UIView *viewWelcome;
     
     calibrationCropFactor = [self setCropFactor];
     
+    /*
     __weak typeof(self) weakSelf = self;
     
     buttonStealer = [[RBVolumeButtons alloc] init];
@@ -61,6 +62,8 @@ UIView *viewWelcome;
     };
     
     [buttonStealer startStealingVolumeButtonEvents];
+     */
+     
 }
 
 - (void)calibrateLeft: (id) sender
@@ -192,8 +195,10 @@ UIView *viewWelcome;
     [defaults setFloat:cropPosition forKey:@"xOffset"];
     [defaults synchronize];
     
-    [buttonStealer stopStealingVolumeButtonEvents];
-    buttonStealer = nil;
+    
+    //[buttonStealer stopStealingVolumeButtonEvents];
+    //buttonStealer = nil;
+    
     
     [stillCamera removeAllTargets];
     [stillCamera stopCameraCapture];

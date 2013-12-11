@@ -214,10 +214,12 @@ int currentIndex = -1;
     };
     buttonStealer.downBlock = ^{
         // - volume button pressed
+        /*
         if (!ignoreVolumeDown) {
             NSLog(@"VOLUME DOWN!");
             [weakSelf showMedia:prev];
         }
+         */
     };
     
     // NOTE: immediately steals volume button events. maybe we want to only do this in landscape mode

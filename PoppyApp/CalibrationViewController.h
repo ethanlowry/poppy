@@ -8,14 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "GPUImage.h"
-#import "RBVolumeButtons.h"
+//#import "RBVolumeButtons.h"
 
 @interface CalibrationViewController : UIViewController
 {
     GPUImageStillCamera *stillCamera;
     GPUImageView *mainView;
     GPUImageCropFilter *displayFilter;
-    RBVolumeButtons *buttonStealer;
+    //RBVolumeButtons *buttonStealer;
 }
 
 @property (nonatomic) BOOL showOOBE;
