@@ -504,6 +504,8 @@ int currentIndex = -1;
         //still camera setup
         if ([self deviceModelNumber] == 40) {
             stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetiFrame960x540 cameraPosition:AVCaptureDevicePositionBack];
+        } else if ([self deviceModelNumber] == 41) {
+            stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720  cameraPosition:AVCaptureDevicePositionBack];
         } else {
             stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto  cameraPosition:AVCaptureDevicePositionBack];
         }
@@ -518,11 +520,11 @@ int currentIndex = -1;
 {
 
     CGRect finalCropRect;
-    if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
-        finalCropRect = CGRectMake(xOffset + (1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
-    } else {
+//    if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
+//        finalCropRect = CGRectMake(xOffset + (1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
+//    } else {
         finalCropRect = CGRectMake(xOffset + (1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
-    }
+//    }
     
     displayFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
     [camera addTarget:displayFilter];
@@ -534,11 +536,11 @@ int currentIndex = -1;
 {
     @autoreleasepool {
         CGRect finalCropRect;
-        if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
-            finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
-        } else {
+//        if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
+//            finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
+//        } else {
             finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
-        }
+//        }
         
         finalFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
         
@@ -546,10 +548,10 @@ int currentIndex = -1;
         GPUImageCropFilter *cropLeft;
         GPUImageCropFilter *cropRight;
         
-        if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
-            NSLog(@"still output for iPhone 4S");
-            [initialFilter forceProcessingAtSize:CGSizeMake(1920, 1440)];
-        }
+        //if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
+        //    NSLog(@"still output for iPhone 4S");
+        //    //[initialFilter forceProcessingAtSize:CGSizeMake(1920, 1440)];
+        //}
 
         // SPLIT THE IMAGE IN HALF
         //take into account the xOffset
