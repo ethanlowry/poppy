@@ -80,7 +80,7 @@ UIView *touchView;
     [welcomeView setBackgroundColor:[UIColor whiteColor]];
     UIImageView *logoImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo"]];
     [logoImgView setFrame:CGRectMake((self.view.bounds.size.width - 350)/2,35,350,69)];
-    [welcomeView addSubview:[self makeLabel:@"Welcome to Poppy! This app will help you\ncapture and view 3D photos and clips." withFrame:CGRectMake(0,0,welcomeView.frame.size.width, welcomeView.frame.size.height) withAlignment:NSTextAlignmentCenter withSize:20]];
+    [welcomeView addSubview:[self makeLabel:@"Welcome to Poppy!\nBefore you put your iPhone in Poppy,\nhere are a few tips." withFrame:CGRectMake(0,0,welcomeView.frame.size.width, welcomeView.frame.size.height) withAlignment:NSTextAlignmentCenter withSize:20]];
     [welcomeView addSubview:logoImgView];
     [frameArray addObject:welcomeView];
     
@@ -89,7 +89,7 @@ UIView *touchView;
     [adapterView setBackgroundColor:[UIColor whiteColor]];
     UIImageView *adapterImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"adapter"]];
     [adapterImgView setFrame:CGRectMake(self.view.bounds.size.width - 190,(self.view.bounds.size.height - 275)/2,150,200)];
-    [adapterView addSubview:[self makeLabel:@"Choose the right adapter for your iPhone, and load it into Poppy." withFrame:CGRectMake(40,0,self.view.bounds.size.width - 270, self.view.bounds.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
+    [adapterView addSubview:[self makeLabel:@"Choose the right adapter and load it into Poppy. Leave your phone out for now." withFrame:CGRectMake(40,0,self.view.bounds.size.width - 270, self.view.bounds.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
     [adapterView addSubview:adapterImgView];
     [frameArray addObject:adapterView];
     

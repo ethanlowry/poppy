@@ -151,13 +151,13 @@ UIView *viewWelcome;
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.3];
     
-    UILabel *labelWelcome = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewWelcome.frame.size.width, viewWelcome.frame.size.height)];
+    UILabel *labelWelcome = [[UILabel alloc] initWithFrame:CGRectMake(viewWelcome.frame.size.width/2,0,viewWelcome.frame.size.width/2, viewWelcome.frame.size.height)];
     [labelWelcome setTextColor:[UIColor whiteColor]];
     [labelWelcome setBackgroundColor:[UIColor clearColor]];
-    [labelWelcome setTextAlignment:NSTextAlignmentCenter];
+    [labelWelcome setTextAlignment:NSTextAlignmentLeft];
     labelWelcome.lineBreakMode = NSLineBreakByWordWrapping;
     labelWelcome.numberOfLines = 0;
-    [labelWelcome setText:@"Put me in Poppy\nThen move the image left or right to calibrate"];
+    [labelWelcome setText:@"Put me in Poppy and move the image left or right to calibrate"];
     
     [viewWelcome addSubview:viewShadow];
     [viewWelcome addSubview:labelWelcome];
@@ -170,7 +170,7 @@ UIView *viewWelcome;
                          viewWelcome.alpha = 1.0;
                      }
                      completion:^(BOOL complete){
-                         [NSTimer scheduledTimerWithTimeInterval:7.0 target:self selector:@selector(welcomeTimerFired:) userInfo:nil repeats:NO];
+                         [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(welcomeTimerFired:) userInfo:nil repeats:NO];
                      }];
 }
 

@@ -54,7 +54,7 @@ float perspectiveFactor = 0.267;
 
 bool didFinishEffect = NO;
 bool isRecording = NO;
-bool isVideo = YES;
+bool isVideo = NO;
 bool isWatching = NO;
 bool isSaving = NO;
 bool ignoreVolumeDown = NO;
@@ -89,17 +89,37 @@ int currentIndex = -1;
     ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
     
     // this is just a test to trigger asking for user permission to access photos
-    [lib enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-        NSLog(@"%i",[group numberOfAssets]);
-    } failureBlock:^(NSError *error) {
-        if (error.code == ALAssetsLibraryAccessUserDeniedError) {
-            NSLog(@"user denied access, code: %i",error.code);
-        }else{
-            NSLog(@"Other error code: %i",error.code);
+    ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
+    if (status == ALAuthorizationStatusNotDetermined) {
+        [lib enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+            NSLog(@"%i",[group numberOfAssets]);
+        } failureBlock:^(NSError *error) {
+            if (error.code == ALAssetsLibraryAccessUserDeniedError) {
+                NSLog(@"user denied access, code: %i",error.code);
+            }else{
+                NSLog(@"Other error code: %i",error.code);
+            }
+        }];
+    } else if (status != ALAuthorizationStatusAuthorized) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Attention" message:@"Please give Poppy permission to access your photos in the iPhone settings app!" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil, nil];
+        [alert show];
+    }
+    
+    lib = nil;
+    
+    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+        if (!granted) {
+            BOOL secondRun = [[NSUserDefaults standardUserDefaults] boolForKey:@"isCalibrated"];
+            if (secondRun) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Attention" message:@"Please give Poppy permission to access your microphone in the iPhone settings app!" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil, nil];
+                [alert show];
+            } else {
+                [self authorizeAccess:AVMediaTypeAudio]; // asks the user for permission to use the microphone
+            }
         }
     }];
     
-    lib = nil;
+    
     
     [self authorizeAccess:AVMediaTypeVideo]; // apparently permission is needed in some regions for video
     [self authorizeAccess:AVMediaTypeAudio]; // asks the user for permission to use the microphone
