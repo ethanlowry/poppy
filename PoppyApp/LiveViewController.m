@@ -823,6 +823,7 @@ int currentIndex = -1;
         [galleryWebView setOpaque:NO];
         [galleryWebView setBackgroundColor:[UIColor blackColor]];
         [self.view addSubview:galleryWebView];
+        galleryWebView.delegate = self;
     }
     NSString *url=@"http://poppy3d.com/gallery";
     NSURL *nsurl=[NSURL URLWithString:url];
@@ -1241,6 +1242,7 @@ int currentIndex = -1;
     if ([request.URL.scheme isEqualToString:@"poppy"]) {
         if ([request.URL.host isEqualToString:@"viewer"]) {
             [galleryWebView removeFromSuperview];
+            galleryWebView = nil;
         }
         return NO;
     }
