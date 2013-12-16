@@ -11,7 +11,7 @@
 // 101 = the toggle label
 // 102 = the "recording" light
 // 103 = the movie player view
-// 104 = the view containing the view controls (camera button)
+// 104 = the view containing the viewer controls
 // 105 = the "no media available" label view
 // 106 = the "saving" label view
 // 107 = the "welcome" label view
@@ -43,6 +43,7 @@ CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
 @synthesize movieWriter;
 @synthesize uberView;
 @synthesize imgView;
+@synthesize galleryWebView;
 @synthesize finalFilter;
 @synthesize displayFilter;
 
@@ -200,6 +201,8 @@ int currentIndex = -1;
     // clear away the view mode UI
     isWatching = NO;
     [imgView setHidden:YES];
+    [galleryWebView removeFromSuperview];
+    galleryWebView = nil;
     [mainMoviePlayer stop];
     self.mainMoviePlayer = nil;
     [[self.view viewWithTag:103] removeFromSuperview]; //remove the movie player
@@ -310,7 +313,7 @@ int currentIndex = -1;
         if (!isWatching) {
             isWatching = YES; // we're in view mode, not capture mode
             [self showViewerControls];
-            [self dimView:0.0 withAlpha:0.1 withView:[self.view viewWithTag:104] withTimer:NO];
+            //[self dimView:0.0 withAlpha:0.1 withView:[self.view viewWithTag:104] withTimer:NO];
             //tear down everything about capture mode
             [videoCamera stopCameraCapture];
             self.videoCamera = nil;
@@ -318,7 +321,7 @@ int currentIndex = -1;
             self.stillCamera = nil;
             [finalFilter removeAllTargets];
             [displayFilter removeAllTargets];
-            [self hideView:[self.view viewWithTag:100]]; // hide the capture mode controls
+            [self hideView:[self.view viewWithTag:100]];
         }
         
         [mainMoviePlayer stop];
@@ -458,7 +461,9 @@ int currentIndex = -1;
                          welcomeView.alpha = 0.0;
                      }
                      completion:^(BOOL complete){
-                         [self showCameraControls];
+                         if(!isWatching){
+                             [self showCameraControls];
+                         }
                          [welcomeView removeFromSuperview];
                      }];
 }
@@ -689,7 +694,6 @@ int currentIndex = -1;
     if (!(stillCamera || videoCamera)){
         [self activateCamera];
     }
-    
     NSLog(@"show camera controls");
     
     UIView *viewControls = (id)[self.view viewWithTag:100];
@@ -783,6 +787,7 @@ int currentIndex = -1;
         
         viewControls = viewViewerControls;
     }
+    [self hideView:[self.view viewWithTag:100]];
     [self.view bringSubviewToFront:viewControls];
     [self dimView:0.5 withAlpha:1.0 withView:viewControls withTimer:YES];
     
@@ -792,7 +797,7 @@ int currentIndex = -1;
 {
     UIView *controlsView = [[UIView alloc] initWithFrame:CGRectMake(viewContainer.bounds.size.width/2, 0, viewContainer.bounds.size.width/2, 75)];
     
-    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 70,0,70,75)];
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,controlsView.frame.size.width,75)];
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.3];
     [self addGestures:viewShadow];
@@ -800,9 +805,31 @@ int currentIndex = -1;
     UIButton *buttonCamera = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 70,0,70,75)];
     [buttonCamera setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
     [buttonCamera addTarget:self action:@selector(switchToCameraMode:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton *buttonGallery = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 230, 0, 70, 75)];
+    [buttonGallery setImage:[UIImage imageNamed:@"gallery"] forState:UIControlStateNormal];
+    [buttonGallery addTarget:self action:@selector(showGallery) forControlEvents:UIControlEventTouchUpInside];
+    
     [controlsView addSubview: viewShadow];
     [controlsView addSubview: buttonCamera];
+    [controlsView addSubview: buttonGallery];
     [viewContainer addSubview:controlsView];
+}
+
+- (void) showGallery
+{
+    if (!galleryWebView) {
+        galleryWebView = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+        [galleryWebView setOpaque:NO];
+        [galleryWebView setBackgroundColor:[UIColor blackColor]];
+        [self.view addSubview:galleryWebView];
+    }
+    NSString *url=@"http://poppy3d.com/gallery";
+    NSURL *nsurl=[NSURL URLWithString:url];
+    NSURLRequest *request=[NSURLRequest requestWithURL:nsurl];
+    [galleryWebView loadRequest:request];
+    
+    [self showViewerControls];
 }
 
 - (void) switchToCameraMode: (id) sender
@@ -815,7 +842,7 @@ int currentIndex = -1;
 
 - (void) switchToViewerMode: (id) sender
 {
-    [self showCameraControls];
+    [self showViewerControls];
     [self showMedia:prev];
 }
 
@@ -1207,6 +1234,17 @@ int currentIndex = -1;
                                                      }];
                                     }
                                 }];
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    //intercept web links in poppy: scheme
+    if ([request.URL.scheme isEqualToString:@"poppy"]) {
+        if ([request.URL.host isEqualToString:@"viewer"]) {
+            [galleryWebView removeFromSuperview];
+        }
+        return NO;
+    }
+    return YES;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

@@ -14,7 +14,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <CalibrationViewController.h>
 
-@interface LiveViewController : UIViewController
+@interface LiveViewController : UIViewController <UIWebViewDelegate>
 
 {
     RBVolumeButtons *buttonStealer;
@@ -26,6 +26,7 @@
 @property (nonatomic, retain) GPUImageMovieWriter *movieWriter;
 @property (nonatomic, retain) GPUImageView *uberView;
 @property (nonatomic, retain) UIImageView *imgView;
+@property (nonatomic, retain) UIWebView *galleryWebView;
 @property (nonatomic, retain) GPUImageCropFilter *finalFilter;
 @property (nonatomic, retain) GPUImageCropFilter *displayFilter;
 

@@ -52,6 +52,7 @@
 		9DE57706185679140048A6D6 /* thumbs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE57705185679140048A6D6 /* thumbs@2x.png */; };
 		9DE5770A185681A20048A6D6 /* screencontrols@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE57709185681A20048A6D6 /* screencontrols@2x.png */; };
 		9DE5770C185786B70048A6D6 /* screencontrolscamera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */; };
+		9DE57712185EB2F50048A6D6 /* gallery@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE57711185EB2F50048A6D6 /* gallery@2x.png */; };
 		9DFA62F9182AE68400F1B262 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F7182AE68400F1B262 /* Default.png */; };
 		9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F8182AE68400F1B262 /* Default@2x.png */; };
 		9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FD182AECB400F1B262 /* Icon-Small.png */; };
@@ -151,6 +152,7 @@
 		9DE57705185679140048A6D6 /* thumbs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "thumbs@2x.png"; sourceTree = "<group>"; };
 		9DE57709185681A20048A6D6 /* screencontrols@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screencontrols@2x.png"; sourceTree = "<group>"; };
 		9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screencontrolscamera@2x.png"; sourceTree = "<group>"; };
+		9DE57711185EB2F50048A6D6 /* gallery@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gallery@2x.png"; sourceTree = "<group>"; };
 		9DFA62F7182AE68400F1B262 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		9DFA62F8182AE68400F1B262 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		9DFA62FD182AECB400F1B262 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				9DE576F71853DCEB0048A6D6 /* arrow-right@2x.png */,
 				9DFCB15A18297DB000332D7C /* beep.wav */,
 				9DE576E6184FE5930048A6D6 /* focus@2x.png */,
+				9DE57711185EB2F50048A6D6 /* gallery@2x.png */,
 				9DFCB1601829C68200332D7C /* play@2x.png */,
 				9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */,
 				9DFCB15D182983FC00332D7C /* shutter@2x.png */,
@@ -445,6 +448,7 @@
 				9D10BC69182B0313008C8D1C /* AppIcon40x40@2x.png in Resources */,
 				9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */,
 				9D8FC077184D5107007D0D53 /* AppIcon57x57@2x.png in Resources */,
+				9DE57712185EB2F50048A6D6 /* gallery@2x.png in Resources */,
 				9D761EE118242A94005412AC /* record@2x.png in Resources */,
 				9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */,
 				9DE5770C185786B70048A6D6 /* screencontrolscamera@2x.png in Resources */,
