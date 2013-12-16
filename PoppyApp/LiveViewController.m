@@ -372,6 +372,8 @@ int currentIndex = -1;
     } else {
         NSLog(@"NO IMAGES IN THE ALBUM");
         [self showNoMediaAlert];
+        //TESTING PURPOSES ONLY!! SHOW VIEWERCONTROLS EVEN WHEN THERE ARE NO PHOTOS
+        //[self showViewerControls];
     }
 
 }
@@ -826,6 +828,8 @@ int currentIndex = -1;
         galleryWebView.delegate = self;
     }
     NSString *url=@"http://poppy3d.com/gallery";
+    //SWITCH TO LOCALHOST FOR TESTING
+    //NSString *url=@"http://localhost:9292/gallery";
     NSURL *nsurl=[NSURL URLWithString:url];
     NSURLRequest *request=[NSURLRequest requestWithURL:nsurl];
     [galleryWebView loadRequest:request];
@@ -1243,6 +1247,7 @@ int currentIndex = -1;
         if ([request.URL.host isEqualToString:@"viewer"]) {
             [galleryWebView removeFromSuperview];
             galleryWebView = nil;
+            [self showViewerControls];
         }
         return NO;
     }
