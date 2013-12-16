@@ -372,7 +372,7 @@ int currentIndex = -1;
     } else {
         NSLog(@"NO IMAGES IN THE ALBUM");
         [self showNoMediaAlert];
-        //TESTING PURPOSES ONLY!! SHOW VIEWERCONTROLS EVEN WHEN THERE ARE NO PHOTOS
+        //FOR SIMULATOR TESTING PURPOSES ONLY UNCOMMENT THE NEXT LINE. SHOW VIEWERCONTROLS EVEN WHEN THERE ARE NO PHOTOS
         //[self showViewerControls];
     }
 
@@ -828,7 +828,7 @@ int currentIndex = -1;
         galleryWebView.delegate = self;
     }
     NSString *url=@"http://poppy3d.com/gallery";
-    //SWITCH TO LOCALHOST FOR TESTING
+    //UNCOMMENT THE NEXT LINE TO SWITCH TO LOCALHOST FOR TESTING ON THE SUMULATOR
     //NSString *url=@"http://localhost:9292/gallery";
     NSURL *nsurl=[NSURL URLWithString:url];
     NSURLRequest *request=[NSURLRequest requestWithURL:nsurl];
