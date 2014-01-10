@@ -17,6 +17,7 @@
 // 107 = the "welcome" label view
 
 #import "LiveViewController.h"
+#import "GalleryViewController.h"
 #import "RBVolumeButtons.h"
 #import <sys/utsname.h>
 
@@ -67,6 +68,8 @@ ALAssetsLibrary *assetLibrary;
 
 UIImageView *imgFocusSquare;
 
+UIView *demoClearView;
+
 SystemSoundID videoBeep;
 
 
@@ -85,6 +88,7 @@ int currentIndex = -1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
     xOffset = [[NSUserDefaults standardUserDefaults] floatForKey:@"xOffset"];
     
     ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
@@ -157,7 +161,6 @@ int currentIndex = -1;
                 NSLog(@"Not granted access to %@", mediaType);
             }
         }];
-        
     }
     
     else {
@@ -203,49 +206,37 @@ int currentIndex = -1;
     [imgView setHidden:YES];
     [galleryWebView removeFromSuperview];
     galleryWebView = nil;
-    [mainMoviePlayer stop];
+    [self.mainMoviePlayer stop];
     self.mainMoviePlayer = nil;
+    
     [[self.view viewWithTag:103] removeFromSuperview]; //remove the movie player
     [[self.view viewWithTag:104] removeFromSuperview]; //remove the camera button
+    [demoClearView removeFromSuperview];
+    demoClearView = nil;
 }
 
 - (void)activateView
 {
     // Create a Poppy album if it doesn't already exist
-    assetLibrary = [[ALAssetsLibrary alloc] init];
-    [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
-                                  resultBlock:^(ALAssetsGroup *group) {
-                                      if (group) {
-                                          NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
-                                      } else {
-                                          NSLog(@"no group created, probably because it already exists");
+    if (!assetLibrary) {
+        assetLibrary = [[ALAssetsLibrary alloc] init];
+        [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
+                                      resultBlock:^(ALAssetsGroup *group) {
+                                          if (group) {
+                                              NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
+                                          } else {
+                                              NSLog(@"no group created, probably because it already exists");
+                                          }
+                                          [self loadAlbumWithName:@"Poppy"];
                                       }
-                                      [self loadAlbumWithName:@"Poppy"];
-                                  }
-                                 failureBlock:^(NSError *error) {
-                                     NSLog(@"error adding album");
-                                 }];
+                                     failureBlock:^(NSError *error) {
+                                         NSLog(@"error adding album");
+                                     }];
+    }
     
-    __weak typeof(self) weakSelf = self;
-    buttonStealer = [[RBVolumeButtons alloc] init];
-    buttonStealer.upBlock = ^{
-        // + volume button pressed
-        if (!ignoreVolumeDown) {
-            NSLog(@"VOLUME UP!");
-            [weakSelf shutterPressed];
-        }
-    };
-    buttonStealer.downBlock = ^{
-        // - volume button pressed
-        /*
-        if (!ignoreVolumeDown) {
-            NSLog(@"VOLUME DOWN!");
-            [weakSelf showMedia:prev];
-        }
-         */
-    };
-
-    [buttonStealer startStealingVolumeButtonEvents];
+    if (!buttonStealer) {
+        [self activateButtonStealer];
+    }
     
     imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
     [imgView setContentMode: UIViewContentModeScaleAspectFill];
@@ -269,15 +260,44 @@ int currentIndex = -1;
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &videoBeep);
 }
 
+- (void)activateButtonStealer
+{
+    __weak typeof(self) weakSelf = self;
+    buttonStealer = [[RBVolumeButtons alloc] init];
+    buttonStealer.upBlock = ^{
+        // + volume button pressed
+        if (!ignoreVolumeDown) {
+            NSLog(@"VOLUME UP!");
+            [weakSelf shutterPressed];
+        }
+    };
+    buttonStealer.downBlock = ^{
+        // - volume button pressed
+        
+         if (!ignoreVolumeDown) {
+         NSLog(@"VOLUME DOWN!");
+         [weakSelf showMedia:prev];
+         }
+    };
+    
+    [buttonStealer startStealingVolumeButtonEvents];
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     if (isViewActive) {
-        [self activateView];
-        if (!calibrateFirst) {
-            [self showWelcomeAlert];
-            calibrateFirst = NO;
+        if (isWatching) {
+            NSLog(@"RETURNING TO THE VIEWER");
+            [buttonStealer startStealingVolumeButtonEvents];
+            [self switchToViewerMode:self];
         } else {
-            [self showCameraControls];
+            [self activateView];
+            if (!calibrateFirst) {
+                [self showWelcomeAlert];
+                calibrateFirst = NO;
+            } else {
+                [self showCameraControls];
+            }
         }
     } else {
         //make the default view less ugly
@@ -285,6 +305,7 @@ int currentIndex = -1;
         CalibrationViewController *cvc = [[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil];
         [self presentViewController:cvc animated:NO completion:nil];
     }
+
 }
 
 - (void)addGestures:(UIView *)touchView
@@ -373,7 +394,7 @@ int currentIndex = -1;
         NSLog(@"NO IMAGES IN THE ALBUM");
         [self showNoMediaAlert];
         //UNCOMMENT THE NEXT LINE FOR SIMULATOR TESTING PURPOSES ONLY. SHOW VIEWERCONTROLS EVEN WHEN THERE ARE NO PHOTOS
-        //[self showViewerControls];
+        [self showViewerControls];
     }
 
 }
@@ -450,7 +471,7 @@ int currentIndex = -1;
                          viewWelcome.alpha = 1.0;
                      }
                      completion:^(BOOL complete){
-                         [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(welcomeTimerFired:) userInfo:nil repeats:NO];
+                         [NSTimer scheduledTimerWithTimeInterval:4.0 target:self selector:@selector(welcomeTimerFired:) userInfo:nil repeats:NO];
                      }];
 }
 
@@ -505,6 +526,7 @@ int currentIndex = -1;
     [mainMoviePlayer.view addSubview:touchView];
     
     [self.view bringSubviewToFront:[self.view viewWithTag:104]];
+    [self showDemoClear];
     
 }
 
@@ -781,7 +803,7 @@ int currentIndex = -1;
     if (!viewControls)
     {
         NSLog(@"add the camera button");
-        UIView *viewViewerControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, self.view.bounds.size.width, 75)];
+        UIView *viewViewerControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, self.view.bounds.size.width, self.view.bounds.size.height)];
         [viewViewerControls setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin];
         [viewViewerControls setTag:104];
         [self addViewerControlsContentWithView:viewViewerControls];
@@ -791,8 +813,8 @@ int currentIndex = -1;
     }
     [self hideView:[self.view viewWithTag:100]];
     [self.view bringSubviewToFront:viewControls];
+    [self showDemoClear];
     [self dimView:0.5 withAlpha:1.0 withView:viewControls withTimer:YES];
-    
 }
 
 - (void) addViewerControlsContentWithView:(UIView *)viewContainer
@@ -818,8 +840,23 @@ int currentIndex = -1;
     [viewContainer addSubview:controlsView];
 }
 
+- (void)showDemoClear
+{
+    // FOR CES DEMO
+    if (!demoClearView) {
+        demoClearView = [[UIView alloc] initWithFrame: CGRectMake(0,0,75,75)];
+        UIButton *buttonClear = [[UIButton alloc] initWithFrame: CGRectMake(0,0,75,75)];
+        [buttonClear addTarget:self action:@selector(resetDemoContent) forControlEvents:UIControlEventTouchUpInside];
+        [demoClearView addSubview:buttonClear];
+        [self.view addSubview:demoClearView];
+    }
+    [self.view bringSubviewToFront:demoClearView];
+}
+
 - (void) showGallery
 {
+    /* TEMPORARILY DISABLING FOR CES
+    [self hideViewer];
     if (!galleryWebView) {
         galleryWebView = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
         [galleryWebView setOpaque:NO];
@@ -833,8 +870,38 @@ int currentIndex = -1;
     NSURL *nsurl=[NSURL URLWithString:url];
     NSURLRequest *request=[NSURLRequest requestWithURL:nsurl];
     [galleryWebView loadRequest:request];
+     */
     
-    [self showViewerControls];
+    //CES DEMO
+    [self hideViewer];
+    isWatching = YES;
+    currentIndex = 0;
+    GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    [buttonStealer stopStealingVolumeButtonEvents];
+    [self presentViewController:gvc animated:NO completion:nil];
+}
+
+- (void)resetDemoContent
+{
+    //CES Demo reset
+    NSLog(@"TRY TO DELETE");
+    //[assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
+    [assetsGroup enumerateAssetsUsingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop)
+    //[assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:{0,[assetsGroup numberOfAssets]}] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
+    {
+        if(asset.isEditable) {
+            NSLog(@"We have an editable asset");
+            //show previous
+            [imgView setHidden:YES];
+            [self showMedia:prev];
+            [asset setImageData:nil metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+                if (error) {
+                    NSLog(@"Asset url %@ should be deleted. (Error %@)", assetURL, error);
+                }
+            }];
+            //*stop = YES; // this means just delete the first one you find.
+        }
+    }];
 }
 
 - (void) switchToCameraMode: (id) sender
@@ -911,7 +978,7 @@ int currentIndex = -1;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
     ^{
-        [self activateCamera];
+        [self showCameraControls];
     });
 }
 
@@ -1093,7 +1160,6 @@ int currentIndex = -1;
 - (void)playVideoStartSound
 {
     AudioServicesPlaySystemSound (videoBeep);
-
 }
 
 - (void)swipeScreenleft:(UISwipeGestureRecognizer *)sgr
@@ -1115,7 +1181,12 @@ int currentIndex = -1;
         if (isWatching) {
             NSLog(@"VIEWER TAPPED!");
             [self showViewerControls];
-            
+            CGPoint location = [tgr locationInView:uberView];
+            if (location.x < uberView.frame.size.height/2) {
+                [self showMedia:prev];
+            } else {
+                [self showMedia:next];
+            }
         } else {
             NSLog(@"CAMERA TAPPED!");
             [self showCameraControls];

@@ -40,6 +40,8 @@
 		9D761EE518245B50005412AC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D761EE418245B50005412AC /* AudioToolbox.framework */; };
 		9D8FC077184D5107007D0D53 /* AppIcon57x57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D8FC076184D5107007D0D53 /* AppIcon57x57@2x.png */; };
 		9D8FC07B184D53C8007D0D53 /* AppIcon57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D8FC07A184D53C8007D0D53 /* AppIcon57x57.png */; };
+		9D99EF22187744BC002D9B14 /* GalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D99EF21187744BC002D9B14 /* GalleryViewController.m */; };
+		9D99EF2618777AD2002D9B14 /* listArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D99EF2518777AD2002D9B14 /* listArrow@2x.png */; };
 		9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576E6184FE5930048A6D6 /* focus@2x.png */; };
 		9DE576EA1850039C0048A6D6 /* CalibrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DE576E91850039C0048A6D6 /* CalibrationViewController.m */; };
 		9DE576EF18510EF20048A6D6 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576EE18510EF20048A6D6 /* Settings.bundle */; };
@@ -138,6 +140,9 @@
 		9D761EE418245B50005412AC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		9D8FC076184D5107007D0D53 /* AppIcon57x57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon57x57@2x.png"; sourceTree = "<group>"; };
 		9D8FC07A184D53C8007D0D53 /* AppIcon57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon57x57.png; sourceTree = "<group>"; };
+		9D99EF20187744BC002D9B14 /* GalleryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GalleryViewController.h; sourceTree = "<group>"; };
+		9D99EF21187744BC002D9B14 /* GalleryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GalleryViewController.m; sourceTree = "<group>"; };
+		9D99EF2518777AD2002D9B14 /* listArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "listArrow@2x.png"; sourceTree = "<group>"; };
 		9DE576E6184FE5930048A6D6 /* focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "focus@2x.png"; sourceTree = "<group>"; };
 		9DE576E81850039C0048A6D6 /* CalibrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalibrationViewController.h; sourceTree = "<group>"; };
 		9DE576E91850039C0048A6D6 /* CalibrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalibrationViewController.m; sourceTree = "<group>"; };
@@ -248,6 +253,8 @@
 				9DE576FB1853F13A0048A6D6 /* WelcomeViewController.m */,
 				9DE576E81850039C0048A6D6 /* CalibrationViewController.h */,
 				9DE576E91850039C0048A6D6 /* CalibrationViewController.m */,
+				9D99EF20187744BC002D9B14 /* GalleryViewController.h */,
+				9D99EF21187744BC002D9B14 /* GalleryViewController.m */,
 				9D5EE03817FB521C008EB372 /* LiveViewController.h */,
 				9D5EE03917FB521C008EB372 /* LiveViewController.m */,
 				9D4F5F691821767B00542AE0 /* RBVolumeButtons.h */,
@@ -269,6 +276,7 @@
 				9DE57705185679140048A6D6 /* thumbs@2x.png */,
 				9DE57709185681A20048A6D6 /* screencontrols@2x.png */,
 				9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */,
+				9D99EF2518777AD2002D9B14 /* listArrow@2x.png */,
 				9DE576F61853DCEB0048A6D6 /* arrow-left@2x.png */,
 				9DE576F71853DCEB0048A6D6 /* arrow-right@2x.png */,
 				9DFCB15A18297DB000332D7C /* beep.wav */,
@@ -459,6 +467,7 @@
 				9D10BC67182B0313008C8D1C /* AppIcon29x29@2x.png in Resources */,
 				9DE576F91853DCEB0048A6D6 /* arrow-right@2x.png in Resources */,
 				9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */,
+				9D99EF2618777AD2002D9B14 /* listArrow@2x.png in Resources */,
 				9DFA6304182AECB400F1B262 /* Icon@2x.png in Resources */,
 				9DFCB1531828764400332D7C /* camera@2x.png in Resources */,
 				9DE576EF18510EF20048A6D6 /* Settings.bundle in Resources */,
@@ -489,6 +498,7 @@
 				9D5EDE5217FB4386008EB372 /* main.m in Sources */,
 				9DE576EA1850039C0048A6D6 /* CalibrationViewController.m in Sources */,
 				9D4F5F6B1821767B00542AE0 /* RBVolumeButtons.m in Sources */,
+				9D99EF22187744BC002D9B14 /* GalleryViewController.m in Sources */,
 				9DE576FC1853F13A0048A6D6 /* WelcomeViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
