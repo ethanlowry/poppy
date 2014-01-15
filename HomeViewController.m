@@ -154,45 +154,76 @@
 }
 
 - (void)addControlsToContainer:(UIView *)viewContainer
-{    
+{
     UIImageView *imgLogo = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_white"]];
     [imgLogo setFrame:CGRectMake((viewContainer.bounds.size.width -200)/2,50,200,40)];
     [viewContainer addSubview:imgLogo];
     
-    UIButton *buttonCamera = [self makeButton:@"Take Pictures" withTop:NO withLeft:YES withView:viewContainer withImageName:@"camera"];
+    UIButton *buttonCamera = [self makeButton:@"Take Pictures" withPosition:1 withView:viewContainer withImageName:@"camera"];
     [buttonCamera addTarget:self action:@selector(launchCamera) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonCamera];
     
-    UIButton *buttonPhotos = [self makeButton:@"Your Photos" withTop:NO withLeft:NO withView:viewContainer withImageName:@"gallery"];
+    UIButton *buttonPhotos = [self makeButton:@"Your Photos" withPosition:2 withView:viewContainer withImageName:@"gallery"];
     [buttonPhotos addTarget:self action:@selector(launchViewer) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonPhotos];
     
-    UIButton *buttonRecent = [self makeButton:@"Twitter & Flickr" withTop:YES withLeft:YES withView:viewContainer withImageName:@"flicktweet"];
+    UIButton *buttonRecent = [self makeButton:@"Twitter & Flickr" withPosition:3 withView:viewContainer withImageName:@"flicktweet"];
     [buttonRecent addTarget:self action:@selector(launchStream) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonRecent];
     
-    UIButton *buttonBest = [self makeButton:@"Poppy Favorites" withTop:YES withLeft:NO withView:viewContainer withImageName:@"favorite"];
+    UIButton *buttonBest = [self makeButton:@"Most Liked" withPosition:4 withView:viewContainer withImageName:@"favorite"];
     [buttonBest addTarget:self action:@selector(launchBest) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonBest];
 }
 
-- (UIButton *)makeButton:(NSString *)title withTop:(BOOL)top withLeft:(BOOL)left withView:(UIView *)containerView withImageName:(NSString *)imageName
+- (UIButton *)makeButton:(NSString *)title withPosition:(int)position withView:(UIView *)containerView withImageName:(NSString *)imageName
 {
-    float xOffset = left ? 0.0 : containerView.bounds.size.width/2;
-    float yOffset = top ? 120.0 : 220.0;
-    
-    UIButton *button = [[UIButton alloc] initWithFrame: CGRectMake(xOffset,yOffset,containerView.bounds.size.width/2,100)];
-    [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
-    [button setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
-    
-    CGSize imageSize = button.imageView.frame.size;
-    button.titleEdgeInsets = UIEdgeInsetsMake(60.0, - imageSize.width, 0.0, 0.0);
-    CGSize titleSize = button.titleLabel.frame.size;
-    button.imageEdgeInsets = UIEdgeInsetsMake(0.0, (containerView.frame.size.width/2 - imageSize.width)/2, 0.0, - titleSize.width);
-    
+    UIButton *button = [[UIButton alloc] init];
     [button setTitle:title forState:UIControlStateNormal];
-    button.titleLabel.font = [UIFont systemFontOfSize:12];
+    [button setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
     [button setBackgroundImage:[self imageWithColor:[UIColor grayColor]] forState:UIControlStateHighlighted];
+    
+    if ([containerView isEqual:self.portraitView]) {
+        [button setFrame:CGRectMake(0.0,position*60 + 50,containerView.bounds.size.width,60)];
+        [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
+        button.titleEdgeInsets = UIEdgeInsetsMake(0.0, 50.0, 0.0, 0.0);
+        button.imageEdgeInsets = UIEdgeInsetsMake(0.0, 40.0, 0.0, 0.0);
+    } else {
+        float xOffset = 0;
+        float yOffset = 0;
+        
+        switch (position) {
+            case 1:
+                xOffset = 0.0;
+                yOffset = 220.0;
+                break;
+            case 2:
+                xOffset = containerView.bounds.size.width/2;
+                yOffset = 220.0;
+                break;
+            case 3:
+                xOffset = 0.0;
+                yOffset = 120.0;
+                break;
+            case 4:
+                xOffset = containerView.bounds.size.width/2;
+                yOffset = 120.0;
+                break;
+            default:
+                break;
+        }
+    
+        [button setFrame:CGRectMake(xOffset,yOffset,containerView.bounds.size.width/2,100)];
+        [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
+        CGSize imageSize = button.imageView.frame.size;
+        button.titleEdgeInsets = UIEdgeInsetsMake(60.0, - imageSize.width, 0.0, 0.0);
+        button.titleLabel.font = [UIFont systemFontOfSize:12];
+        //CGSize titleSize = button.titleLabel.frame.size;
+        button.imageEdgeInsets = UIEdgeInsetsMake(0.0, (containerView.bounds.size.width/2 - imageSize.width)/2, 0.0, 0.0);
+        button.layer.borderWidth = 1.0;
+    }
+    
+    
     [containerView addSubview:button];
     return button;
 }

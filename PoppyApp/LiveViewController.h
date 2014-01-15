@@ -34,6 +34,7 @@
 @property (nonatomic, retain) UIImageView *imgRecord;
 @property (nonatomic, retain) UIView *viewSaving;
 @property (nonatomic, retain) UIView *viewViewerControls;
+@property (nonatomic, retain) UIView *viewDeleteAlert;
 
 @property (nonatomic) BOOL isViewActive;
 @property (nonatomic) float xOffset;

@@ -41,6 +41,7 @@ CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
 @synthesize galleryWebView;
 @synthesize finalFilter;
 @synthesize displayFilter;
+@synthesize viewDeleteAlert;
 
 @synthesize viewCameraControls;
 @synthesize imgRecord;
@@ -703,45 +704,94 @@ int currentIndex = -1;
     [buttonHome setImage:[UIImage imageNamed:@"home"] forState:UIControlStateNormal];
     [buttonHome addTarget:self action:@selector(goHome) forControlEvents:UIControlEventTouchUpInside];
     
+    UIButton *buttonDelete = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 230,0,70,75)];
+    [buttonDelete setImage:[UIImage imageNamed:@"delete"] forState:UIControlStateNormal];
+    [buttonDelete addTarget:self action:@selector(showDeleteAssetAlert) forControlEvents:UIControlEventTouchUpInside];
+    
     [controlsView addSubview: viewShadow];
     [controlsView addSubview: buttonHome];
+    [controlsView addSubview: buttonDelete];
     [viewContainer addSubview:controlsView];
 }
 
-- (void)showDemoClear
+- (void)showDeleteAssetAlert
 {
-    // FOR CES DEMO
-    if (!demoClearView) {
-        demoClearView = [[UIView alloc] initWithFrame: CGRectMake(0,0,75,75)];
-        UIButton *buttonClear = [[UIButton alloc] initWithFrame: CGRectMake(0,0,75,75)];
-        [buttonClear addTarget:self action:@selector(resetDemoContent) forControlEvents:UIControlEventTouchUpInside];
-        [demoClearView addSubview:buttonClear];
-        [self.view addSubview:demoClearView];
-    }
-    [self.view bringSubviewToFront:demoClearView];
-}
-
-- (void)resetDemoContent
-{
-    //CES Demo reset
-    NSLog(@"TRY TO DELETE");
-    //[assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
-    [assetsGroup enumerateAssetsUsingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop)
-    //[assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:{0,[assetsGroup numberOfAssets]}] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
-    {
-        if(asset.isEditable) {
-            NSLog(@"We have an editable asset");
-            //show previous
-            [imgView setHidden:YES];
-            [self showMedia:prev];
-            [asset setImageData:nil metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
-                if (error) {
-                    NSLog(@"Asset url %@ should be deleted. (Error %@)", assetURL, error);
+    if(assetsGroup.numberOfAssets > 0) {
+        if (!viewDeleteAlert) {
+            viewDeleteAlert = [[UIView alloc] initWithFrame:self.view.bounds];
+            [viewDeleteAlert setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin];
+            
+            UIView *viewShadow = [[UIView alloc] initWithFrame:self.view.bounds];
+            viewShadow.backgroundColor = [UIColor blackColor];
+            viewShadow.alpha = 0.3;
+            UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissDeleteAlert)];
+            [viewShadow addGestureRecognizer:handleTap];
+            [viewDeleteAlert addSubview:viewShadow];
+            
+            UILabel *deleteLabel = [[UILabel alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width/2,(viewDeleteAlert.frame.size.height - 120)/2,viewDeleteAlert.frame.size.width/2,60)];
+            [deleteLabel setTextAlignment:NSTextAlignmentCenter];
+            [deleteLabel setBackgroundColor:[UIColor blackColor]];
+            [deleteLabel setTextColor:[UIColor whiteColor]];
+            
+            [viewDeleteAlert addSubview:deleteLabel];
+            [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
+                if (asset) {
+                    if (asset.isEditable) {
+                        [deleteLabel setText: @"Delete this photo?"];
+                        UIButton *buttonConfirmDelete = [[UIButton alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width/2,viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/4, 60)];
+                        [buttonConfirmDelete setTitle:@"Delete" forState:UIControlStateNormal];
+                        [buttonConfirmDelete addTarget:self action:@selector(deleteAsset) forControlEvents:UIControlEventTouchUpInside];
+                        [buttonConfirmDelete.titleLabel setTextAlignment:NSTextAlignmentLeft];
+                        [buttonConfirmDelete setBackgroundColor:[UIColor blackColor]];
+                        [viewDeleteAlert addSubview:buttonConfirmDelete];
+                        
+                        UIButton *buttonCancelDelete = [[UIButton alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width*3/4, viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/4, 60)];
+                        [buttonCancelDelete setTitle:@"Cancel" forState:UIControlStateNormal];
+                        [buttonCancelDelete addTarget:self action:@selector(dismissDeleteAlert) forControlEvents:UIControlEventTouchUpInside];
+                        [buttonCancelDelete.titleLabel setTextAlignment:NSTextAlignmentRight];
+                        [buttonCancelDelete setBackgroundColor:[UIColor blackColor]];
+                        [viewDeleteAlert addSubview:buttonCancelDelete];
+                        *stop = YES;
+                    } else {
+                        [deleteLabel setText: @"This photo can't be deleted"];
+                        UIButton *buttonCancelDelete = [[UIButton alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width/2, viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/2, 60)];
+                        [buttonCancelDelete setTitle:@"Dismiss" forState:UIControlStateNormal];
+                        [buttonCancelDelete addTarget:self action:@selector(dismissDeleteAlert) forControlEvents:UIControlEventTouchUpInside];
+                        [buttonCancelDelete.titleLabel setTextAlignment:NSTextAlignmentRight];
+                        [buttonCancelDelete setBackgroundColor:[UIColor blackColor]];
+                        [viewDeleteAlert addSubview:buttonCancelDelete];
+                    }
                 }
             }];
-            //*stop = YES; // this means just delete the first one you find.
+        }
+
+        [self.view addSubview:viewDeleteAlert];
+        [self.view bringSubviewToFront:viewDeleteAlert];
+    }
+}
+
+- (void)dismissDeleteAlert
+{
+    [viewDeleteAlert removeFromSuperview];
+}
+
+- (void)deleteAsset
+{
+    NSLog(@"DELETE!!");
+    [self dismissDeleteAlert];
+    [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
+        if (asset) {
+            if (asset.editable) {
+                [asset setImageData:nil metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+                    if (error) {
+                        NSLog(@"Asset url %@ should be deleted. (Error %@)", assetURL, error);
+                    }
+                }];
+            }
         }
     }];
+    [self showMedia:prev];
+    
 }
 
 - (void) switchToCameraMode

@@ -61,6 +61,7 @@
 		9DF96D4F1884F5B300EB6B7B /* favorite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D4E1884F5B300EB6B7B /* favorite@2x.png */; };
 		9DF96D541885DDA100EB6B7B /* home@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D531885DDA100EB6B7B /* home@2x.png */; };
 		9DF96D561885E00700EB6B7B /* video@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D551885E00700EB6B7B /* video@2x.png */; };
+		9DF96D58188724E700EB6B7B /* delete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D57188724E700EB6B7B /* delete@2x.png */; };
 		9DFA62F9182AE68400F1B262 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F7182AE68400F1B262 /* Default.png */; };
 		9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F8182AE68400F1B262 /* Default@2x.png */; };
 		9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FD182AECB400F1B262 /* Icon-Small.png */; };
@@ -171,6 +172,7 @@
 		9DF96D4E1884F5B300EB6B7B /* favorite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "favorite@2x.png"; sourceTree = "<group>"; };
 		9DF96D531885DDA100EB6B7B /* home@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "home@2x.png"; sourceTree = "<group>"; };
 		9DF96D551885E00700EB6B7B /* video@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "video@2x.png"; sourceTree = "<group>"; };
+		9DF96D57188724E700EB6B7B /* delete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "delete@2x.png"; sourceTree = "<group>"; };
 		9DFA62F7182AE68400F1B262 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		9DFA62F8182AE68400F1B262 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		9DFA62FD182AECB400F1B262 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 				9DE576FF185667DC0048A6D6 /* logo@2x.png */,
 				9D2E49C11884991F00D9871F /* logo_white@2x.png */,
 				9DF96D531885DDA100EB6B7B /* home@2x.png */,
+				9DF96D57188724E700EB6B7B /* delete@2x.png */,
 				9DF96D551885E00700EB6B7B /* video@2x.png */,
 				9DE5770118566D2C0048A6D6 /* adapter@2x.png */,
 				9DE57703185672AB0048A6D6 /* twist@2x.png */,
@@ -484,6 +487,7 @@
 				9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */,
 				9DE5770C185786B70048A6D6 /* screencontrolscamera@2x.png in Resources */,
 				9D10BC6B182B0313008C8D1C /* AppIcon60x60@2x.png in Resources */,
+				9DF96D58188724E700EB6B7B /* delete@2x.png in Resources */,
 				9DF96D541885DDA100EB6B7B /* home@2x.png in Resources */,
 				9DE576F81853DCEB0048A6D6 /* arrow-left@2x.png in Resources */,
 				9D10BC66182B0313008C8D1C /* AppIcon29x29.png in Resources */,
