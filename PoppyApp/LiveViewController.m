@@ -7,18 +7,12 @@
 //
 
 // TAGGED VIEWS:
-// 100 = the view containing the camera (capture mode) controls
-// 101 = the toggle label
-// 102 = the "recording" light
 // 103 = the movie player view
-// 104 = the view containing the viewer controls
 // 105 = the "no media available" label view
-// 106 = the "saving" label view
 // 107 = the "welcome" label view
 
 #import "LiveViewController.h"
 #import "GalleryViewController.h"
-#import "RBVolumeButtons.h"
 #import <sys/utsname.h>
 
 
@@ -48,6 +42,12 @@ CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
 @synthesize finalFilter;
 @synthesize displayFilter;
 
+@synthesize viewCameraControls;
+@synthesize imgRecord;
+@synthesize viewSaving;
+@synthesize isWatching;
+@synthesize viewViewerControls;
+
 int next = 1;
 int prev = -1;
 
@@ -57,7 +57,6 @@ float perspectiveFactor = 0.267;
 bool didFinishEffect = NO;
 bool isRecording = NO;
 bool isVideo = NO;
-bool isWatching = NO;
 bool isSaving = NO;
 bool ignoreVolumeDown = NO;
 bool isViewActive;
@@ -89,83 +88,27 @@ int currentIndex = -1;
 {
     [super viewDidLoad];
 
+    // Create a Poppy album if it doesn't already exist
+    if (!assetLibrary) {
+        assetLibrary = [[ALAssetsLibrary alloc] init];
+        [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
+                                      resultBlock:^(ALAssetsGroup *group) {
+                                          if (group) {
+                                              NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
+                                          } else {
+                                              NSLog(@"no group created, probably because it already exists");
+                                          }
+                                          [self loadAlbumWithName:@"Poppy"];
+                                      }
+                                     failureBlock:^(NSError *error) {
+                                         NSLog(@"error adding album");
+                                     }];
+    }
+    
     xOffset = [[NSUserDefaults standardUserDefaults] floatForKey:@"xOffset"];
+    NSLog(@"xOffset: %f", xOffset);
     
-    ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
-    
-    // this is just a test to trigger asking for user permission to access photos
-    ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
-    if (status == ALAuthorizationStatusNotDetermined) {
-        [lib enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-            NSLog(@"%i",[group numberOfAssets]);
-        } failureBlock:^(NSError *error) {
-            if (error.code == ALAssetsLibraryAccessUserDeniedError) {
-                NSLog(@"user denied access, code: %i",error.code);
-            }else{
-                NSLog(@"Other error code: %i",error.code);
-            }
-        }];
-    } else if (status != ALAuthorizationStatusAuthorized) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Attention" message:@"Please give Poppy permission to access your photos in the iPhone settings app!" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil, nil];
-        [alert show];
-    }
-    
-    lib = nil;
-    
-    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-        if (!granted) {
-            BOOL secondRun = [[NSUserDefaults standardUserDefaults] boolForKey:@"isCalibrated"];
-            if (secondRun) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Attention" message:@"Please give Poppy permission to access your microphone in the iPhone settings app!" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil, nil];
-                [alert show];
-            } else {
-                [self authorizeAccess:AVMediaTypeAudio]; // asks the user for permission to use the microphone
-            }
-        }
-    }];
-    
-    
-    
-    [self authorizeAccess:AVMediaTypeVideo]; // apparently permission is needed in some regions for video
-    [self authorizeAccess:AVMediaTypeAudio]; // asks the user for permission to use the microphone
-    
-}
-
-- (void) authorizeAccess:(NSString *)mediaType
-{
-    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:mediaType];
-    
-    // This status is normally not visible—the AVCaptureDevice class methods for discovering devices do not return devices the user is restricted from accessing.
-    if(authStatus == AVAuthorizationStatusRestricted){
-        NSLog(@"Restricted");
-    }
-    
-    // The user has explicitly denied permission for media capture.
-    else if(authStatus == AVAuthorizationStatusDenied){
-        NSLog(@"Denied");
-    }
-    
-    // The user has explicitly granted permission for media capture, or explicit user permission is not necessary for the media type in question.
-    else if(authStatus == AVAuthorizationStatusAuthorized){
-        NSLog(@"Authorized");
-    }
-    
-    // Explicit user permission is required for media capture, but the user has not yet granted or denied such permission.
-    else if(authStatus == AVAuthorizationStatusNotDetermined){
-        
-        [AVCaptureDevice requestAccessForMediaType:mediaType completionHandler:^(BOOL granted) {
-            if(granted){
-                NSLog(@"Granted access to %@", mediaType);
-            }
-            else {
-                NSLog(@"Not granted access to %@", mediaType);
-            }
-        }];
-    }
-    
-    else {
-        NSLog(@"Unknown authorization status");
-    }
+    [self.view setBackgroundColor:[UIColor darkGrayColor]];
 }
 
 - (void) shutterPressed
@@ -191,6 +134,7 @@ int currentIndex = -1;
         }
     }
 }
+
 - (void) shutterButtonPressed: (id) sender
 {
     NSLog(@"ON SCREEN SHUTTER BUTTON PRESSED");
@@ -208,43 +152,33 @@ int currentIndex = -1;
     galleryWebView = nil;
     [self.mainMoviePlayer stop];
     self.mainMoviePlayer = nil;
+    currentIndex = -1;
     
     [[self.view viewWithTag:103] removeFromSuperview]; //remove the movie player
-    [[self.view viewWithTag:104] removeFromSuperview]; //remove the camera button
+    [viewViewerControls removeFromSuperview]; //remove the camera button
     [demoClearView removeFromSuperview];
     demoClearView = nil;
 }
 
 - (void)activateView
 {
-    // Create a Poppy album if it doesn't already exist
-    if (!assetLibrary) {
-        assetLibrary = [[ALAssetsLibrary alloc] init];
-        [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
-                                      resultBlock:^(ALAssetsGroup *group) {
-                                          if (group) {
-                                              NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
-                                          } else {
-                                              NSLog(@"no group created, probably because it already exists");
-                                          }
-                                          [self loadAlbumWithName:@"Poppy"];
-                                      }
-                                     failureBlock:^(NSError *error) {
-                                         NSLog(@"error adding album");
-                                     }];
-    }
-    
     if (!buttonStealer) {
         [self activateButtonStealer];
+    } else {
+        [buttonStealer startStealingVolumeButtonEvents];
     }
     
-    imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-    [imgView setContentMode: UIViewContentModeScaleAspectFill];
+    if (!imgView) {
+        imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+        [imgView setContentMode: UIViewContentModeScaleAspectFill];
+        
+        [self.view addSubview:imgView];
+    }
     
-    [self.view addSubview:imgView];
-    
-    uberView = (GPUImageView *)self.view;
-    uberView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+    if (!uberView) {
+        uberView = (GPUImageView *)self.view;
+        uberView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+    }
     
     // set crop factor based on device
     cropFactor = [self setCropFactor];
@@ -256,8 +190,10 @@ int currentIndex = -1;
     
     [self activateCamera];
     
-    NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"beep" ofType:@"wav"];
-    AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &videoBeep);
+    if (!videoBeep) {
+        NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"beep" ofType:@"wav"];
+        AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &videoBeep);
+    }
 }
 
 - (void)activateButtonStealer
@@ -285,27 +221,14 @@ int currentIndex = -1;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if (isViewActive) {
-        if (isWatching) {
-            NSLog(@"RETURNING TO THE VIEWER");
-            [buttonStealer startStealingVolumeButtonEvents];
-            [self switchToViewerMode:self];
-        } else {
-            [self activateView];
-            if (!calibrateFirst) {
-                [self showWelcomeAlert];
-                calibrateFirst = NO;
-            } else {
-                [self showCameraControls];
-            }
-        }
+    [self activateView];
+    if (isWatching) {
+        NSLog(@"RETURNING TO THE VIEWER");
+        [buttonStealer startStealingVolumeButtonEvents];
+        [self switchToViewerMode:self];
     } else {
-        //make the default view less ugly
-        [self.view setBackgroundColor:[UIColor blackColor]];
-        CalibrationViewController *cvc = [[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-        [self presentViewController:cvc animated:NO completion:nil];
+        [self showCameraControls];
     }
-
 }
 
 - (void)addGestures:(UIView *)touchView
@@ -334,7 +257,6 @@ int currentIndex = -1;
         if (!isWatching) {
             isWatching = YES; // we're in view mode, not capture mode
             [self showViewerControls];
-            //[self dimView:0.0 withAlpha:0.1 withView:[self.view viewWithTag:104] withTimer:NO];
             //tear down everything about capture mode
             [videoCamera stopCameraCapture];
             self.videoCamera = nil;
@@ -342,7 +264,7 @@ int currentIndex = -1;
             self.stillCamera = nil;
             [finalFilter removeAllTargets];
             [displayFilter removeAllTargets];
-            [self hideView:[self.view viewWithTag:100]];
+            [self hideView:viewCameraControls];
         }
         
         [mainMoviePlayer stop];
@@ -394,7 +316,7 @@ int currentIndex = -1;
         NSLog(@"NO IMAGES IN THE ALBUM");
         [self showNoMediaAlert];
         //UNCOMMENT THE NEXT LINE FOR SIMULATOR TESTING PURPOSES ONLY. SHOW VIEWERCONTROLS EVEN WHEN THERE ARE NO PHOTOS
-        [self showViewerControls];
+        //[self showViewerControls];
     }
 
 }
@@ -443,54 +365,6 @@ int currentIndex = -1;
                      }];
 }
 
-- (void)showWelcomeAlert
-{
-    UIView *viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 75)/2, self.view.bounds.size.width, 75)];
-    [viewWelcome setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
-    [viewWelcome setTag:107];
-    
-    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewWelcome.frame.size.width, viewWelcome.frame.size.height)];
-    [viewShadow setBackgroundColor:[UIColor blackColor]];
-    [viewShadow setAlpha:0.3];
-    
-    UILabel *labelWelcome = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewWelcome.frame.size.width, viewWelcome.frame.size.height)];
-    [labelWelcome setTextColor:[UIColor whiteColor]];
-    [labelWelcome setBackgroundColor:[UIColor clearColor]];
-    [labelWelcome setTextAlignment:NSTextAlignmentCenter];
-    [labelWelcome setFont:[UIFont boldSystemFontOfSize:24]];
-    [labelWelcome setText:@"Put me in Poppy!"];
-    
-    [viewWelcome addSubview:viewShadow];
-    [viewWelcome addSubview:labelWelcome];
-    
-    [self.view addSubview:viewWelcome];
-    
-    [UIView animateWithDuration:0.5 delay:0.0
-                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
-                     animations:^{
-                         viewWelcome.alpha = 1.0;
-                     }
-                     completion:^(BOOL complete){
-                         [NSTimer scheduledTimerWithTimeInterval:4.0 target:self selector:@selector(welcomeTimerFired:) userInfo:nil repeats:NO];
-                     }];
-}
-
-- (void)welcomeTimerFired:(NSTimer *)timer
-{
-    UIView *welcomeView = [self.view viewWithTag:107];
-    [UIView animateWithDuration:0.5 delay:0.0
-                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
-                     animations:^{
-                         welcomeView.alpha = 0.0;
-                     }
-                     completion:^(BOOL complete){
-                         if(!isWatching){
-                             [self showCameraControls];
-                         }
-                         [welcomeView removeFromSuperview];
-                     }];
-}
-
 - (void)loadAlbumWithName:(NSString *)name
 {
     [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAlbum
@@ -525,9 +399,7 @@ int currentIndex = -1;
     [self addGestures:touchView];
     [mainMoviePlayer.view addSubview:touchView];
     
-    [self.view bringSubviewToFront:[self.view viewWithTag:104]];
-    [self showDemoClear];
-    
+    [self.view bringSubviewToFront:viewViewerControls];
 }
 
 - (void)moviePlayBackDidFinish:(id)sender {
@@ -540,6 +412,7 @@ int currentIndex = -1;
 - (void)activateCamera
 {
     if (isVideo) {
+        NSLog(@"VIDEO");
         // video camera setup
         if ([self deviceModelNumber] == 40) {
             videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetiFrame960x540 cameraPosition:AVCaptureDevicePositionBack];
@@ -550,6 +423,7 @@ int currentIndex = -1;
         videoCamera.horizontallyMirrorRearFacingCamera = NO;
         [self showFilteredDisplay:videoCamera];
     } else {
+        NSLog(@"STILL");
         //still camera setup
         if ([self deviceModelNumber] == 40) {
             stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetiFrame960x540 cameraPosition:AVCaptureDevicePositionBack];
@@ -718,26 +592,21 @@ int currentIndex = -1;
     if (!(stillCamera || videoCamera)){
         [self activateCamera];
     }
+    
+    isWatching = NO;
     NSLog(@"show camera controls");
     
-    UIView *viewControls = (id)[self.view viewWithTag:100];
-    
-    if (!viewControls)
+    if (!viewCameraControls)
     {
-        // add the toggle button
-        UIView *viewCameraControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, self.view.bounds.size.width, 75)];
-        
-        [viewCameraControls setTag:100];
+        // add the camera control buttons
+        viewCameraControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, self.view.bounds.size.width, 75)];
         
         [self addCameraControlsContentWithView:viewCameraControls];
         
         [self.view addSubview:viewCameraControls];
-        
-        viewControls = viewCameraControls;
     }
-    [self.view bringSubviewToFront:viewControls];
-    [self dimView:0.5 withAlpha:1.0 withView:viewControls withTimer:YES];
-
+    [self.view bringSubviewToFront:viewCameraControls];
+    [self dimView:0.5 withAlpha:1.0 withView:viewCameraControls withTimer:YES];
 }
 
 - (void) addCameraControlsContentWithView:(UIView *)viewContainer
@@ -748,46 +617,57 @@ int currentIndex = -1;
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.3];
     [self addGestures:viewShadow];
+    
     UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleShadowTapAction:)];
     [viewShadow addGestureRecognizer:handleTap];
-    
-    UILabel *labelCaptureMode = [[UILabel alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 230, 10, 50, 20)];
-    [labelCaptureMode setTag: 101];
-    [labelCaptureMode setTextColor:[UIColor whiteColor]];
-    [labelCaptureMode setBackgroundColor:[UIColor clearColor]];
-    [labelCaptureMode setTextAlignment:NSTextAlignmentCenter];
-    
-    UISwitch *switchCaptureMode = [[UISwitch alloc] initWithFrame:CGRectMake(controlsView.frame.size.width - 230, 35, 50, 20)];
-    [switchCaptureMode addTarget: self action: @selector(toggleCaptureMode:) forControlEvents:UIControlEventValueChanged];
-    
-    if(isVideo){
-        [labelCaptureMode setText:@"Video"];
-        [switchCaptureMode setOn: YES];
-    } else {
-        [labelCaptureMode setText:@"Photo"];
-        [switchCaptureMode setOn: NO];
-    }
-    
     [controlsView addSubview: viewShadow];
-    [controlsView addSubview: labelCaptureMode];
-    [controlsView addSubview: switchCaptureMode];
+
+    UIButton *buttonToggleMode = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 230, 0, 70, 75)];
     
-    // add the switch to viewer button
-    NSLog(@"adding the viewer button");
-    UIButton *buttonViewer = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 150, 0, 70, 75)];
-    [buttonViewer setImage:[UIImage imageNamed:@"play"] forState:UIControlStateNormal];
-    [buttonViewer addTarget:self action:@selector(switchToViewerMode:) forControlEvents:UIControlEventTouchUpInside];
-    [controlsView addSubview: buttonViewer];
+    [self setCameraButtonIcon:buttonToggleMode];
+
+    [buttonToggleMode addTarget:self action:@selector(toggleCaptureMode:) forControlEvents:UIControlEventTouchUpInside];
+    [controlsView addSubview: buttonToggleMode];
+    
+    UIButton *buttonHome = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 70, 0, 70, 75)];
+    [buttonHome setImage:[UIImage imageNamed:@"home"] forState:UIControlStateNormal];
+    [buttonHome addTarget:self action:@selector(goHome) forControlEvents:UIControlEventTouchUpInside];
+    [controlsView addSubview: buttonHome];
     
     // add the shutter button
     NSLog(@"adding the shutter button");
-    UIButton *buttonShutter = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 70, 0, 70, 75)];
+    UIButton *buttonShutter = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 150, 0, 70, 75)];
     [buttonShutter setImage:[UIImage imageNamed:@"shutter"] forState:UIControlStateNormal];
     [buttonShutter setImage:[UIImage imageNamed:@"shutterPressed"] forState:UIControlStateHighlighted];
     [buttonShutter addTarget:self action:@selector(shutterButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [controlsView addSubview: buttonShutter];
     
     [viewContainer addSubview: controlsView];
+}
+
+- (void) goHome
+{
+    //TO DO: Fix this ugly, hacky way to clear away everything
+    self.uberView = nil;
+    self.imgView = nil;
+    [self hideViewer];
+    if (isRecording) {
+        [self stopRecording];
+    }
+    id camera = isVideo ? videoCamera : stillCamera;
+    [camera stopCameraCapture];
+    
+    [displayFilter removeAllTargets];
+    [finalFilter removeAllTargets];
+    self.displayFilter = nil;
+    self.finalFilter = nil;
+    
+    self.stillCamera = nil;
+    self.videoCamera = nil;
+    
+    [buttonStealer stopStealingVolumeButtonEvents];
+    buttonStealer = nil;
+    [self dismissViewControllerAnimated:YES completion:^{}];
 }
 
 - (void) showViewerControls
@@ -798,23 +678,16 @@ int currentIndex = -1;
         [self stopRecording];
     }
     
-    UIView *viewControls = (id)[self.view viewWithTag:104];
-    
-    if (!viewControls)
+    if (!viewViewerControls)
     {
-        NSLog(@"add the camera button");
-        UIView *viewViewerControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, self.view.bounds.size.width, self.view.bounds.size.height)];
+        viewViewerControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, self.view.bounds.size.width, self.view.bounds.size.height)];
         [viewViewerControls setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin];
-        [viewViewerControls setTag:104];
         [self addViewerControlsContentWithView:viewViewerControls];
         [self.view addSubview:viewViewerControls];
-        
-        viewControls = viewViewerControls;
     }
-    [self hideView:[self.view viewWithTag:100]];
-    [self.view bringSubviewToFront:viewControls];
-    [self showDemoClear];
-    [self dimView:0.5 withAlpha:1.0 withView:viewControls withTimer:YES];
+    [self hideView:viewCameraControls];
+    [self.view bringSubviewToFront:viewViewerControls];
+    [self dimView:0.5 withAlpha:1.0 withView:viewViewerControls withTimer:YES];
 }
 
 - (void) addViewerControlsContentWithView:(UIView *)viewContainer
@@ -826,17 +699,12 @@ int currentIndex = -1;
     [viewShadow setAlpha:0.3];
     [self addGestures:viewShadow];
     
-    UIButton *buttonCamera = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 70,0,70,75)];
-    [buttonCamera setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
-    [buttonCamera addTarget:self action:@selector(switchToCameraMode:) forControlEvents:UIControlEventTouchUpInside];
-    
-    UIButton *buttonGallery = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 230, 0, 70, 75)];
-    [buttonGallery setImage:[UIImage imageNamed:@"gallery"] forState:UIControlStateNormal];
-    [buttonGallery addTarget:self action:@selector(showGallery) forControlEvents:UIControlEventTouchUpInside];
+    UIButton *buttonHome = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 70,0,70,75)];
+    [buttonHome setImage:[UIImage imageNamed:@"home"] forState:UIControlStateNormal];
+    [buttonHome addTarget:self action:@selector(goHome) forControlEvents:UIControlEventTouchUpInside];
     
     [controlsView addSubview: viewShadow];
-    [controlsView addSubview: buttonCamera];
-    [controlsView addSubview: buttonGallery];
+    [controlsView addSubview: buttonHome];
     [viewContainer addSubview:controlsView];
 }
 
@@ -851,34 +719,6 @@ int currentIndex = -1;
         [self.view addSubview:demoClearView];
     }
     [self.view bringSubviewToFront:demoClearView];
-}
-
-- (void) showGallery
-{
-    /* TEMPORARILY DISABLING FOR CES
-    [self hideViewer];
-    if (!galleryWebView) {
-        galleryWebView = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-        [galleryWebView setOpaque:NO];
-        [galleryWebView setBackgroundColor:[UIColor blackColor]];
-        [self.view addSubview:galleryWebView];
-        galleryWebView.delegate = self;
-    }
-    NSString *url=@"http://poppy3d.com/gallery";
-    //UNCOMMENT THE NEXT LINE TO SWITCH TO LOCALHOST FOR TESTING ON THE SUMULATOR
-    //url=@"http://localhost:9292/gallery";
-    NSURL *nsurl=[NSURL URLWithString:url];
-    NSURLRequest *request=[NSURLRequest requestWithURL:nsurl];
-    [galleryWebView loadRequest:request];
-     */
-    
-    //CES DEMO
-    [self hideViewer];
-    isWatching = YES;
-    currentIndex = 0;
-    GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    [buttonStealer stopStealingVolumeButtonEvents];
-    [self presentViewController:gvc animated:NO completion:nil];
 }
 
 - (void)resetDemoContent
@@ -904,9 +744,9 @@ int currentIndex = -1;
     }];
 }
 
-- (void) switchToCameraMode: (id) sender
+- (void) switchToCameraMode
 {
-    [self hideView:[self.view viewWithTag:104]];
+    [self hideView:viewViewerControls];
     [self hideViewer];
     [self showCameraControls];
     currentIndex = -1;
@@ -920,13 +760,11 @@ int currentIndex = -1;
 
 - (void)dimmerTimerFired:(NSTimer *)timer
 {
-    UIView *cameraControlsView = [self.view viewWithTag:100];
-    UIView *viewerControlsView = [self.view viewWithTag:104];
-    if (cameraControlsView.alpha > 0.1) {
-        [self dimView:0.5 withAlpha:0.1 withView:cameraControlsView withTimer:NO];
+    if (viewCameraControls.alpha > 0.1) {
+        [self dimView:0.5 withAlpha:0.1 withView:viewCameraControls withTimer:NO];
     }
-    if (viewerControlsView.alpha > 0.1) {
-        [self dimView:0.5 withAlpha:0.1 withView:viewerControlsView withTimer:NO];
+    if (viewViewerControls.alpha > 0.1) {
+        [self dimView:0.5 withAlpha:0.1 withView:viewViewerControls withTimer:NO];
     }
 }
 
@@ -955,18 +793,16 @@ int currentIndex = -1;
 
 - (void)toggleCaptureMode: (id) sender {
     [self showCameraControls];
-    UISwitch *toggle = (UISwitch *) sender;
-    NSLog(@"%@", toggle.on ? @"Video" : @"Still");
-    UILabel *toggleLabel = (id)[self.view viewWithTag:101];
-    
+
     if (isRecording) {
         [self stopRecording];
     }
     
-    isVideo = toggle.on;
+    isVideo = !isVideo;
+    UIButton *button = (UIButton *) sender;
+    [self setCameraButtonIcon:button];
 
-    id camera = toggle.on ? stillCamera : videoCamera;
-    [toggleLabel setText: toggle.on ? @"Video" : @"Photo"];
+    id camera = isVideo ? videoCamera : stillCamera;
     [camera stopCameraCapture];
     [displayFilter removeAllTargets];
     [finalFilter removeAllTargets];
@@ -980,6 +816,15 @@ int currentIndex = -1;
     ^{
         [self showCameraControls];
     });
+}
+
+- (void) setCameraButtonIcon:(UIButton *)button
+{
+    if (isVideo) {
+        [button setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
+    } else {
+        [button setImage:[UIImage imageNamed:@"video"] forState:UIControlStateNormal];
+    }
 }
 
 - (void)captureStill
@@ -1044,9 +889,8 @@ int currentIndex = -1;
 
 - (void)showSavingAlert
 {
-    UIView *viewSaving = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 150)/2, self.view.bounds.size.width/2, 75)];
+    viewSaving = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 150)/2, self.view.bounds.size.width/2, 75)];
     [viewSaving setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
-    [viewSaving setTag:106];
     
     UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewSaving.frame.size.width, viewSaving.frame.size.height)];
     [viewShadow setBackgroundColor:[UIColor blackColor]];
@@ -1074,7 +918,6 @@ int currentIndex = -1;
 
 - (void)hideSavingAlert
 {
-    UIView *viewSaving = [self.view viewWithTag:106];
     [UIView animateWithDuration:0.5 delay:0.0
                         options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
                      animations:^{
@@ -1093,13 +936,12 @@ int currentIndex = -1;
     ignoreVolumeDown = YES;
     [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(activateVolumeDown:) userInfo:nil repeats:NO];
     
-    [self dimView:0.5 withAlpha:0.1 withView:[self.view viewWithTag:100] withTimer:NO];
+    [self dimView:0.5 withAlpha:0.1 withView:viewCameraControls withTimer:NO];
     
     // Show the red "record" light
-    UIImageView *imgRecord = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"record"]];
+    imgRecord = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"record"]];
     [imgRecord setFrame:CGRectMake(self.view.bounds.size.width - 45, 20, 25, 25)];
     [imgRecord setAutoresizingMask: UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin];
-    [imgRecord setTag:102];
     [self.view addSubview:imgRecord];
     NSLog(@"SHOWED THE RED LIGHT");
 
@@ -1146,7 +988,7 @@ int currentIndex = -1;
                        [finalFilter removeTarget:movieWriter];
                        [movieWriter finishRecording];
                        NSLog(@"Movie completed");
-                       [[self.view viewWithTag:102] removeFromSuperview]; // remove the "recording" light
+                       [imgRecord removeFromSuperview]; // remove the "recording" light
                    });
 }
 
@@ -1325,10 +1167,10 @@ int currentIndex = -1;
     return YES;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft);
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+//{
+//    return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft);
+//}
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {

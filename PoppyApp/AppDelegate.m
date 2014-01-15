@@ -10,6 +10,7 @@
 #import "LiveViewController.h"
 #import "CalibrationViewController.h"
 #import "WelcomeViewController.h"
+#import "HomeViewController.h"
 
 @implementation AppDelegate
 
@@ -18,12 +19,15 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-    self.window.backgroundColor = [UIColor whiteColor];
-    //WelcomeViewController *wvc = [[WelcomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    LiveViewController *lvc = [[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    [self.window setRootViewController:lvc];
+    self.window.backgroundColor = [UIColor blackColor];
+
+    HomeViewController *hvc = [[HomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    [self.window setRootViewController:hvc];
     [self.window makeKeyAndVisible];
     
+    /*
+    LiveViewController *lvc = [[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    [self.window setRootViewController:lvc];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"isCalibrated"]) {
         [defaults setFloat:0.0 forKey:@"xOffset"];
@@ -33,6 +37,7 @@
     } else {
         lvc.isViewActive = YES;
     }
+     */
     
     return YES;
 }

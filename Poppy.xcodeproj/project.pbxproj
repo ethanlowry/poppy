@@ -13,6 +13,8 @@
 		9D10BC69182B0313008C8D1C /* AppIcon40x40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC63182B0313008C8D1C /* AppIcon40x40@2x.png */; };
 		9D10BC6A182B0313008C8D1C /* AppIcon60x60.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC64182B0313008C8D1C /* AppIcon60x60.png */; };
 		9D10BC6B182B0313008C8D1C /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC65182B0313008C8D1C /* AppIcon60x60@2x.png */; };
+		9D2E49BE18846F2E00D9871F /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D2E49BD18846F2E00D9871F /* HomeViewController.m */; };
+		9D2E49C21884991F00D9871F /* logo_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D2E49C11884991F00D9871F /* logo_white@2x.png */; };
 		9D4F5F6B1821767B00542AE0 /* RBVolumeButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9D5EDE4617FB4386008EB372 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4517FB4386008EB372 /* Foundation.framework */; };
 		9D5EDE4817FB4386008EB372 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */; };
@@ -55,6 +57,10 @@
 		9DE5770A185681A20048A6D6 /* screencontrols@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE57709185681A20048A6D6 /* screencontrols@2x.png */; };
 		9DE5770C185786B70048A6D6 /* screencontrolscamera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */; };
 		9DE57712185EB2F50048A6D6 /* gallery@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE57711185EB2F50048A6D6 /* gallery@2x.png */; };
+		9DF96D4B1884F2E500EB6B7B /* flicktweet@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D4A1884F2E500EB6B7B /* flicktweet@2x.png */; };
+		9DF96D4F1884F5B300EB6B7B /* favorite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D4E1884F5B300EB6B7B /* favorite@2x.png */; };
+		9DF96D541885DDA100EB6B7B /* home@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D531885DDA100EB6B7B /* home@2x.png */; };
+		9DF96D561885E00700EB6B7B /* video@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D551885E00700EB6B7B /* video@2x.png */; };
 		9DFA62F9182AE68400F1B262 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F7182AE68400F1B262 /* Default.png */; };
 		9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F8182AE68400F1B262 /* Default@2x.png */; };
 		9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FD182AECB400F1B262 /* Icon-Small.png */; };
@@ -107,6 +113,9 @@
 		9D10BC63182B0313008C8D1C /* AppIcon40x40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon40x40@2x.png"; sourceTree = "<group>"; };
 		9D10BC64182B0313008C8D1C /* AppIcon60x60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon60x60.png; sourceTree = "<group>"; };
 		9D10BC65182B0313008C8D1C /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@2x.png"; sourceTree = "<group>"; };
+		9D2E49BC18846F2E00D9871F /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HomeViewController.h; path = ../HomeViewController.h; sourceTree = "<group>"; };
+		9D2E49BD18846F2E00D9871F /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HomeViewController.m; path = ../HomeViewController.m; sourceTree = "<group>"; };
+		9D2E49C11884991F00D9871F /* logo_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_white@2x.png"; sourceTree = "<group>"; };
 		9D4F5F691821767B00542AE0 /* RBVolumeButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBVolumeButtons.h; sourceTree = "<group>"; };
 		9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBVolumeButtons.m; sourceTree = "<group>"; };
 		9D5EDE4217FB4386008EB372 /* Poppy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Poppy.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -158,6 +167,10 @@
 		9DE57709185681A20048A6D6 /* screencontrols@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screencontrols@2x.png"; sourceTree = "<group>"; };
 		9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screencontrolscamera@2x.png"; sourceTree = "<group>"; };
 		9DE57711185EB2F50048A6D6 /* gallery@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gallery@2x.png"; sourceTree = "<group>"; };
+		9DF96D4A1884F2E500EB6B7B /* flicktweet@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flicktweet@2x.png"; sourceTree = "<group>"; };
+		9DF96D4E1884F5B300EB6B7B /* favorite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "favorite@2x.png"; sourceTree = "<group>"; };
+		9DF96D531885DDA100EB6B7B /* home@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "home@2x.png"; sourceTree = "<group>"; };
+		9DF96D551885E00700EB6B7B /* video@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "video@2x.png"; sourceTree = "<group>"; };
 		9DFA62F7182AE68400F1B262 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		9DFA62F8182AE68400F1B262 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		9DFA62FD182AECB400F1B262 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
@@ -249,6 +262,8 @@
 			children = (
 				9D5EDE5417FB4386008EB372 /* AppDelegate.h */,
 				9D5EDE5517FB4386008EB372 /* AppDelegate.m */,
+				9D2E49BC18846F2E00D9871F /* HomeViewController.h */,
+				9D2E49BD18846F2E00D9871F /* HomeViewController.m */,
 				9DE576FA1853F13A0048A6D6 /* WelcomeViewController.h */,
 				9DE576FB1853F13A0048A6D6 /* WelcomeViewController.m */,
 				9DE576E81850039C0048A6D6 /* CalibrationViewController.h */,
@@ -271,6 +286,9 @@
 			isa = PBXGroup;
 			children = (
 				9DE576FF185667DC0048A6D6 /* logo@2x.png */,
+				9D2E49C11884991F00D9871F /* logo_white@2x.png */,
+				9DF96D531885DDA100EB6B7B /* home@2x.png */,
+				9DF96D551885E00700EB6B7B /* video@2x.png */,
 				9DE5770118566D2C0048A6D6 /* adapter@2x.png */,
 				9DE57703185672AB0048A6D6 /* twist@2x.png */,
 				9DE57705185679140048A6D6 /* thumbs@2x.png */,
@@ -281,6 +299,8 @@
 				9DE576F71853DCEB0048A6D6 /* arrow-right@2x.png */,
 				9DFCB15A18297DB000332D7C /* beep.wav */,
 				9DE576E6184FE5930048A6D6 /* focus@2x.png */,
+				9DF96D4E1884F5B300EB6B7B /* favorite@2x.png */,
+				9DF96D4A1884F2E500EB6B7B /* flicktweet@2x.png */,
 				9DE57711185EB2F50048A6D6 /* gallery@2x.png */,
 				9DFCB1601829C68200332D7C /* play@2x.png */,
 				9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */,
@@ -450,20 +470,25 @@
 				9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */,
 				9DE5770A185681A20048A6D6 /* screencontrols@2x.png in Resources */,
 				9DE5770218566D2C0048A6D6 /* adapter@2x.png in Resources */,
+				9D2E49C21884991F00D9871F /* logo_white@2x.png in Resources */,
 				9DFCB15E182983FC00332D7C /* shutterPressed@2x.png in Resources */,
 				9DFCB15F182983FC00332D7C /* shutter@2x.png in Resources */,
 				9DE57700185667DC0048A6D6 /* logo@2x.png in Resources */,
 				9D10BC69182B0313008C8D1C /* AppIcon40x40@2x.png in Resources */,
+				9DF96D4B1884F2E500EB6B7B /* flicktweet@2x.png in Resources */,
 				9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */,
 				9D8FC077184D5107007D0D53 /* AppIcon57x57@2x.png in Resources */,
 				9DE57712185EB2F50048A6D6 /* gallery@2x.png in Resources */,
+				9DF96D4F1884F5B300EB6B7B /* favorite@2x.png in Resources */,
 				9D761EE118242A94005412AC /* record@2x.png in Resources */,
 				9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */,
 				9DE5770C185786B70048A6D6 /* screencontrolscamera@2x.png in Resources */,
 				9D10BC6B182B0313008C8D1C /* AppIcon60x60@2x.png in Resources */,
+				9DF96D541885DDA100EB6B7B /* home@2x.png in Resources */,
 				9DE576F81853DCEB0048A6D6 /* arrow-left@2x.png in Resources */,
 				9D10BC66182B0313008C8D1C /* AppIcon29x29.png in Resources */,
 				9DFA62F9182AE68400F1B262 /* Default.png in Resources */,
+				9DF96D561885E00700EB6B7B /* video@2x.png in Resources */,
 				9D10BC67182B0313008C8D1C /* AppIcon29x29@2x.png in Resources */,
 				9DE576F91853DCEB0048A6D6 /* arrow-right@2x.png in Resources */,
 				9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */,
@@ -500,6 +525,7 @@
 				9D4F5F6B1821767B00542AE0 /* RBVolumeButtons.m in Sources */,
 				9D99EF22187744BC002D9B14 /* GalleryViewController.m in Sources */,
 				9DE576FC1853F13A0048A6D6 /* WelcomeViewController.m in Sources */,
+				9D2E49BE18846F2E00D9871F /* HomeViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

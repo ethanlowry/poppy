@@ -7,7 +7,6 @@
 //
 
 #import "CalibrationViewController.h"
-#import "LiveViewController.h"
 #import "WelcomeViewController.h"
 #import <sys/utsname.h>
 
@@ -204,10 +203,13 @@ UIView *viewWelcome;
     [stillCamera stopCameraCapture];
     stillCamera = nil;
     
+    /*
     LiveViewController *lvc = (id) self.presentingViewController;
     lvc.xOffset = cropPosition;
     lvc.isViewActive = YES;
-    [self dismissViewControllerAnimated:YES completion:^{}];
+     */
+    
+    [self dismissViewControllerAnimated:NO completion:^{}];
 }
 
 - (float)setCropFactor
@@ -289,6 +291,11 @@ UIView *viewWelcome;
 - (BOOL)prefersStatusBarHidden
 {
     return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskLandscapeLeft;
 }
 
 - (void)didReceiveMemoryWarning

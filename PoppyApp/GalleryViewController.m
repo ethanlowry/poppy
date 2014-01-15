@@ -14,21 +14,20 @@
 
 @implementation GalleryViewController
 
-@synthesize galleryArray;
-@synthesize galleryListView;
 @synthesize displayView;
 @synthesize imgView;
 @synthesize frameHeight;
 @synthesize frameWidth;
-@synthesize assetLibrary;
-@synthesize assetsGroup;
-@synthesize assetCount;
-@synthesize currentAsset;
-@synthesize mainMoviePlayer;
-@synthesize buttonStealer;
-@synthesize loadingLabel;
 
-bool odd = YES;
+@synthesize buttonStealer;
+@synthesize viewLoadingLabel;
+@synthesize imageArray;
+@synthesize viewViewerControls;
+
+int imageIndex;
+NSTimer *timerDimmer;
+
+@synthesize showPopular;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -42,12 +41,38 @@ bool odd = YES;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.view setBackgroundColor:[UIColor darkGrayColor]];
     
-    assetLibrary = [[ALAssetsLibrary alloc] init];
+    imageArray = [[NSMutableArray alloc] init];
     
-    galleryArray = [[NSMutableArray alloc] initWithObjects: @"WEB", @"Made on Poppy", @"3D Video", @"Miscellaneous", @"Queen", @"Stereo Cards", nil];
+    NSString *sort = showPopular ? @"top" : @"recent";
+    NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];;
+    NSString *urlString = [NSString stringWithFormat:@"http://poppy3d.com/app/media_item/get.json?uuid=%@&sort=%@", uuid, sort];
     
-	// Do any additional setup after loading the view.
+    NSURL *url = [NSURL URLWithString:urlString];
+    [self loadJSON:url];
+}
+
+- (void) loadJSON:(NSURL *)url
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:url
+                                             cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                         timeoutInterval:30.0];
+    // Get the data
+    NSURLResponse *response;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+    
+    // Now create an array from the JSON data
+    NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+
+    // Iterate through the array of dictionaries
+    NSLog(@"Array count: %d", jsonArray.count);
+    for (NSDictionary *item in jsonArray) {
+        NSLog(@"%@", item);
+        NSURL *imageURL = [NSURL URLWithString:item[@"media_url"]];
+        [imageArray addObject:imageURL];
+    }
+    imageIndex = -1;
 }
 
 - (void)activateButtonStealer
@@ -59,7 +84,7 @@ bool odd = YES;
         buttonStealer.upBlock = ^{
             // + volume button pressed
             NSLog(@"volume button pressed");
-            [weakSelf returnToViewer];
+            [weakSelf goHome];
         };
     }
     
@@ -73,99 +98,60 @@ bool odd = YES;
     [self activateButtonStealer];
     
     displayView = [[UIView alloc] initWithFrame:self.view.bounds];
-    [displayView setHidden:YES];
     [self.view addSubview:displayView];
     
     imgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+    [imgView setContentMode:UIViewContentModeScaleAspectFill];
     [displayView addSubview:imgView];
     
-    loadingLabel = [[UILabel alloc] initWithFrame:self.view.bounds];
+    viewLoadingLabel = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 150)/2, self.view.bounds.size.width/2, 75)];
+    [viewLoadingLabel setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+    UIView *viewShadow = [[UIView alloc] initWithFrame:viewLoadingLabel.bounds];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.3];
+    UILabel *loadingLabel = [[UILabel alloc] initWithFrame:viewLoadingLabel.bounds];
+    [loadingLabel setText:@"Loading..."];
     [loadingLabel setTextColor:[UIColor whiteColor]];
-    [self.view addSubview:loadingLabel];
+    [loadingLabel setTextAlignment:NSTextAlignmentCenter];
+    [viewLoadingLabel addSubview:viewShadow];
+    [viewLoadingLabel addSubview:loadingLabel];
+    [viewLoadingLabel setHidden:YES];
+    [self.view addSubview:viewLoadingLabel];
     
     UIView *touchView = [[UIView alloc] initWithFrame:self.view.bounds];
     [self addGestures:touchView];
     [displayView addSubview:touchView];
     
-    [self.view setBackgroundColor:[UIColor blackColor]];
+    [self showViewerControls];
     
-    galleryListView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth*2, frameHeight)];
-    [self.view addSubview:galleryListView];
-    
-    for(int j = 0;j < 2;j++){
-        //add the Poppy 3D Galleries title
-        UILabel *label = [[UILabel alloc] initWithFrame: CGRectMake(frameWidth*j + 30, 20, frameWidth - 30, 40)];
-        [label setFont:[UIFont boldSystemFontOfSize:24]];
-        [label setTextColor:[UIColor whiteColor]];
-        [label setText:@"Poppy Galleries"];
-        [galleryListView addSubview:label];
-        
-        //add the "return to normal" button
-        UIButton *button = [[UIButton alloc] initWithFrame: CGRectMake(frameWidth*j + 30, 60, frameWidth - 30, 40)];
-        [button setTitle:@"View your images" forState:UIControlStateNormal];
-        [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
-        [button addTarget:self action:@selector(returnToViewer) forControlEvents:UIControlEventTouchUpInside];
-        [galleryListView addSubview:button];
-        UIImageView *listArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"listArrow"]];
-        [listArrow setFrame: CGRectMake(frameWidth*(j+1) - 40, 73, 10, 15)];
-        [galleryListView addSubview:listArrow];
-    }
-    
-    //add the gallery buttons
-    for (int i = 0; i < galleryArray.count; i++) {
-        [self addItem:i];
-    }
+    [self showMedia:NO];
 }
 
-- (void)addItem:(int)i
+- (void)showViewerControls
 {
-    for (int j = 0;j < 2;j++){
-        UIImageView *listArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"listArrow"]];
-        [listArrow setFrame: CGRectMake(frameWidth*(j+1) - 40, i * 40 + 113, 10, 15)];
-        [galleryListView addSubview:listArrow];
-        UIButton *button = [[UIButton alloc] initWithFrame: CGRectMake(frameWidth*j + 30, i * 40 + 100, frameWidth - 30, 40)];
-        [button setTitle:[galleryArray objectAtIndex:i] forState:UIControlStateNormal];
-        [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
-        [button addTarget:self action:@selector(showGallery:) forControlEvents:UIControlEventTouchUpInside];
-        [galleryListView addSubview:button];
+    if (!viewViewerControls)
+    {
+        viewViewerControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, self.view.bounds.size.width, self.view.bounds.size.height)];
+        [viewViewerControls setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin];
+        [self addViewerControlsContent];
+        [self.view addSubview:viewViewerControls];
     }
+    [self dimView:0.5 withAlpha:1.0 withView:viewViewerControls withTimer:YES];
 }
 
-- (void)showGallery:(id)sender
+- (void)addViewerControlsContent
 {
-    UIButton *button = (UIButton*)sender;
-    NSString *title = button.titleLabel.text;
-    currentAsset = -1;
-    assetCount = 0;
-    [self loadAlbumWithName:title];
-    [galleryListView setHidden:YES];
-}
-
-- (void)playMovie:(ALAsset*)asset {
-    mainMoviePlayer = [[MPMoviePlayerController alloc] initWithContentURL:[[asset defaultRepresentation] url]];
-    mainMoviePlayer.shouldAutoplay=YES;
-    mainMoviePlayer.controlStyle = MPMovieControlStyleNone;
-    [mainMoviePlayer setMovieSourceType: MPMovieSourceTypeFile];
-    [mainMoviePlayer setFullscreen:YES animated:YES];
-    [mainMoviePlayer prepareToPlay];
-    [mainMoviePlayer.view setFrame: CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-    [mainMoviePlayer setScalingMode:MPMovieScalingModeAspectFill];
-    [mainMoviePlayer.view setTag:103];
-    [self.view addSubview: mainMoviePlayer.view];
-    mainMoviePlayer.repeatMode = MPMovieRepeatModeOne;
-    [mainMoviePlayer play];
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(viewViewerControls.bounds.size.width/2,0,viewViewerControls.bounds.size.width/2,75)];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.3];
+    [self addGestures:viewShadow];
     
-    //now add gesture controls
-    UIView *touchView = [[UIView alloc] initWithFrame:mainMoviePlayer.view.bounds];
-    [self addGestures:touchView];
-    [mainMoviePlayer.view addSubview:touchView];
+    UIButton *buttonHome = [[UIButton alloc] initWithFrame: CGRectMake(viewViewerControls.frame.size.width - 70,0,70,75)];
+    [buttonHome setImage:[UIImage imageNamed:@"home"] forState:UIControlStateNormal];
+    [buttonHome addTarget:self action:@selector(goHome) forControlEvents:UIControlEventTouchUpInside];
     
-}
-
-- (void)hideGallery
-{
-    [galleryListView setHidden:NO];
-    [displayView setHidden:YES];
+    [viewViewerControls addSubview: viewShadow];
+    [viewViewerControls addSubview: buttonHome];
 }
 
 - (void)addGestures:(UIView *)touchView
@@ -187,13 +173,13 @@ bool odd = YES;
 - (void)swipeScreenleft:(UISwipeGestureRecognizer *)sgr
 {
     NSLog(@"show next");
-    [self showNext];
+    [self showMedia:NO];
 }
 
 - (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr
 {
     NSLog(@"show previous");
-    [self showPrev];
+    [self showMedia:YES];
 }
 
 - (void)handleTapAction:(UITapGestureRecognizer *)tgr
@@ -201,126 +187,81 @@ bool odd = YES;
     if (tgr.state == UIGestureRecognizerStateRecognized) {
         CGPoint location = [tgr locationInView:self.view];
         if (location.x < self.view.frame.size.height/2) {
-            [self showPrev];
+            [self showMedia:YES];
         } else {
-            [self showNext];
+            [self showMedia:NO];
         }
     }
+    [self dimView:0.5 withAlpha:1.0 withView:viewViewerControls withTimer:YES];
 }
 
-- (void)showNext {
-    if (mainMoviePlayer) {
-        [self.mainMoviePlayer stop];
-        [self.mainMoviePlayer.view removeFromSuperview];
-        self.mainMoviePlayer = nil;
-    }
-    currentAsset = currentAsset + 1;
-    NSLog(@"Current: %d Total: %d", currentAsset, assetCount);
-    if (currentAsset >= assetCount) {
-        //hide the image, show the list
-        if (!assetsGroup) {
-            [self showAsset];
+- (void) showMedia:(BOOL)previous
+{
+    if (imageArray && imageArray.count > 0) {
+        if (previous) {
+            imageIndex = imageIndex - 1;
+            if (imageIndex < 0) {
+                imageIndex = imageArray.count - 1;
+            }
         } else {
-            [self hideGallery];
+            imageIndex = imageIndex + 1;
+            if (imageIndex >= imageArray.count) {
+                imageIndex = 0;
+            }
         }
+        NSLog(@"Image Index: %d", imageIndex);
+        
+        [viewLoadingLabel setHidden:NO];
+        NSOperationQueue *queue = [NSOperationQueue new];
+        NSInvocationOperation *operation = [[NSInvocationOperation alloc]
+                                            initWithTarget:self
+                                            selector:@selector(loadImage)
+                                            object:nil];
+        [queue addOperation:operation];
     } else {
-        [self showAsset];
+        NSLog(@"NO MEDIA");
     }
 }
 
-- (void)showPrev {
-    if (mainMoviePlayer) {
-        [self.mainMoviePlayer stop];
-        [self.mainMoviePlayer.view removeFromSuperview];
-        self.mainMoviePlayer = nil;
-    }
-    currentAsset = currentAsset - 1;
-    if (currentAsset < 0) {
-        //hide the image, show the list
-        [self hideGallery];
-    } else {
-        [self showAsset];
-    }
-}
-
-- (void) showAsset
+- (void)goHome
 {
-    if (assetCount > 0) {
-        [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentAsset] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
-         {
-             if (asset) {
-                 NSLog(@"got the asset: %d", index);
-                 ALAssetRepresentation *assetRepresentation = [asset defaultRepresentation];
-                 UIImageOrientation orientation = UIImageOrientationUp;
-                 NSNumber* orientationValue = [asset valueForProperty:@"ALAssetPropertyOrientation"];
-                 if (orientationValue != nil) {
-                     orientation = [orientationValue intValue];
-                 }
-                 UIImage *fullScreenImage = [UIImage imageWithCGImage:[assetRepresentation fullScreenImage] scale:[assetRepresentation scale] orientation:orientation];
-                 NSLog(@"image stuff, wide: %f height: %f", fullScreenImage.size.width, fullScreenImage.size.height);
-                 
-                 [imgView setImage:fullScreenImage];
-                 [displayView setHidden:NO];
-                 
-                 if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
-                     NSLog(@"It's a video");
-                     [self playMovie:asset];
-                 } else {
-                     NSLog(@"It's a photo");
-                 }
-             }
-         }];
-    } else {
-        NSLog(@"NO IMAGES IN THE ALBUM");
-        if (!assetsGroup) {
-            [loadingLabel setText:@"Loading..."];
-            NSOperationQueue *queue = [NSOperationQueue new];
-            NSInvocationOperation *operation = [[NSInvocationOperation alloc]
-                                                initWithTarget:self
-                                                selector:@selector(loadImage)
-                                                object:nil];
-            [queue addOperation:operation];
-        }
-    }
-}
-
-- (void)loadAlbumWithName:(NSString *)name
-{
-    if ([name isEqualToString:@"WEB"]) {
-        NSLog(@"WEB Album");
-        assetsGroup = nil;
-        assetCount = 0;
-        [self showNext];
-    } else {
-    [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAlbum
-                                usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                                    if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:name]) {
-                                        NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
-                                        assetsGroup = group;
-                                        NSLog(@"assetGroup is now %@", [assetsGroup valueForProperty:ALAssetsGroupPropertyName]);
-                                        assetCount = [assetsGroup numberOfAssets];
-                                        NSLog(@"ALBUM: %@ COUNT: %d", name, assetCount);
-                                        [self showNext];
-                                    }
-                                }
-                              failureBlock:^(NSError* error) {
-                                  NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
-                              }];
-    }
-}
-
-- (void)returnToViewer
-{
-    [self.mainMoviePlayer stop];
-    self.mainMoviePlayer = nil;
     [buttonStealer stopStealingVolumeButtonEvents];
-    //self.buttonStealer = nil;
     [self dismissViewControllerAnimated:YES completion:^{}];
+}
+
+- (void)dimView:(float)duration withAlpha:(float)alpha withView:(UIView *)view withTimer:(BOOL)showTimer
+{
+    NSLog(@"dim the view");
+    [timerDimmer invalidate];
+    timerDimmer = nil;
+    
+    [UIView animateWithDuration:duration delay:0.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         view.alpha = alpha;
+                     }
+                     completion:^(BOOL complete){
+                         if(showTimer){
+                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
+                         }
+                     }];
+}
+
+- (void)dimmerTimerFired:(NSTimer *)timer
+{
+    if (viewViewerControls.alpha > 0.1) {
+        [self dimView:0.5 withAlpha:0.1 withView:viewViewerControls withTimer:NO];
+    }
 }
 
 - (BOOL)prefersStatusBarHidden
 {
     return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskLandscapeLeft;
 }
 
 - (void)didReceiveMemoryWarning
@@ -330,23 +271,15 @@ bool odd = YES;
 }
 
 - (void)loadImage {
-    NSString *url;
-    if (odd) {
-        url = @"http://poppy3d.com.s3.amazonaws.com/gallery/Food/Oreos.jpg";
-        odd = NO;
-    } else {
-        url = @"http://poppy3d.com.s3.amazonaws.com/gallery/Food/Garlic.JPG";
-        odd = YES;
-    }
-    NSData* imageData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:url]];
+    NSURL* url = imageArray[imageIndex];
+    NSData* imageData = [[NSData alloc] initWithContentsOfURL:url];
     UIImage* image = [[UIImage alloc] initWithData:imageData];
     [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
 }
 
 - (void)displayImage:(UIImage *)image {
-    [loadingLabel setText:@""];
+    [viewLoadingLabel setHidden:YES];
     [imgView setImage:image];
-    [displayView setHidden:NO];
 }
 
 

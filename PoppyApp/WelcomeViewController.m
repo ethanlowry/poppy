@@ -186,7 +186,7 @@ UIView *touchView;
     } else {
         CalibrationViewController *cvc = (id) self.presentingViewController;
         cvc.showOOBE = NO;
-        [self dismissViewControllerAnimated:YES completion:^{}];
+        [self dismissViewControllerAnimated:NO completion:^{}];
     }
 }
 
@@ -222,6 +222,11 @@ UIView *touchView;
 - (BOOL)prefersStatusBarHidden
 {
     return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return  UIInterfaceOrientationMaskLandscapeLeft;
 }
 
 - (void)didReceiveMemoryWarning

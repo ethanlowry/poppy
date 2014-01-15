@@ -18,16 +18,15 @@
 @property (nonatomic, strong) UIView *galleryListView;
 @property (nonatomic, strong) UIView *displayView;
 @property (nonatomic, strong) UIImageView *imgView;
-@property (nonatomic, strong) UILabel *loadingLabel;
+@property (nonatomic, strong) UIView *viewLoadingLabel;
+@property (nonatomic, strong) UIView *viewViewerControls;
 @property (nonatomic) float frameHeight;
 @property (nonatomic) float frameWidth;
 
-@property (nonatomic, strong) ALAssetsGroup *assetsGroup;
-@property (nonatomic, strong) ALAssetsLibrary *assetLibrary;
-@property (nonatomic) int assetCount;
-@property (nonatomic) int currentAsset;
+@property (nonatomic) BOOL showPopular;
 
-@property (nonatomic, retain) MPMoviePlayerController *mainMoviePlayer;
 @property (nonatomic, strong) RBVolumeButtons *buttonStealer;
+
+@property (nonatomic, strong) NSMutableArray *imageArray;
 
 @end

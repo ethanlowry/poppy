@@ -30,9 +30,15 @@
 @property (nonatomic, retain) GPUImageCropFilter *finalFilter;
 @property (nonatomic, retain) GPUImageCropFilter *displayFilter;
 
+@property (nonatomic, retain) UIView *viewCameraControls;
+@property (nonatomic, retain) UIImageView *imgRecord;
+@property (nonatomic, retain) UIView *viewSaving;
+@property (nonatomic, retain) UIView *viewViewerControls;
+
 @property (nonatomic) BOOL isViewActive;
 @property (nonatomic) float xOffset;
 @property (nonatomic) BOOL calibrateFirst;
+@property (nonatomic) BOOL isWatching;
 
 -(void)activateView;
 
