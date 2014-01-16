@@ -10,6 +10,10 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
+@property (strong, nonatomic) NSMutableArray *recentImageArray;
+@property (strong, nonatomic) NSMutableArray *topImageArray;
+@property (strong, nonatomic) NSCache *imageCache;
+
 @property (strong, nonatomic) UIWindow *window;
 
 @end

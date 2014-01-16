@@ -7,6 +7,7 @@
 //
 
 #import "GalleryViewController.h"
+#import "AppDelegate.h"
 
 @interface GalleryViewController ()
 
@@ -51,14 +52,11 @@ NSTimer *timerDimmer;
     [super viewDidLoad];
     [self.view setBackgroundColor:[UIColor darkGrayColor]];
     
-    imageArray = [[NSMutableArray alloc] init];
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSLog(@"top count: %d", poppyAppDelegate.topImageArray.count);
+    NSLog(@"recent count: %d", poppyAppDelegate.recentImageArray.count);
     
-    NSString *sort = showPopular ? @"top" : @"recent";
-    NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];;
-    NSString *urlString = [NSString stringWithFormat:@"http://poppy3d.com/app/media_item/get.json?uuid=%@&sort=%@", uuid, sort];
-    
-    NSURL *url = [NSURL URLWithString:urlString];
-    [self loadJSON:url];
+    imageArray = showPopular ? poppyAppDelegate.topImageArray : poppyAppDelegate.recentImageArray;
 }
 
 - (void) loadJSON:(NSURL *)url
@@ -76,7 +74,6 @@ NSTimer *timerDimmer;
     // Iterate through the array of dictionaries
     NSLog(@"Array count: %d", jsonArray.count);
     for (NSMutableDictionary *item in jsonArray) {
-        NSLog(@"%@", item);
         [imageArray addObject:item];
     }
     imageIndex = -1;
@@ -100,6 +97,8 @@ NSTimer *timerDimmer;
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    imageIndex = -1;
+    
     frameWidth = self.view.frame.size.height/2;
     frameHeight = self.view.frame.size.width;
     [self activateButtonStealer];
@@ -164,10 +163,10 @@ NSTimer *timerDimmer;
         [self.view addSubview:viewViewerControls];
     }
     
-    if (imageArray && imageIndex >= 0 && [imageArray[imageIndex][@"favorited"] isEqualToString:@"false"]) {
-        [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
-    } else {
+    if (imageArray && imageIndex >= 0 && [imageArray[imageIndex][@"favorited"] isEqualToString:@"true"]) {
         [buttonFavorite setImage:[UIImage imageNamed:@"is_favorite"] forState:UIControlStateNormal];
+    } else {
+        [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
     }
     
     NSLog(@"showing viewer controls");
@@ -307,12 +306,27 @@ NSTimer *timerDimmer;
         NSLog(@"Image Index: %d", imageIndex);
         
         [viewLoadingLabel setHidden:NO];
+        [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
         NSOperationQueue *queue = [NSOperationQueue new];
         NSInvocationOperation *operation = [[NSInvocationOperation alloc]
                                             initWithTarget:self
-                                            selector:@selector(loadImage)
+                                            selector:@selector(loadAndDisplayCurrentImage)
                                             object:nil];
         [queue addOperation:operation];
+        // Now preload the next (or previous) image
+        NSInvocationOperation *preload;
+        if (previous) {
+            preload = [[NSInvocationOperation alloc]
+                       initWithTarget:self
+                       selector:@selector(loadPreviousImage)
+                       object:nil];
+        } else {
+            preload = [[NSInvocationOperation alloc]
+                       initWithTarget:self
+                       selector:@selector(loadNextImage)
+                       object:nil];
+        }
+        [queue addOperation:preload];
     } else {
         NSLog(@"NO MEDIA");
     }
@@ -366,12 +380,46 @@ NSTimer *timerDimmer;
     // Dispose of any resources that can be recreated.
 }
 
-- (void)loadImage {
-    NSURL *imageURL = [NSURL URLWithString:imageArray[imageIndex][@"media_url"]];
-    NSURL *url = imageURL;
-    NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
-    UIImage *image = [[UIImage alloc] initWithData:imageData];
+- (void)loadAndDisplayCurrentImage
+{
+    UIImage *image = [self loadImage:imageIndex];
     [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+}
+
+- (void)loadNextImage
+{
+    int index = imageIndex + 1;
+    if (index >= imageArray.count) {
+        index = 0;
+    }
+    [self loadImage:index];
+}
+
+- (void)loadPreviousImage
+{
+    int index = imageIndex - 1;
+    if (index < 0) {
+        index = imageArray.count - 1;
+    }
+    [self loadImage:index];
+}
+
+- (UIImage *)loadImage:(int)index
+{
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    UIImage *image;
+    if ([poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]]) {
+        // load from the dictionary
+        image = [poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]];
+    } else {
+        // load from the web
+        NSURL *imageURL = [NSURL URLWithString:imageArray[index][@"media_url"]];
+        NSURL *url = imageURL;
+        NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
+        image = [[UIImage alloc] initWithData:imageData];
+        [poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
+    }
+    return image;
 }
 
 - (void)displayImage:(UIImage *)image {
@@ -383,6 +431,7 @@ NSTimer *timerDimmer;
     [imgSourceR setImage:[UIImage imageNamed:sourceImageName]];
     [labelAttributionL setText:attributionText];
     [labelAttributionR setText:attributionText];
+    [self showViewerControls];
 }
 
 

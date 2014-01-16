@@ -145,9 +145,12 @@
         [self.view setBackgroundColor:[UIColor blackColor]];
         
         if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
+            [self.portraitView removeFromSuperview];
             [self.view addSubview:self.landscapeLView];
             [self.view addSubview:self.landscapeRView];
         } else {
+            [self.landscapeLView removeFromSuperview];
+            [self.landscapeRView removeFromSuperview];
             [self.view addSubview:self.portraitView];
         }
     }

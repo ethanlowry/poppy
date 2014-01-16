@@ -14,6 +14,10 @@
 
 @implementation AppDelegate
 
+@synthesize recentImageArray;
+@synthesize topImageArray;
+@synthesize imageCache;
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -24,22 +28,68 @@
     HomeViewController *hvc = [[HomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     [self.window setRootViewController:hvc];
     [self.window makeKeyAndVisible];
-    
-    /*
-    LiveViewController *lvc = [[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    [self.window setRootViewController:lvc];
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if (![defaults boolForKey:@"isCalibrated"]) {
-        [defaults setFloat:0.0 forKey:@"xOffset"];
-        [defaults synchronize];
-        lvc.calibrateFirst = YES;
-        lvc.isViewActive = NO;
-    } else {
-        lvc.isViewActive = YES;
-    }
-     */
+    [self loadImageArrays];
     
     return YES;
+}
+
+- (void)loadImageArrays
+{
+    topImageArray = [[NSMutableArray alloc] init];
+    recentImageArray = [[NSMutableArray alloc] init];
+    imageCache = [[NSCache alloc] init];
+    [imageCache setCountLimit:4];
+    [self loadJSON:@"top"];
+    [self loadJSON:@"recent"];
+}
+
+- (void) loadJSON:(NSString *)sort
+{
+    NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];;
+    NSString *urlString = [NSString stringWithFormat:@"http://poppy3d.com/app/media_item/get.json?uuid=%@&sort=%@", uuid, sort];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableArray *imageArray = ([sort isEqualToString:@"top"]) ? topImageArray : recentImageArray;
+
+    NSURLRequest *request = [NSURLRequest requestWithURL:url
+                                             cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                         timeoutInterval:30.0];
+    // Get the data
+    NSLog(@"url: %@", url);
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               // Now create an array from the JSON data
+                               NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                               // Iterate through the array of dictionaries
+                               NSLog(@"Array count: %d", jsonArray.count);
+                               for (NSMutableDictionary *item in jsonArray) {
+                                   [imageArray addObject:item];
+                               }
+                               [self getFirstImage:imageArray];
+                           }];
+}
+
+- (void)getFirstImage:(NSMutableArray *)imageArray
+{
+    NSLog(@"GETTING FIRST IMAGE");
+    NSOperationQueue *queue = [NSOperationQueue new];
+    NSInvocationOperation *operation = [[NSInvocationOperation alloc]
+                                        initWithTarget:self
+                                        selector:@selector(loadImage:)
+                                        object:imageArray];
+    [queue addOperation:operation];
+}
+
+- (void)loadImage:(NSMutableArray *)imageArray
+{
+    NSLog(@"LOADING THE FIRST IMAGE");
+    NSURL *imageURL = [NSURL URLWithString:imageArray[0][@"media_url"]];
+    NSURL *url = imageURL;
+    NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
+    UIImage *image = [[UIImage alloc] initWithData:imageData];
+    [imageCache setObject:image forKey:imageArray[0][@"_id"]];
+    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

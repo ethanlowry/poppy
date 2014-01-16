@@ -13,6 +13,7 @@
 
 #import "LiveViewController.h"
 #import "GalleryViewController.h"
+#import "AppDelegate.h"
 #import <sys/utsname.h>
 
 
@@ -574,6 +575,9 @@ int currentIndex = -1;
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [poppyAppDelegate.imageCache removeAllObjects];
+    
     // Dispose of any resources that can be recreated.
 }
 
