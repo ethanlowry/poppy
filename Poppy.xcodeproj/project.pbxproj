@@ -62,6 +62,9 @@
 		9DF96D541885DDA100EB6B7B /* home@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D531885DDA100EB6B7B /* home@2x.png */; };
 		9DF96D561885E00700EB6B7B /* video@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D551885E00700EB6B7B /* video@2x.png */; };
 		9DF96D58188724E700EB6B7B /* delete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D57188724E700EB6B7B /* delete@2x.png */; };
+		9DF96D5B1887916000EB6B7B /* flickr.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D591887916000EB6B7B /* flickr.png */; };
+		9DF96D5C1887916000EB6B7B /* twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D5A1887916000EB6B7B /* twitter.png */; };
+		9DF96D5E1887B6C900EB6B7B /* is_favorite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D5D1887B6C900EB6B7B /* is_favorite@2x.png */; };
 		9DFA62F9182AE68400F1B262 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F7182AE68400F1B262 /* Default.png */; };
 		9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F8182AE68400F1B262 /* Default@2x.png */; };
 		9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FD182AECB400F1B262 /* Icon-Small.png */; };
@@ -173,6 +176,9 @@
 		9DF96D531885DDA100EB6B7B /* home@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "home@2x.png"; sourceTree = "<group>"; };
 		9DF96D551885E00700EB6B7B /* video@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "video@2x.png"; sourceTree = "<group>"; };
 		9DF96D57188724E700EB6B7B /* delete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "delete@2x.png"; sourceTree = "<group>"; };
+		9DF96D591887916000EB6B7B /* flickr.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flickr.png; sourceTree = "<group>"; };
+		9DF96D5A1887916000EB6B7B /* twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = twitter.png; sourceTree = "<group>"; };
+		9DF96D5D1887B6C900EB6B7B /* is_favorite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "is_favorite@2x.png"; sourceTree = "<group>"; };
 		9DFA62F7182AE68400F1B262 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		9DFA62F8182AE68400F1B262 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		9DFA62FD182AECB400F1B262 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
@@ -289,7 +295,10 @@
 			children = (
 				9DE576FF185667DC0048A6D6 /* logo@2x.png */,
 				9D2E49C11884991F00D9871F /* logo_white@2x.png */,
+				9DF96D591887916000EB6B7B /* flickr.png */,
+				9DF96D5A1887916000EB6B7B /* twitter.png */,
 				9DF96D531885DDA100EB6B7B /* home@2x.png */,
+				9DF96D5D1887B6C900EB6B7B /* is_favorite@2x.png */,
 				9DF96D57188724E700EB6B7B /* delete@2x.png */,
 				9DF96D551885E00700EB6B7B /* video@2x.png */,
 				9DE5770118566D2C0048A6D6 /* adapter@2x.png */,
@@ -467,17 +476,20 @@
 				9DFCB163182ACA4300332D7C /* Default-568h@2x.png in Resources */,
 				9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */,
 				9DFA6302182AECB400F1B262 /* Icon-Small@2x.png in Resources */,
+				9DF96D5E1887B6C900EB6B7B /* is_favorite@2x.png in Resources */,
 				9D8FC07B184D53C8007D0D53 /* AppIcon57x57.png in Resources */,
 				9DFA6303182AECB400F1B262 /* Icon.png in Resources */,
 				9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */,
 				9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */,
 				9DE5770A185681A20048A6D6 /* screencontrols@2x.png in Resources */,
+				9DF96D5B1887916000EB6B7B /* flickr.png in Resources */,
 				9DE5770218566D2C0048A6D6 /* adapter@2x.png in Resources */,
 				9D2E49C21884991F00D9871F /* logo_white@2x.png in Resources */,
 				9DFCB15E182983FC00332D7C /* shutterPressed@2x.png in Resources */,
 				9DFCB15F182983FC00332D7C /* shutter@2x.png in Resources */,
 				9DE57700185667DC0048A6D6 /* logo@2x.png in Resources */,
 				9D10BC69182B0313008C8D1C /* AppIcon40x40@2x.png in Resources */,
+				9DF96D5C1887916000EB6B7B /* twitter.png in Resources */,
 				9DF96D4B1884F2E500EB6B7B /* flicktweet@2x.png in Resources */,
 				9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */,
 				9D8FC077184D5107007D0D53 /* AppIcon57x57@2x.png in Resources */,

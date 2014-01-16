@@ -23,6 +23,14 @@
 @property (nonatomic) float frameHeight;
 @property (nonatomic) float frameWidth;
 
+@property (nonatomic, strong) UIImageView *imgSourceL;
+@property (nonatomic, strong) UILabel *labelAttributionL;
+@property (nonatomic, strong) UIImageView *imgSourceR;
+@property (nonatomic, strong) UILabel *labelAttributionR;
+@property (nonatomic, strong) UIView *viewAttribution;
+
+@property (nonatomic, strong) UIButton *buttonFavorite;
+
 @property (nonatomic) BOOL showPopular;
 
 @property (nonatomic, strong) RBVolumeButtons *buttonStealer;

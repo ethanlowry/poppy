@@ -24,6 +24,14 @@
 @synthesize imageArray;
 @synthesize viewViewerControls;
 
+@synthesize imgSourceL;
+@synthesize imgSourceR;
+@synthesize labelAttributionL;
+@synthesize labelAttributionR;
+@synthesize viewAttribution;
+
+@synthesize buttonFavorite;
+
 int imageIndex;
 NSTimer *timerDimmer;
 
@@ -67,10 +75,9 @@ NSTimer *timerDimmer;
 
     // Iterate through the array of dictionaries
     NSLog(@"Array count: %d", jsonArray.count);
-    for (NSDictionary *item in jsonArray) {
+    for (NSMutableDictionary *item in jsonArray) {
         NSLog(@"%@", item);
-        NSURL *imageURL = [NSURL URLWithString:item[@"media_url"]];
-        [imageArray addObject:imageURL];
+        [imageArray addObject:item];
     }
     imageIndex = -1;
 }
@@ -104,7 +111,27 @@ NSTimer *timerDimmer;
     [imgView setContentMode:UIViewContentModeScaleAspectFill];
     [displayView addSubview:imgView];
     
-    viewLoadingLabel = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 150)/2, self.view.bounds.size.width/2, 75)];
+    viewAttribution = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth * 2, 30)];
+    UIView *viewAttrShadow = [[UIView alloc] initWithFrame:viewAttribution.frame];
+    [viewAttrShadow setAlpha:0.3];
+    [viewAttrShadow setBackgroundColor:[UIColor blackColor]];
+    [viewAttribution addSubview:viewAttrShadow];
+    
+    imgSourceL = [[UIImageView alloc] initWithFrame:CGRectMake(10, 5, 20, 20)];
+    imgSourceR = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth + 10, 5, 20, 20)];
+    labelAttributionL = [[UILabel alloc] initWithFrame:CGRectMake(40, 5, frameWidth - 40, 20)];
+    labelAttributionR = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth + 40, 5, frameWidth - 40, 20)];
+    [labelAttributionL setFont:[UIFont systemFontOfSize:12]];
+    [labelAttributionL setTextColor:[UIColor whiteColor]];
+    [labelAttributionR setFont:[UIFont systemFontOfSize:12]];
+    [labelAttributionR setTextColor:[UIColor whiteColor]];
+    [viewAttribution addSubview:imgSourceL];
+    [viewAttribution addSubview:imgSourceR];
+    [viewAttribution addSubview:labelAttributionL];
+    [viewAttribution addSubview:labelAttributionR];
+    [displayView addSubview:viewAttribution];
+    
+    viewLoadingLabel = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 130)/2, self.view.bounds.size.width/2, 75)];
     [viewLoadingLabel setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
     UIView *viewShadow = [[UIView alloc] initWithFrame:viewLoadingLabel.bounds];
     [viewShadow setBackgroundColor:[UIColor blackColor]];
@@ -136,6 +163,15 @@ NSTimer *timerDimmer;
         [self addViewerControlsContent];
         [self.view addSubview:viewViewerControls];
     }
+    
+    if (imageArray && imageIndex >= 0 && [imageArray[imageIndex][@"favorited"] isEqualToString:@"false"]) {
+        [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
+    } else {
+        [buttonFavorite setImage:[UIImage imageNamed:@"is_favorite"] forState:UIControlStateNormal];
+    }
+    
+    NSLog(@"showing viewer controls");
+    [self dimView:0.5 withAlpha:1.0 withView:viewAttribution withTimer:NO];
     [self dimView:0.5 withAlpha:1.0 withView:viewViewerControls withTimer:YES];
 }
 
@@ -150,13 +186,62 @@ NSTimer *timerDimmer;
     [buttonHome setImage:[UIImage imageNamed:@"home"] forState:UIControlStateNormal];
     [buttonHome addTarget:self action:@selector(goHome) forControlEvents:UIControlEventTouchUpInside];
     
+    buttonFavorite = [[UIButton alloc] initWithFrame: CGRectMake(viewViewerControls.frame.size.width - 230,0,70,75)];
+    [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
+    [buttonFavorite addTarget:self action:@selector(markFavorite) forControlEvents:UIControlEventTouchUpInside];
     [viewViewerControls addSubview: viewShadow];
     [viewViewerControls addSubview: buttonHome];
+    [viewViewerControls addSubview: buttonFavorite];
+}
+
+- (void)markFavorite
+{
+    if (imageArray[imageIndex]){
+        NSLog(@"There's a pic to Favorite");
+        NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+        NSString *item_id = imageArray[imageIndex][@"_id"];
+        NSString *addText;
+        NSString *favorited;
+        if ([imageArray[imageIndex][@"favorited"] isEqualToString:@"false"]) {
+            addText = @"add";
+            favorited = @"true";
+        } else {
+            addText = @"remove";
+            favorited = @"false";
+        }
+        NSString *urlString = [NSString stringWithFormat:@"http://poppy3d.com/app/action/post.json?uuid=%@&media_item_id=%@&action=favorite&v=%@", uuid, item_id, addText];
+        
+        NSURL *url = [NSURL URLWithString:urlString];
+        
+        NSLog(@"URL: %@", url);
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                                           timeoutInterval:30.0];
+        
+        [request setHTTPMethod:@"POST"];
+        NSURLResponse *response;
+        [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+        //NSLog(@"RESPONSE: %@", response);
+        
+        //Now update the "favorited" value to reflect the change
+        NSMutableDictionary *newItem = [[NSMutableDictionary alloc] init];
+        NSDictionary *oldItem = (NSDictionary *)[imageArray objectAtIndex:imageIndex];
+        [newItem addEntriesFromDictionary:oldItem];
+        [newItem setObject:favorited forKey:@"favorited"];
+        [imageArray replaceObjectAtIndex:imageIndex withObject:newItem];
+
+        [self showViewerControls];
+    }
 }
 
 - (void)addGestures:(UIView *)touchView
 {
+    UITapGestureRecognizer *handleDoubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapAction:)];
+    handleDoubleTap.numberOfTapsRequired = 2;
+    [touchView addGestureRecognizer:handleDoubleTap];
+    
     UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapAction:)];
+    handleTap.numberOfTapsRequired = 1;
     [touchView addGestureRecognizer:handleTap];
     
     UISwipeGestureRecognizer *swipeLeftGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeScreenleft:)];
@@ -174,15 +259,17 @@ NSTimer *timerDimmer;
 {
     NSLog(@"show next");
     [self showMedia:NO];
+    [self showViewerControls];
 }
 
 - (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr
 {
     NSLog(@"show previous");
     [self showMedia:YES];
+    [self showViewerControls];
 }
 
-- (void)handleTapAction:(UITapGestureRecognizer *)tgr
+- (void)handleDoubleTapAction:(UITapGestureRecognizer *)tgr
 {
     if (tgr.state == UIGestureRecognizerStateRecognized) {
         CGPoint location = [tgr locationInView:self.view];
@@ -192,7 +279,15 @@ NSTimer *timerDimmer;
             [self showMedia:NO];
         }
     }
-    [self dimView:0.5 withAlpha:1.0 withView:viewViewerControls withTimer:YES];
+    [self showViewerControls];
+}
+
+- (void)handleTapAction:(UITapGestureRecognizer *)tgr
+{
+    if (tgr.state == UIGestureRecognizerStateRecognized) {
+        [self showViewerControls];
+    }
+    
 }
 
 - (void) showMedia:(BOOL)previous
@@ -242,7 +337,7 @@ NSTimer *timerDimmer;
                      }
                      completion:^(BOOL complete){
                          if(showTimer){
-                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
+                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
                          }
                      }];
 }
@@ -251,6 +346,7 @@ NSTimer *timerDimmer;
 {
     if (viewViewerControls.alpha > 0.1) {
         [self dimView:0.5 withAlpha:0.1 withView:viewViewerControls withTimer:NO];
+        [self dimView:0.5 withAlpha:0.1 withView:viewAttribution withTimer:NO];
     }
 }
 
@@ -271,15 +367,22 @@ NSTimer *timerDimmer;
 }
 
 - (void)loadImage {
-    NSURL* url = imageArray[imageIndex];
-    NSData* imageData = [[NSData alloc] initWithContentsOfURL:url];
-    UIImage* image = [[UIImage alloc] initWithData:imageData];
+    NSURL *imageURL = [NSURL URLWithString:imageArray[imageIndex][@"media_url"]];
+    NSURL *url = imageURL;
+    NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
+    UIImage *image = [[UIImage alloc] initWithData:imageData];
     [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
 }
 
 - (void)displayImage:(UIImage *)image {
     [viewLoadingLabel setHidden:YES];
     [imgView setImage:image];
+    NSString *sourceImageName = imageArray[imageIndex][@"source"];
+    NSString *attributionText = imageArray[imageIndex][@"attribution_name"];
+    [imgSourceL setImage:[UIImage imageNamed:sourceImageName]];
+    [imgSourceR setImage:[UIImage imageNamed:sourceImageName]];
+    [labelAttributionL setText:attributionText];
+    [labelAttributionR setText:attributionText];
 }
 
 

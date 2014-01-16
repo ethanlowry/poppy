@@ -234,7 +234,12 @@ int currentIndex = -1;
 
 - (void)addGestures:(UIView *)touchView
 {
+    UITapGestureRecognizer *handleDoubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapAction:)];
+    handleDoubleTap.numberOfTapsRequired = 2;
+    [touchView addGestureRecognizer:handleDoubleTap];
+    
     UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapAction:)];
+    handleTap.numberOfTapsRequired = 1;
     [touchView addGestureRecognizer:handleTap];
     
     UISwipeGestureRecognizer *swipeLeftGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeScreenleft:)];
@@ -851,6 +856,8 @@ int currentIndex = -1;
     isVideo = !isVideo;
     UIButton *button = (UIButton *) sender;
     [self setCameraButtonIcon:button];
+    
+    //TO DO:Also update the shutter button to be either the camera or video style
 
     id camera = isVideo ? videoCamera : stillCamera;
     [camera stopCameraCapture];
@@ -1073,18 +1080,25 @@ int currentIndex = -1;
         if (isWatching) {
             NSLog(@"VIEWER TAPPED!");
             [self showViewerControls];
-            CGPoint location = [tgr locationInView:uberView];
-            if (location.x < uberView.frame.size.height/2) {
-                [self showMedia:prev];
-            } else {
-                [self showMedia:next];
-            }
         } else {
             NSLog(@"CAMERA TAPPED!");
             [self showCameraControls];
             CGPoint location = [tgr locationInView:uberView];
             [self showFocusSquare:location];
             [self setCameraFocus:location];
+        }
+    }
+}
+
+-(void) handleDoubleTapAction:(UITapGestureRecognizer *)tgr
+{
+    if (isWatching) {
+        [self showViewerControls];
+        CGPoint location = [tgr locationInView:uberView];
+        if (location.x < uberView.frame.size.height/2) {
+            [self showMedia:prev];
+        } else {
+            [self showMedia:next];
         }
     }
 }
