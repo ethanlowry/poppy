@@ -11,6 +11,8 @@
 #import "CalibrationViewController.h"
 #import "WelcomeViewController.h"
 #import "HomeViewController.h"
+#import "Flurry.h"
+
 
 @implementation AppDelegate
 
@@ -20,6 +22,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
+    [Flurry setCrashReportingEnabled:YES];
+    [Flurry startSession:@"YOUR_API_KEY"];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
@@ -32,6 +37,7 @@
     
     return YES;
 }
+
 
 - (void)loadImageArrays
 {
