@@ -351,7 +351,7 @@ NSTimer *timerDimmer;
                      }
                      completion:^(BOOL complete){
                          if(showTimer){
-                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
+                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:2.5 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
                          }
                      }];
 }
@@ -431,6 +431,7 @@ NSTimer *timerDimmer;
     [imgSourceR setImage:[UIImage imageNamed:sourceImageName]];
     [labelAttributionL setText:attributionText];
     [labelAttributionR setText:attributionText];
+    NSLog(@"ATTR: %@", attributionText);
     [self showViewerControls];
 }
 

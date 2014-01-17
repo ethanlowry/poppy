@@ -114,10 +114,7 @@
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"isCalibrated"]) {
-        [defaults setFloat:0.0 forKey:@"xOffset"];
-        [defaults synchronize];
-        CalibrationViewController *cvc = [[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-        [self presentViewController:cvc animated:NO completion:nil];
+        [self runCalibration];
     } else {
         if (!buttonStealer) {
             __weak typeof(self) weakSelf = self;
@@ -133,6 +130,14 @@
         if(!self.portraitView) {
             self.portraitView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
             [self addControlsToContainer:self.portraitView];
+            
+            UIButton *buttonRecalibrate = [self makeButton:@"Recalibrate" withPosition:5 withView:self.portraitView withImageName:@"cog"];
+            [buttonRecalibrate addTarget:self action:@selector(runCalibration) forControlEvents:UIControlEventTouchUpInside];
+            [self.portraitView addSubview:buttonRecalibrate];
+            
+            UIButton *buttonHelp = [self makeButton:@"How to Share Photos" withPosition:6 withView:self.portraitView withImageName:@"question"];
+            [buttonHelp addTarget:self action:@selector(launchHelp) forControlEvents:UIControlEventTouchUpInside];
+            [self.portraitView addSubview:buttonHelp];
         }
         if(!self.landscapeLView) {
             self.landscapeLView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width/2, self.view.frame.size.height)];
@@ -245,6 +250,18 @@
     return image;
 }
 
+- (void)runCalibration
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    CalibrationViewController *cvc = [[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    cvc.showOOBE = ![defaults boolForKey:@"isCalibrated"];
+    
+    [defaults setFloat:0.0 forKey:@"xOffset"];
+    [defaults setBool:NO forKey:@"isCalibrated"];
+    [defaults synchronize];
+    [self presentViewController:cvc animated:NO completion:nil];
+}
+
 - (void)launchCamera
 {
     LiveViewController *lvc = [[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil];
@@ -279,6 +296,11 @@
     gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
     gvc.showPopular = YES;
     [self presentViewController:gvc animated:YES completion:nil];
+}
+
+- (void)launchHelp
+{
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://poppy3d.com/app-help"]];
 }
 
 - (BOOL)prefersStatusBarHidden

@@ -37,8 +37,6 @@ UIView *viewWelcome;
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    showOOBE = YES;
-    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     cropPosition = [defaults floatForKey:@"xOffset"];
     if (!cropPosition) {
@@ -82,6 +80,7 @@ UIView *viewWelcome;
 - (void)viewDidAppear:(BOOL)animated
 {
     if (showOOBE) {
+        NSLog(@"ABOUT TO SHOW OOBE");
         WelcomeViewController *wvc = [[WelcomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
         [self presentViewController:wvc animated:NO completion:nil];
     } else {

@@ -845,7 +845,7 @@ int currentIndex = -1;
                      }
                      completion:^(BOOL complete){
                          if(showTimer){
-                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
+                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:2.5 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
                          }
                      }];
 }
