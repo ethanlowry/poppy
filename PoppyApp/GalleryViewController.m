@@ -31,6 +31,8 @@
 @synthesize labelAttributionR;
 @synthesize viewAttribution;
 
+@synthesize viewBlockAlert;
+
 @synthesize buttonFavorite;
 
 int imageIndex;
@@ -148,8 +150,6 @@ NSTimer *timerDimmer;
     [self addGestures:touchView];
     [displayView addSubview:touchView];
     
-    [self showViewerControls];
-    
     [self showMedia:NO];
 }
 
@@ -185,12 +185,18 @@ NSTimer *timerDimmer;
     [buttonHome setImage:[UIImage imageNamed:@"home"] forState:UIControlStateNormal];
     [buttonHome addTarget:self action:@selector(goHome) forControlEvents:UIControlEventTouchUpInside];
     
-    buttonFavorite = [[UIButton alloc] initWithFrame: CGRectMake(viewViewerControls.frame.size.width - 230,0,70,75)];
+    buttonFavorite = [[UIButton alloc] initWithFrame: CGRectMake(viewViewerControls.frame.size.width - 150,0,70,75)];
     [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
     [buttonFavorite addTarget:self action:@selector(markFavorite) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton *buttonBlock = [[UIButton alloc] initWithFrame: CGRectMake(viewViewerControls.frame.size.width - 230,0,70,75)];
+    [buttonBlock setImage:[UIImage imageNamed:@"delete"] forState:UIControlStateNormal];
+    [buttonBlock addTarget:self action:@selector(showBlockAlert) forControlEvents:UIControlEventTouchUpInside];
+    
     [viewViewerControls addSubview: viewShadow];
     [viewViewerControls addSubview: buttonHome];
     [viewViewerControls addSubview: buttonFavorite];
+    [viewViewerControls addSubview: buttonBlock];
 }
 
 - (void)markFavorite
@@ -218,8 +224,14 @@ NSTimer *timerDimmer;
                                                            timeoutInterval:30.0];
         
         [request setHTTPMethod:@"POST"];
-        NSURLResponse *response;
-        [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+        
+        [NSURLConnection sendAsynchronousRequest:request
+                                           queue:[NSOperationQueue mainQueue]
+                               completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                   // TO DO: Look at the response. Currently this is fire and forget
+                               }];
+
+        //[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
         //NSLog(@"RESPONSE: %@", response);
         
         //Now update the "favorited" value to reflect the change
@@ -232,6 +244,88 @@ NSTimer *timerDimmer;
         [self showViewerControls];
     }
 }
+
+- (void)showBlockAlert
+{
+    if(imageArray[imageIndex]) {
+        if (!viewBlockAlert) {
+            viewBlockAlert = [[UIView alloc] initWithFrame:self.view.bounds];
+            [viewBlockAlert setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin];
+            
+            UIView *viewShadow = [[UIView alloc] initWithFrame:self.view.bounds];
+            viewShadow.backgroundColor = [UIColor blackColor];
+            viewShadow.alpha = 0.3;
+            UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissBlockAlert)];
+            [viewShadow addGestureRecognizer:handleTap];
+            [viewBlockAlert addSubview:viewShadow];
+            
+            UILabel *blockLabel = [[UILabel alloc] initWithFrame:CGRectMake(viewBlockAlert.frame.size.width/2,(viewBlockAlert.frame.size.height - 120)/2,viewBlockAlert.frame.size.width/2,60)];
+            [blockLabel setTextAlignment:NSTextAlignmentCenter];
+            [blockLabel setBackgroundColor:[UIColor blackColor]];
+            [blockLabel setTextColor:[UIColor whiteColor]];
+            [blockLabel setText: @"Remove this photo?"];
+            [viewBlockAlert addSubview:blockLabel];
+            
+            UIButton *buttonConfirmBlock = [[UIButton alloc] initWithFrame:CGRectMake(viewBlockAlert.frame.size.width/2,viewBlockAlert.frame.size.height/2, viewBlockAlert.frame.size.width/4, 60)];
+            [buttonConfirmBlock setTitle:@"Remove" forState:UIControlStateNormal];
+            [buttonConfirmBlock addTarget:self action:@selector(markBlocked) forControlEvents:UIControlEventTouchUpInside];
+            [buttonConfirmBlock.titleLabel setTextAlignment:NSTextAlignmentLeft];
+            [buttonConfirmBlock setBackgroundColor:[UIColor blackColor]];
+            [viewBlockAlert addSubview:buttonConfirmBlock];
+            
+            UIButton *buttonCancelBlock = [[UIButton alloc] initWithFrame:CGRectMake(viewBlockAlert.frame.size.width*3/4, viewBlockAlert.frame.size.height/2, viewBlockAlert.frame.size.width/4, 60)];
+            [buttonCancelBlock setTitle:@"Cancel" forState:UIControlStateNormal];
+            [buttonCancelBlock addTarget:self action:@selector(dismissBlockAlert) forControlEvents:UIControlEventTouchUpInside];
+            [buttonCancelBlock.titleLabel setTextAlignment:NSTextAlignmentRight];
+            [buttonCancelBlock setBackgroundColor:[UIColor blackColor]];
+            [viewBlockAlert addSubview:buttonCancelBlock];
+        }
+        
+        [self.view addSubview:viewBlockAlert];
+        [self.view bringSubviewToFront:viewBlockAlert];
+    }
+}
+
+- (void)dismissBlockAlert
+{
+    [viewBlockAlert removeFromSuperview];
+}
+
+- (void)markBlocked
+{
+    NSLog(@"BLOCK!!");
+    [self dismissBlockAlert];
+    
+    // post a block message
+    // remove from the imageArray
+    // step to the next image
+    
+    
+    NSLog(@"There's a pic to Block");
+    NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    NSString *item_id = imageArray[imageIndex][@"_id"];
+    NSString *urlString = [NSString stringWithFormat:@"http://poppy3d.com/app/action/post.json?uuid=%@&media_item_id=%@&action=flag&v=add", uuid, item_id];
+    NSURL *url = [NSURL URLWithString:urlString];
+    
+    NSLog(@"URL: %@", url);
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                                       timeoutInterval:30.0];
+    
+    [request setHTTPMethod:@"POST"];
+    
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               // TO DO: Look at the response. Currently this is fire and forget
+                           }];
+
+    //Now remove the blocked photo from the stream
+    [imageArray removeObjectAtIndex:imageIndex];
+    
+    [self showMedia:NO];
+}
+
 
 - (void)addGestures:(UIView *)touchView
 {
@@ -258,14 +352,12 @@ NSTimer *timerDimmer;
 {
     NSLog(@"show next");
     [self showMedia:NO];
-    [self showViewerControls];
 }
 
 - (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr
 {
     NSLog(@"show previous");
     [self showMedia:YES];
-    [self showViewerControls];
 }
 
 - (void)handleDoubleTapAction:(UITapGestureRecognizer *)tgr
@@ -278,7 +370,6 @@ NSTimer *timerDimmer;
             [self showMedia:NO];
         }
     }
-    [self showViewerControls];
 }
 
 - (void)handleTapAction:(UITapGestureRecognizer *)tgr
@@ -327,6 +418,8 @@ NSTimer *timerDimmer;
                        object:nil];
         }
         [queue addOperation:preload];
+        
+        [self showViewerControls];
     } else {
         NSLog(@"NO MEDIA");
     }
@@ -409,7 +502,7 @@ NSTimer *timerDimmer;
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     UIImage *image;
     if ([poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]]) {
-        // load from the dictionary
+        // load from the cache
         image = [poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]];
     } else {
         // load from the web

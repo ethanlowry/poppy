@@ -31,6 +31,8 @@
 
 @property (nonatomic, strong) UIButton *buttonFavorite;
 
+@property (nonatomic, strong) UIView *viewBlockAlert;
+
 @property (nonatomic) BOOL showPopular;
 
 @property (nonatomic, strong) RBVolumeButtons *buttonStealer;
