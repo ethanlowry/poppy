@@ -13,7 +13,6 @@
 #import "HomeViewController.h"
 #import "Flurry.h"
 
-
 @implementation AppDelegate
 
 @synthesize recentImageArray;
@@ -27,7 +26,7 @@ float previousBrightness;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
     [Flurry setCrashReportingEnabled:YES];
-    [Flurry startSession:@"YOUR_API_KEY"];
+    [Flurry startSession:@"5HPNH9RXVG3HQY5SWGW8"];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
