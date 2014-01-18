@@ -17,4 +17,6 @@
 
 @interface HomeViewController : UIViewController
 
+@property (strong, nonatomic) UIView *viewConnectionAlert;
+
 @end

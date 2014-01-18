@@ -28,6 +28,8 @@
 @property (nonatomic, strong) UIImageView *imgSourceR;
 @property (nonatomic, strong) UILabel *labelAttributionR;
 @property (nonatomic, strong) UIView *viewAttribution;
+@property (nonatomic, strong) UILabel *labelLikeCountL;
+@property (nonatomic, strong) UILabel *labelLikeCountR;
 
 @property (nonatomic, strong) UIButton *buttonFavorite;
 

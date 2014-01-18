@@ -65,10 +65,14 @@
 		9DF96D601888A66000EB6B7B /* cog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D5F1888A66000EB6B7B /* cog@2x.png */; };
 		9DF96D621888A87600EB6B7B /* question@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D611888A87600EB6B7B /* question@2x.png */; };
 		9DF96D651888A8B000EB6B7B /* twitter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D631888A8B000EB6B7B /* twitter@2x.png */; };
-		9DF96D691888B79400EB6B7B /* libFlurry_4.3.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF96D681888B79400EB6B7B /* libFlurry_4.3.1.a */; };
 		9DF96D6B1888B81A00EB6B7B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF96D6A1888B81A00EB6B7B /* SystemConfiguration.framework */; };
 		9DF96D6D1888B82800EB6B7B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF96D6C1888B82800EB6B7B /* Security.framework */; };
 		9DF96D6F1888BA6600EB6B7B /* video@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D6E1888BA6600EB6B7B /* video@2x.png */; };
+		9DF96D721888EA5500EB6B7B /* libFlurry_4.3.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF96D711888EA5500EB6B7B /* libFlurry_4.3.1.a */; };
+		9DF96D751889EDA400EB6B7B /* flag@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D731889EDA400EB6B7B /* flag@2x.png */; };
+		9DF96D761889EDA400EB6B7B /* trash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D741889EDA400EB6B7B /* trash@2x.png */; };
+		9DF96D7C188A0FFD00EB6B7B /* shutter_recording@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D7A188A0FFD00EB6B7B /* shutter_recording@2x.png */; };
+		9DF96D7F188A10DA00EB6B7B /* shutter_video@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D7E188A10DA00EB6B7B /* shutter_video@2x.png */; };
 		9DFA62F9182AE68400F1B262 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F7182AE68400F1B262 /* Default.png */; };
 		9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62F8182AE68400F1B262 /* Default@2x.png */; };
 		9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DFA62FD182AECB400F1B262 /* Icon-Small.png */; };
@@ -183,11 +187,15 @@
 		9DF96D5F1888A66000EB6B7B /* cog@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@2x.png"; sourceTree = "<group>"; };
 		9DF96D611888A87600EB6B7B /* question@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "question@2x.png"; sourceTree = "<group>"; };
 		9DF96D631888A8B000EB6B7B /* twitter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "twitter@2x.png"; sourceTree = "<group>"; };
-		9DF96D671888B79400EB6B7B /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Flurry.h; path = Flurry/Flurry.h; sourceTree = "<group>"; };
-		9DF96D681888B79400EB6B7B /* libFlurry_4.3.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFlurry_4.3.1.a; path = Flurry/libFlurry_4.3.1.a; sourceTree = "<group>"; };
 		9DF96D6A1888B81A00EB6B7B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		9DF96D6C1888B82800EB6B7B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		9DF96D6E1888BA6600EB6B7B /* video@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "video@2x.png"; sourceTree = "<group>"; };
+		9DF96D701888EA5500EB6B7B /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Flurry.h; path = Flurry/Flurry.h; sourceTree = "<group>"; };
+		9DF96D711888EA5500EB6B7B /* libFlurry_4.3.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFlurry_4.3.1.a; path = Flurry/libFlurry_4.3.1.a; sourceTree = "<group>"; };
+		9DF96D731889EDA400EB6B7B /* flag@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flag@2x.png"; sourceTree = "<group>"; };
+		9DF96D741889EDA400EB6B7B /* trash@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash@2x.png"; sourceTree = "<group>"; };
+		9DF96D7A188A0FFD00EB6B7B /* shutter_recording@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shutter_recording@2x.png"; sourceTree = "<group>"; };
+		9DF96D7E188A10DA00EB6B7B /* shutter_video@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shutter_video@2x.png"; sourceTree = "<group>"; };
 		9DFA62F7182AE68400F1B262 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		9DFA62F8182AE68400F1B262 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		9DFA62FD182AECB400F1B262 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
@@ -210,7 +218,6 @@
 				9DF96D6D1888B82800EB6B7B /* Security.framework in Frameworks */,
 				9DF96D6B1888B81A00EB6B7B /* SystemConfiguration.framework in Frameworks */,
 				9D761EE518245B50005412AC /* AudioToolbox.framework in Frameworks */,
-				9DF96D691888B79400EB6B7B /* libFlurry_4.3.1.a in Frameworks */,
 				9D761EE318245A24005412AC /* MediaPlayer.framework in Frameworks */,
 				9D5EE03617FB4FDB008EB372 /* libGPUImage.a in Frameworks */,
 				9D5EDE7F17FB4479008EB372 /* AVFoundation.framework in Frameworks */,
@@ -222,6 +229,7 @@
 				9D5EDE4817FB4386008EB372 /* CoreGraphics.framework in Frameworks */,
 				9D5EDE4A17FB4386008EB372 /* UIKit.framework in Frameworks */,
 				9D5EDE4617FB4386008EB372 /* Foundation.framework in Frameworks */,
+				9DF96D721888EA5500EB6B7B /* libFlurry_4.3.1.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,8 +305,8 @@
 				9D4F5F691821767B00542AE0 /* RBVolumeButtons.h */,
 				9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */,
 				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
-				9DF96D671888B79400EB6B7B /* Flurry.h */,
-				9DF96D681888B79400EB6B7B /* libFlurry_4.3.1.a */,
+				9DF96D701888EA5500EB6B7B /* Flurry.h */,
+				9DF96D711888EA5500EB6B7B /* libFlurry_4.3.1.a */,
 				9D5EDE5717FB4386008EB372 /* Images.xcassets */,
 				9D5EDE4C17FB4386008EB372 /* Supporting Files */,
 				9DE576EE18510EF20048A6D6 /* Settings.bundle */,
@@ -311,6 +319,8 @@
 			children = (
 				9DE576FF185667DC0048A6D6 /* logo@2x.png */,
 				9D2E49C11884991F00D9871F /* logo_white@2x.png */,
+				9DF96D731889EDA400EB6B7B /* flag@2x.png */,
+				9DF96D741889EDA400EB6B7B /* trash@2x.png */,
 				9DF96D5F1888A66000EB6B7B /* cog@2x.png */,
 				9DF96D6E1888BA6600EB6B7B /* video@2x.png */,
 				9DF96D611888A87600EB6B7B /* question@2x.png */,
@@ -334,6 +344,8 @@
 				9DFCB1601829C68200332D7C /* play@2x.png */,
 				9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */,
 				9DFCB15D182983FC00332D7C /* shutter@2x.png */,
+				9DF96D7A188A0FFD00EB6B7B /* shutter_recording@2x.png */,
+				9DF96D7E188A10DA00EB6B7B /* shutter_video@2x.png */,
 				9DFCB1521828764400332D7C /* camera@2x.png */,
 				9D761EE018242A94005412AC /* record@2x.png */,
 				9D5EDE4D17FB4386008EB372 /* Poppy-Info.plist */,
@@ -499,6 +511,7 @@
 				9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */,
 				9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */,
 				9DE5770A185681A20048A6D6 /* screencontrols@2x.png in Resources */,
+				9DF96D761889EDA400EB6B7B /* trash@2x.png in Resources */,
 				9DE5770218566D2C0048A6D6 /* adapter@2x.png in Resources */,
 				9D2E49C21884991F00D9871F /* logo_white@2x.png in Resources */,
 				9DF96D651888A8B000EB6B7B /* twitter@2x.png in Resources */,
@@ -509,6 +522,7 @@
 				9DF96D4B1884F2E500EB6B7B /* flicktweet@2x.png in Resources */,
 				9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */,
 				9D8FC077184D5107007D0D53 /* AppIcon57x57@2x.png in Resources */,
+				9DF96D7F188A10DA00EB6B7B /* shutter_video@2x.png in Resources */,
 				9DE57712185EB2F50048A6D6 /* gallery@2x.png in Resources */,
 				9DF96D4F1884F5B300EB6B7B /* favorite@2x.png in Resources */,
 				9D761EE118242A94005412AC /* record@2x.png in Resources */,
@@ -523,12 +537,14 @@
 				9DF96D6F1888BA6600EB6B7B /* video@2x.png in Resources */,
 				9DFA62F9182AE68400F1B262 /* Default.png in Resources */,
 				9D10BC67182B0313008C8D1C /* AppIcon29x29@2x.png in Resources */,
+				9DF96D751889EDA400EB6B7B /* flag@2x.png in Resources */,
 				9DE576F91853DCEB0048A6D6 /* arrow-right@2x.png in Resources */,
 				9DF96D601888A66000EB6B7B /* cog@2x.png in Resources */,
 				9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */,
 				9D99EF2618777AD2002D9B14 /* listArrow@2x.png in Resources */,
 				9DFA6304182AECB400F1B262 /* Icon@2x.png in Resources */,
 				9DFCB1531828764400332D7C /* camera@2x.png in Resources */,
+				9DF96D7C188A0FFD00EB6B7B /* shutter_recording@2x.png in Resources */,
 				9DE576EF18510EF20048A6D6 /* Settings.bundle in Resources */,
 				9D10BC68182B0313008C8D1C /* AppIcon40x40.png in Resources */,
 				9DE57706185679140048A6D6 /* thumbs@2x.png in Resources */,

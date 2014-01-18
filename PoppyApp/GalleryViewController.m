@@ -29,12 +29,15 @@
 @synthesize imgSourceR;
 @synthesize labelAttributionL;
 @synthesize labelAttributionR;
+@synthesize labelLikeCountL;
+@synthesize labelLikeCountR;
 @synthesize viewAttribution;
 
 @synthesize viewBlockAlert;
 
 @synthesize buttonFavorite;
 
+BOOL directionNext;
 int imageIndex;
 NSTimer *timerDimmer;
 
@@ -120,16 +123,27 @@ NSTimer *timerDimmer;
     
     imgSourceL = [[UIImageView alloc] initWithFrame:CGRectMake(10, 5, 20, 20)];
     imgSourceR = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth + 10, 5, 20, 20)];
-    labelAttributionL = [[UILabel alloc] initWithFrame:CGRectMake(40, 5, frameWidth - 40, 20)];
-    labelAttributionR = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth + 40, 5, frameWidth - 40, 20)];
+    labelAttributionL = [[UILabel alloc] initWithFrame:CGRectMake(40, 5, frameWidth - 80, 20)];
+    labelAttributionR = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth + 40, 5, frameWidth - 80, 20)];
     [labelAttributionL setFont:[UIFont systemFontOfSize:12]];
     [labelAttributionL setTextColor:[UIColor whiteColor]];
     [labelAttributionR setFont:[UIFont systemFontOfSize:12]];
     [labelAttributionR setTextColor:[UIColor whiteColor]];
+    labelLikeCountL = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth - 65, 5, 60, 20)];
+    labelLikeCountR = [[UILabel alloc] initWithFrame:CGRectMake(2*frameWidth - 65, 5, 60, 20)];
+    [labelLikeCountL setFont:[UIFont systemFontOfSize:12]];
+    [labelLikeCountL setTextColor:[UIColor whiteColor]];
+    [labelLikeCountL setTextAlignment:NSTextAlignmentRight];
+    [labelLikeCountR setFont:[UIFont systemFontOfSize:12]];
+    [labelLikeCountR setTextColor:[UIColor whiteColor]];
+    [labelLikeCountR setTextAlignment:NSTextAlignmentRight];
+    
     [viewAttribution addSubview:imgSourceL];
     [viewAttribution addSubview:imgSourceR];
     [viewAttribution addSubview:labelAttributionL];
     [viewAttribution addSubview:labelAttributionR];
+    [viewAttribution addSubview:labelLikeCountL];
+    [viewAttribution addSubview:labelLikeCountR];
     [displayView addSubview:viewAttribution];
     
     viewLoadingLabel = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 130)/2, self.view.bounds.size.width/2, 75)];
@@ -190,7 +204,7 @@ NSTimer *timerDimmer;
     [buttonFavorite addTarget:self action:@selector(markFavorite) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton *buttonBlock = [[UIButton alloc] initWithFrame: CGRectMake(viewViewerControls.frame.size.width - 230,0,70,75)];
-    [buttonBlock setImage:[UIImage imageNamed:@"delete"] forState:UIControlStateNormal];
+    [buttonBlock setImage:[UIImage imageNamed:@"flag"] forState:UIControlStateNormal];
     [buttonBlock addTarget:self action:@selector(showBlockAlert) forControlEvents:UIControlEventTouchUpInside];
     
     [viewViewerControls addSubview: viewShadow];
@@ -207,13 +221,17 @@ NSTimer *timerDimmer;
         NSString *item_id = imageArray[imageIndex][@"_id"];
         NSString *addText;
         NSString *favorited;
+        int likeCount = [imageArray[imageIndex][@"poppy_like_count"] intValue];
         if ([imageArray[imageIndex][@"favorited"] isEqualToString:@"false"]) {
             addText = @"add";
             favorited = @"true";
+            likeCount = likeCount + 1;
         } else {
             addText = @"remove";
             favorited = @"false";
+            likeCount = likeCount - 1;
         }
+        [self updateLikeLabels:likeCount];
         NSString *urlString = [NSString stringWithFormat:@"http://poppy3d.com/app/action/post.json?uuid=%@&media_item_id=%@&action=favorite&v=%@", uuid, item_id, addText];
         
         NSURL *url = [NSURL URLWithString:urlString];
@@ -229,16 +247,17 @@ NSTimer *timerDimmer;
                                            queue:[NSOperationQueue mainQueue]
                                completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                                    // TO DO: Look at the response. Currently this is fire and forget
+                                   if(error){
+                                       NSLog(@"ERROR: %@", error);
+                                   }
                                }];
-
-        //[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
-        //NSLog(@"RESPONSE: %@", response);
         
         //Now update the "favorited" value to reflect the change
         NSMutableDictionary *newItem = [[NSMutableDictionary alloc] init];
         NSDictionary *oldItem = (NSDictionary *)[imageArray objectAtIndex:imageIndex];
         [newItem addEntriesFromDictionary:oldItem];
         [newItem setObject:favorited forKey:@"favorited"];
+        [newItem setObject:[NSNumber numberWithInt:likeCount] forKey:@"poppy_like_count"];
         [imageArray replaceObjectAtIndex:imageIndex withObject:newItem];
 
         [self showViewerControls];
@@ -263,11 +282,15 @@ NSTimer *timerDimmer;
             [blockLabel setTextAlignment:NSTextAlignmentCenter];
             [blockLabel setBackgroundColor:[UIColor blackColor]];
             [blockLabel setTextColor:[UIColor whiteColor]];
-            [blockLabel setText: @"Remove this photo?"];
+            [blockLabel setText: @"Inappropriate or not 3D?"];
+            CALayer *bottomBorder = [CALayer layer];
+            bottomBorder.frame = CGRectMake(40, 59, blockLabel.frame.size.width-80, 1.0);
+            bottomBorder.backgroundColor = [UIColor whiteColor].CGColor;
+            [blockLabel.layer addSublayer:bottomBorder];
             [viewBlockAlert addSubview:blockLabel];
             
             UIButton *buttonConfirmBlock = [[UIButton alloc] initWithFrame:CGRectMake(viewBlockAlert.frame.size.width/2,viewBlockAlert.frame.size.height/2, viewBlockAlert.frame.size.width/4, 60)];
-            [buttonConfirmBlock setTitle:@"Remove" forState:UIControlStateNormal];
+            [buttonConfirmBlock setTitle:@"Report" forState:UIControlStateNormal];
             [buttonConfirmBlock addTarget:self action:@selector(markBlocked) forControlEvents:UIControlEventTouchUpInside];
             [buttonConfirmBlock.titleLabel setTextAlignment:NSTextAlignmentLeft];
             [buttonConfirmBlock setBackgroundColor:[UIColor blackColor]];
@@ -318,12 +341,15 @@ NSTimer *timerDimmer;
                                        queue:[NSOperationQueue mainQueue]
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                                // TO DO: Look at the response. Currently this is fire and forget
+                               if(error){
+                                   NSLog(@"ERROR: %@", error);
+                               }
                            }];
 
     //Now remove the blocked photo from the stream
     [imageArray removeObjectAtIndex:imageIndex];
     
-    [self showMedia:NO];
+    [self showMedia:YES];
 }
 
 
@@ -444,7 +470,7 @@ NSTimer *timerDimmer;
                      }
                      completion:^(BOOL complete){
                          if(showTimer){
-                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:2.5 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
+                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
                          }
                      }];
 }
@@ -475,8 +501,7 @@ NSTimer *timerDimmer;
 
 - (void)loadAndDisplayCurrentImage
 {
-    UIImage *image = [self loadImage:imageIndex];
-    [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+    [self loadImage:imageIndex andDisplay:YES];
 }
 
 - (void)loadNextImage
@@ -485,7 +510,8 @@ NSTimer *timerDimmer;
     if (index >= imageArray.count) {
         index = 0;
     }
-    [self loadImage:index];
+    directionNext = YES;
+    [self loadImage:index andDisplay:NO];
 }
 
 - (void)loadPreviousImage
@@ -494,38 +520,89 @@ NSTimer *timerDimmer;
     if (index < 0) {
         index = imageArray.count - 1;
     }
-    [self loadImage:index];
+    directionNext = NO;
+    [self loadImage:index andDisplay:NO];
 }
 
-- (UIImage *)loadImage:(int)index
+- (void)loadImage:(int)index andDisplay:(BOOL)displayImage
 {
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    UIImage *image;
+    
     if ([poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]]) {
         // load from the cache
-        image = [poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]];
+        UIImage *image = [poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]];
+        //if for display
+        if (displayImage) {
+            [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+        }
     } else {
         // load from the web
         NSURL *imageURL = [NSURL URLWithString:imageArray[index][@"media_url"]];
         NSURL *url = imageURL;
-        NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
-        image = [[UIImage alloc] initWithData:imageData];
-        [poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url
+                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                             timeoutInterval:30.0];
+        // Get the data
+        [NSURLConnection sendAsynchronousRequest:request
+                                           queue:[NSOperationQueue mainQueue]
+                               completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                   if (error) {
+                                       NSLog(@"ERROR: %@", error);
+                                   } else {
+                                       UIImage *image = [[UIImage alloc] initWithData:data];
+                                       [poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
+                                       //if for display
+                                       if (displayImage) {
+                                           [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+                                       }
+                                   }
+                               }];
+       
+        //NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
+        //image = [[UIImage alloc] initWithData:imageData];
+        //[poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
     }
-    return image;
 }
 
 - (void)displayImage:(UIImage *)image {
     [viewLoadingLabel setHidden:YES];
-    [imgView setImage:image];
-    NSString *sourceImageName = imageArray[imageIndex][@"source"];
+    //Create a temporary animated view, slide it into view, load the correct image into imgView and then hide the animated view
+    float xPosition = directionNext ? imgView.frame.size.width : -imgView.frame.size.width;
+    UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:CGRectMake(xPosition, 0, imgView.frame.size.width, imgView.frame.size.height)];
+    [animatedImgView setImage:image];
+    [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
+    [self.view addSubview:animatedImgView];
+    CGRect finalFrame = animatedImgView.frame;
+    finalFrame.origin.x = 0;
+    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
+        [imgView setImage:image];
+        [animatedImgView removeFromSuperview];
+    }];
+    
+    // Set the attribution and score
     NSString *attributionText = imageArray[imageIndex][@"attribution_name"];
-    [imgSourceL setImage:[UIImage imageNamed:sourceImageName]];
-    [imgSourceR setImage:[UIImage imageNamed:sourceImageName]];
     [labelAttributionL setText:attributionText];
     [labelAttributionR setText:attributionText];
-    NSLog(@"ATTR: %@", attributionText);
+    NSString *sourceImageName = imageArray[imageIndex][@"source"];
+    [imgSourceL setImage:[UIImage imageNamed:sourceImageName]];
+    [imgSourceR setImage:[UIImage imageNamed:sourceImageName]];
+    int likeCount = [imageArray[imageIndex][@"poppy_like_count"] intValue];
+    [self updateLikeLabels:likeCount];
     [self showViewerControls];
+}
+
+- (void)updateLikeLabels:(int)count
+{
+    NSString *likeCount;
+    if (count == 0) {
+        likeCount = @"";
+    } else if (count == 1) {
+        likeCount = [NSString stringWithFormat:@"%d Like", count];
+    } else {
+        likeCount = [NSString stringWithFormat:@"%d Likes", count];
+    }
+    [labelLikeCountL setText:likeCount];
+    [labelLikeCountR setText:likeCount];
 }
 
 

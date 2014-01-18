@@ -7,6 +7,7 @@
 //
 
 #import "HomeViewController.h"
+#import "AppDelegate.h"
 
 @interface HomeViewController ()
 
@@ -18,9 +19,12 @@
 @property (strong, nonatomic) UIView *landscapeLView;
 @property (strong, nonatomic) UIView *landscapeRView;
 
+
 @end
 
 @implementation HomeViewController
+
+@synthesize viewConnectionAlert;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -126,40 +130,66 @@
             };
         }
         [buttonStealer startStealingVolumeButtonEvents];
-        
-        if(!self.portraitView) {
-            self.portraitView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-            [self addControlsToContainer:self.portraitView];
-            
-            UIButton *buttonRecalibrate = [self makeButton:@"Recalibrate" withPosition:5 withView:self.portraitView withImageName:@"cog"];
-            [buttonRecalibrate addTarget:self action:@selector(runCalibration) forControlEvents:UIControlEventTouchUpInside];
-            [self.portraitView addSubview:buttonRecalibrate];
-            
-            UIButton *buttonHelp = [self makeButton:@"How to Share Photos" withPosition:6 withView:self.portraitView withImageName:@"question"];
-            [buttonHelp addTarget:self action:@selector(launchHelp) forControlEvents:UIControlEventTouchUpInside];
-            [self.portraitView addSubview:buttonHelp];
-        }
-        if(!self.landscapeLView) {
-            self.landscapeLView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width/2, self.view.frame.size.height)];
-            [self addControlsToContainer:self.landscapeLView];
-        }
-        if(!self.landscapeRView) {
-            self.landscapeRView = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, 0, self.view.bounds.size.width/2, self.view.frame.size.height)];
-            [self addControlsToContainer:self.landscapeRView];
-        }
+
         [self.view setBackgroundColor:[UIColor blackColor]];
         
         if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
-            [self.portraitView removeFromSuperview];
-            [self.view addSubview:self.landscapeLView];
-            [self.view addSubview:self.landscapeRView];
+            [self showLandscape];
         } else {
-            [self.landscapeLView removeFromSuperview];
-            [self.landscapeRView removeFromSuperview];
-            [self.view addSubview:self.portraitView];
+            [self showPortrait];
         }
     }
 }
+
+-(void) showLandscape
+{
+    if(self.portraitView) {
+        [self.portraitView removeFromSuperview];
+        self.portraitView = nil;
+    }
+    if(!self.landscapeLView) {
+        self.landscapeLView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width/2, self.view.bounds.size.height)];
+        [self addControlsToContainer:self.landscapeLView];
+    }
+    if(!self.landscapeRView) {
+        self.landscapeRView = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, 0, self.view.bounds.size.width/2, self.view.bounds.size.height)];
+        [self addControlsToContainer:self.landscapeRView];
+    }
+    if (![self.landscapeLView isDescendantOfView:self.view]) {
+        [self.view addSubview:self.landscapeLView];
+    }
+    if (![self.landscapeRView isDescendantOfView:self.view]) {
+        [self.view addSubview:self.landscapeRView];
+    }
+}
+
+-(void) showPortrait
+{
+    if(self.landscapeRView) {
+        [self.landscapeRView removeFromSuperview];
+        self.landscapeRView = nil;
+    }
+    if (self.landscapeLView) {
+        [self.landscapeLView removeFromSuperview];
+        self.landscapeLView = nil;
+    }
+    if(!self.portraitView) {
+        self.portraitView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        [self addControlsToContainer:self.portraitView];
+        
+        UIButton *buttonRecalibrate = [self makeButton:@"Recalibrate" withPosition:5 withView:self.portraitView withImageName:@"cog"];
+        [buttonRecalibrate addTarget:self action:@selector(runCalibration) forControlEvents:UIControlEventTouchUpInside];
+        [self.portraitView addSubview:buttonRecalibrate];
+        
+        UIButton *buttonHelp = [self makeButton:@"How to Share Photos" withPosition:6 withView:self.portraitView withImageName:@"question"];
+        [buttonHelp addTarget:self action:@selector(launchHelp) forControlEvents:UIControlEventTouchUpInside];
+        [self.portraitView addSubview:buttonHelp];
+    }
+    if (![self.portraitView isDescendantOfView:self.view]) {
+        [self.view addSubview:self.portraitView];
+    }
+}
+
 
 - (void)addControlsToContainer:(UIView *)viewContainer
 {
@@ -282,25 +312,87 @@
 
 - (void)launchStream
 {
-    [buttonStealer stopStealingVolumeButtonEvents];
-    GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
-    gvc.showPopular = NO;
-    [self presentViewController:gvc animated:YES completion:nil];
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (poppyAppDelegate.isConnected) {
+        [buttonStealer stopStealingVolumeButtonEvents];
+        GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+        gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
+        gvc.showPopular = NO;
+        [self presentViewController:gvc animated:YES completion:nil];
+    } else {
+        // show the No Connection popup
+        [poppyAppDelegate loadImageArrays];
+        [self showConnectionAlert];
+    }
 }
 
 - (void)launchBest
 {
-    [buttonStealer stopStealingVolumeButtonEvents];
-    GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
-    gvc.showPopular = YES;
-    [self presentViewController:gvc animated:YES completion:nil];
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (poppyAppDelegate.isConnected) {
+        [buttonStealer stopStealingVolumeButtonEvents];
+        GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+        gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
+        gvc.showPopular = YES;
+        [self presentViewController:gvc animated:YES completion:nil];
+    } else {
+        // show the No Connection popup
+        [poppyAppDelegate loadImageArrays];
+        [self showConnectionAlert];
+    }
 }
 
 - (void)launchHelp
 {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://poppy3d.com/app-help"]];
+}
+
+- (void)showConnectionAlert
+{
+    viewConnectionAlert = [[UIView alloc] initWithFrame:self.view.bounds];
+    [viewConnectionAlert setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:self.view.bounds];
+    viewShadow.backgroundColor = [UIColor blackColor];
+    viewShadow.alpha = 0.8;
+    UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissConnectionAlert)];
+    [viewShadow addGestureRecognizer:handleTap];
+    [viewConnectionAlert addSubview:viewShadow];
+    
+    UILabel *connectionLabel = [[UILabel alloc] init];
+    
+    if (viewConnectionAlert.frame.size.height > viewConnectionAlert.frame.size.width) {
+        //portrait view
+        [connectionLabel setFrame:CGRectMake(0, 120, viewConnectionAlert.frame.size.width, 60)];
+    } else {
+        //landscape view
+        [connectionLabel setFrame:CGRectMake(viewConnectionAlert.frame.size.width/2,(viewConnectionAlert.frame.size.height - 120)/2,viewConnectionAlert.frame.size.width/2,60)];
+    }
+    [connectionLabel setTextAlignment:NSTextAlignmentCenter];
+    [connectionLabel setBackgroundColor:[UIColor blackColor]];
+    [connectionLabel setTextColor:[UIColor whiteColor]];
+    [connectionLabel setText: @"Uh oh, network trouble!"];
+    CALayer *bottomBorder = [CALayer layer];
+    bottomBorder.frame = CGRectMake(40, 59, connectionLabel.frame.size.width-80, 1.0);
+    bottomBorder.backgroundColor = [UIColor whiteColor].CGColor;
+    [connectionLabel.layer addSublayer:bottomBorder];
+    [viewConnectionAlert addSubview:connectionLabel];
+    
+    UIButton *buttonConnection = [[UIButton alloc] initWithFrame:CGRectMake(connectionLabel.frame.origin.x,connectionLabel.frame.origin.y + 60, connectionLabel.frame.size.width, 60)];
+    [buttonConnection setTitle:@"Try again" forState:UIControlStateNormal];
+    [buttonConnection addTarget:self action:@selector(dismissConnectionAlert) forControlEvents:UIControlEventTouchUpInside];
+    [buttonConnection.titleLabel setTextAlignment:NSTextAlignmentLeft];
+    [buttonConnection setBackgroundColor:[UIColor blackColor]];
+    [viewConnectionAlert addSubview:buttonConnection];
+
+    [self.view addSubview:viewConnectionAlert];
+    [self.view bringSubviewToFront:viewConnectionAlert];
+}
+
+- (void)dismissConnectionAlert
+{
+    [viewConnectionAlert removeFromSuperview];
+    self.viewConnectionAlert = nil;
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -316,14 +408,11 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
-        [self.view addSubview:self.landscapeLView];
-        [self.view addSubview:self.landscapeRView];
-        [self.portraitView removeFromSuperview];
+        [self showLandscape];
     } else {
-        [self.view addSubview:self.portraitView];
-        [self.landscapeLView removeFromSuperview];
-        [self.landscapeRView removeFromSuperview];
+        [self showPortrait];
     }
+    [self dismissConnectionAlert];
 }
 
 - (void)didReceiveMemoryWarning

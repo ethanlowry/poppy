@@ -45,13 +45,14 @@ CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
 @synthesize viewDeleteAlert;
 
 @synthesize viewCameraControls;
-@synthesize imgRecord;
+@synthesize buttonShutter;
 @synthesize viewSaving;
 @synthesize isWatching;
 @synthesize viewViewerControls;
 
 int next = 1;
 int prev = -1;
+BOOL directionNext;
 
 float cropFactor = 0.7;
 float perspectiveFactor = 0.267;
@@ -280,12 +281,14 @@ int currentIndex = -1;
         NSLog(@"Current index before = %d", currentIndex);
         
         if (direction == prev) {
+            directionNext = NO;
             if (currentIndex > 0) {
                 currentIndex = currentIndex - 1;
             } else {
                 currentIndex = assetCount - 1;
             }
         } else {
+            directionNext = YES;
             if (currentIndex < assetCount - 1) {
                 currentIndex = currentIndex + 1;
             } else {
@@ -307,15 +310,23 @@ int currentIndex = -1;
                      UIImage *fullScreenImage = [UIImage imageWithCGImage:[assetRepresentation fullScreenImage] scale:[assetRepresentation scale] orientation:orientation];
                      NSLog(@"image stuff, wide: %f height: %f", fullScreenImage.size.width, fullScreenImage.size.height);
                      
-                     [imgView setImage:fullScreenImage];
-                     [imgView setHidden:NO];
-                     
-                     if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
-                         NSLog(@"It's a video");
-                         [self playMovie:asset];
-                     } else {
-                         NSLog(@"It's a photo");
-                     }
+                     // Animate the appearance of the next/prev image
+                     float xPosition = directionNext ? imgView.frame.size.width : -imgView.frame.size.width;
+                     UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:CGRectMake(xPosition, 0, imgView.frame.size.width, imgView.frame.size.height)];
+                     [animatedImgView setImage:fullScreenImage];
+                     [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
+                     [self.view addSubview:animatedImgView];
+                     CGRect finalFrame = animatedImgView.frame;
+                     finalFrame.origin.x = 0;
+                     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
+                         [imgView setImage:fullScreenImage];
+                         [imgView setHidden:NO];
+                         [animatedImgView removeFromSuperview];
+                         if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
+                             [self playMovie:asset];
+                         }
+                     }];
+
                      *stop = YES;
                  }
              }];
@@ -614,9 +625,25 @@ int currentIndex = -1;
         [self addCameraControlsContentWithView:viewCameraControls];
         
         [self.view addSubview:viewCameraControls];
+    } else {
+        NSLog(@"FOO!");
+        [self setShutterButtonImage];
     }
     [self.view bringSubviewToFront:viewCameraControls];
     [self dimView:0.5 withAlpha:1.0 withView:viewCameraControls withTimer:YES];
+}
+
+- (void) setShutterButtonImage
+{
+    if(isVideo) {
+        if(isRecording) {
+            [buttonShutter setImage:[UIImage imageNamed:@"shutter_recording"] forState:UIControlStateNormal];
+        } else {
+            [buttonShutter setImage:[UIImage imageNamed:@"shutter_video"] forState:UIControlStateNormal];
+        }
+    } else {
+        [buttonShutter setImage:[UIImage imageNamed:@"shutter"] forState:UIControlStateNormal];
+    }
 }
 
 - (void) addCameraControlsContentWithView:(UIView *)viewContainer
@@ -646,9 +673,9 @@ int currentIndex = -1;
     
     // add the shutter button
     NSLog(@"adding the shutter button");
-    UIButton *buttonShutter = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 150, 0, 70, 75)];
-    [buttonShutter setImage:[UIImage imageNamed:@"shutter"] forState:UIControlStateNormal];
+    buttonShutter = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 150, 0, 70, 75)];
     [buttonShutter setImage:[UIImage imageNamed:@"shutterPressed"] forState:UIControlStateHighlighted];
+    [self setShutterButtonImage];
     [buttonShutter addTarget:self action:@selector(shutterButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [controlsView addSubview: buttonShutter];
     
@@ -714,7 +741,7 @@ int currentIndex = -1;
     [buttonHome addTarget:self action:@selector(goHome) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton *buttonDelete = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 230,0,70,75)];
-    [buttonDelete setImage:[UIImage imageNamed:@"delete"] forState:UIControlStateNormal];
+    [buttonDelete setImage:[UIImage imageNamed:@"trash"] forState:UIControlStateNormal];
     [buttonDelete addTarget:self action:@selector(showDeleteAssetAlert) forControlEvents:UIControlEventTouchUpInside];
     
     [controlsView addSubview: viewShadow];
@@ -741,6 +768,10 @@ int currentIndex = -1;
             [deleteLabel setTextAlignment:NSTextAlignmentCenter];
             [deleteLabel setBackgroundColor:[UIColor blackColor]];
             [deleteLabel setTextColor:[UIColor whiteColor]];
+            CALayer *bottomBorder = [CALayer layer];
+            bottomBorder.frame = CGRectMake(40, 59, deleteLabel.frame.size.width-80, 1.0);
+            bottomBorder.backgroundColor = [UIColor whiteColor].CGColor;
+            [deleteLabel.layer addSublayer:bottomBorder];
             
             [viewDeleteAlert addSubview:deleteLabel];
             [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
@@ -845,7 +876,7 @@ int currentIndex = -1;
                      }
                      completion:^(BOOL complete){
                          if(showTimer){
-                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:2.5 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
+                             timerDimmer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(dimmerTimerFired:) userInfo:nil repeats:NO];
                          }
                      }];
 }
@@ -873,10 +904,11 @@ int currentIndex = -1;
     self.stillCamera = nil;
     self.videoCamera = nil;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-    ^{
-        [self showCameraControls];
-    });
+    [self showCameraControls];
+    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+    //^{
+    //    [self showCameraControls];
+    //});
 }
 
 - (void) setCameraButtonIcon:(UIButton *)button
@@ -999,12 +1031,8 @@ int currentIndex = -1;
     
     [self dimView:0.5 withAlpha:0.1 withView:viewCameraControls withTimer:NO];
     
-    // Show the red "record" light
-    imgRecord = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"record"]];
-    [imgRecord setFrame:CGRectMake(self.view.bounds.size.width - 45, 20, 25, 25)];
-    [imgRecord setAutoresizingMask: UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin];
-    [self.view addSubview:imgRecord];
-    NSLog(@"SHOWED THE RED LIGHT");
+    // Show the red "record" button
+    [self setShutterButtonImage];
 
     // start recording the movie
     didFinishEffect = NO;
@@ -1043,13 +1071,13 @@ int currentIndex = -1;
 - (void)stopRecording
 {
     isRecording = NO;
+    [self setShutterButtonImage];
     dispatch_async(dispatch_get_main_queue(),
                    ^{
                        videoCamera.audioEncodingTarget = nil;
                        [finalFilter removeTarget:movieWriter];
                        [movieWriter finishRecording];
                        NSLog(@"Movie completed");
-                       [imgRecord removeFromSuperview]; // remove the "recording" light
                    });
 }
 

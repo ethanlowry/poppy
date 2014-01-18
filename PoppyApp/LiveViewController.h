@@ -31,7 +31,7 @@
 @property (nonatomic, retain) GPUImageCropFilter *displayFilter;
 
 @property (nonatomic, retain) UIView *viewCameraControls;
-@property (nonatomic, retain) UIImageView *imgRecord;
+@property (nonatomic, retain) UIButton *buttonShutter;
 @property (nonatomic, retain) UIView *viewSaving;
 @property (nonatomic, retain) UIView *viewViewerControls;
 @property (nonatomic, retain) UIView *viewDeleteAlert;

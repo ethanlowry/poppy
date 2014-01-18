@@ -19,6 +19,10 @@
 @synthesize recentImageArray;
 @synthesize topImageArray;
 @synthesize imageCache;
+@synthesize screenTimer;
+@synthesize isConnected;
+
+float previousBrightness;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
@@ -28,7 +32,10 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+    previousBrightness = [UIScreen mainScreen].brightness;
+    [self resetScreenTimer];
     self.window.backgroundColor = [UIColor blackColor];
+    self.window.layer.speed = 1.5f;
 
     HomeViewController *hvc = [[HomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     [self.window setRootViewController:hvc];
@@ -37,7 +44,6 @@
     
     return YES;
 }
-
 
 - (void)loadImageArrays
 {
@@ -63,8 +69,13 @@
     // Get the data
     NSLog(@"url: %@", url);
     [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                   queue:[NSOperationQueue mainQueue]
+                       completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                           if (error) {
+                               NSLog(@"ERROR: %@", error);
+                               isConnected = NO;
+                           } else {
+                               isConnected = YES;
                                // Now create an array from the JSON data
                                NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                                // Iterate through the array of dictionaries
@@ -73,12 +84,12 @@
                                    [imageArray addObject:item];
                                }
                                [self getFirstImage:imageArray];
-                           }];
+                           }
+                       }];
 }
 
 - (void)getFirstImage:(NSMutableArray *)imageArray
 {
-    NSLog(@"GETTING FIRST IMAGE");
     NSOperationQueue *queue = [NSOperationQueue new];
     NSInvocationOperation *operation = [[NSInvocationOperation alloc]
                                         initWithTarget:self
@@ -89,7 +100,6 @@
 
 - (void)loadImage:(NSMutableArray *)imageArray
 {
-    NSLog(@"LOADING THE FIRST IMAGE");
     NSURL *imageURL = [NSURL URLWithString:imageArray[0][@"media_url"]];
     NSURL *url = imageURL;
     NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
@@ -123,6 +133,41 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    
+    //it appears apple has a known bug where the brightness doesn't automatically reset, and you are unable to change brightness on exit. So this doesn't work. But if they fix the bug or enable reset on exit this code will work!
+    [[UIScreen mainScreen] setBrightness:previousBrightness];
+}
+
+
+- (void)sendEvent:(UIEvent *)event {
+    [super sendEvent:event];
+    
+    // Only want to reset the timer on a Began touch or an Ended touch, to reduce the number of timer resets.
+    NSSet *allTouches = [event allTouches];
+    if ([allTouches count] > 0) {
+        // allTouches count only ever seems to be 1, so anyObject works here.
+        UITouchPhase phase = ((UITouch *)[allTouches anyObject]).phase;
+        if (phase == UITouchPhaseBegan || phase == UITouchPhaseEnded) {
+            [self resetScreenTimer];
+        }
+    }
+}
+
+- (void)resetScreenTimer
+{
+    if (screenTimer) {
+        [screenTimer invalidate];
+    }
+    screenTimer = [NSTimer scheduledTimerWithTimeInterval:600.0 target:self selector:@selector(screenTimerFired) userInfo:nil repeats:NO];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    [[UIScreen mainScreen] setBrightness: 1.0];
+    NSLog(@"SCREEN TIMER RESET!");
+}
+
+- (void)screenTimerFired
+{
+    [[UIScreen mainScreen] setBrightness: 0.2];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
 @end
