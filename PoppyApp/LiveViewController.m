@@ -278,8 +278,6 @@ int currentIndex = -1;
         [mainMoviePlayer stop];
         [[self.view viewWithTag:103] removeFromSuperview];
         
-        NSLog(@"Current index before = %d", currentIndex);
-        
         if (direction == prev) {
             directionNext = NO;
             if (currentIndex > 0) {
@@ -295,7 +293,6 @@ int currentIndex = -1;
                 currentIndex = 0;
             }
         }
-        NSLog(@"Current index after = %d", currentIndex);
         
         [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
              {
@@ -330,6 +327,7 @@ int currentIndex = -1;
                      *stop = YES;
                  }
              }];
+        [self showViewerControls];
     } else {
         NSLog(@"NO IMAGES IN THE ALBUM");
         [self showNoMediaAlert];
@@ -781,14 +779,14 @@ int currentIndex = -1;
                         UIButton *buttonConfirmDelete = [[UIButton alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width/2,viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/4, 60)];
                         [buttonConfirmDelete setTitle:@"Delete" forState:UIControlStateNormal];
                         [buttonConfirmDelete addTarget:self action:@selector(deleteAsset) forControlEvents:UIControlEventTouchUpInside];
-                        [buttonConfirmDelete.titleLabel setTextAlignment:NSTextAlignmentLeft];
+                        //[buttonConfirmDelete.titleLabel setTextAlignment:NSTextAlignmentLeft];
                         [buttonConfirmDelete setBackgroundColor:[UIColor blackColor]];
                         [viewDeleteAlert addSubview:buttonConfirmDelete];
                         
                         UIButton *buttonCancelDelete = [[UIButton alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width*3/4, viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/4, 60)];
                         [buttonCancelDelete setTitle:@"Cancel" forState:UIControlStateNormal];
                         [buttonCancelDelete addTarget:self action:@selector(dismissDeleteAlert) forControlEvents:UIControlEventTouchUpInside];
-                        [buttonCancelDelete.titleLabel setTextAlignment:NSTextAlignmentRight];
+                        //[buttonCancelDelete.titleLabel setTextAlignment:NSTextAlignmentRight];
                         [buttonCancelDelete setBackgroundColor:[UIColor blackColor]];
                         [viewDeleteAlert addSubview:buttonCancelDelete];
                         *stop = YES;

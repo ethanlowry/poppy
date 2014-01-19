@@ -22,6 +22,7 @@
 @synthesize isConnected;
 
 float previousBrightness;
+int retry;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
@@ -46,10 +47,11 @@ float previousBrightness;
 
 - (void)loadImageArrays
 {
+    retry = 0;
     topImageArray = [[NSMutableArray alloc] init];
     recentImageArray = [[NSMutableArray alloc] init];
     imageCache = [[NSCache alloc] init];
-    [imageCache setCountLimit:4];
+    [imageCache setCountLimit:8];
     [self loadJSON:@"top"];
     [self loadJSON:@"recent"];
 }
@@ -73,6 +75,11 @@ float previousBrightness;
                            if (error) {
                                NSLog(@"ERROR: %@", error);
                                isConnected = NO;
+                               if (retry < 3) {
+                                   NSLog(@"RETRY # %d", retry);
+                                   retry = retry + 1;
+                                   [self performSelector:@selector(loadJSON:) withObject:sort afterDelay:0.5 inModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+                               }
                            } else {
                                isConnected = YES;
                                // Now create an array from the JSON data

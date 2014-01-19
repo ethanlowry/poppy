@@ -18,5 +18,6 @@
 @interface HomeViewController : UIViewController
 
 @property (strong, nonatomic) UIView *viewConnectionAlert;
+@property (strong, nonatomic) UIView *viewCalibrationAlert;
 
 @end

@@ -292,14 +292,14 @@ NSTimer *timerDimmer;
             UIButton *buttonConfirmBlock = [[UIButton alloc] initWithFrame:CGRectMake(viewBlockAlert.frame.size.width/2,viewBlockAlert.frame.size.height/2, viewBlockAlert.frame.size.width/4, 60)];
             [buttonConfirmBlock setTitle:@"Report" forState:UIControlStateNormal];
             [buttonConfirmBlock addTarget:self action:@selector(markBlocked) forControlEvents:UIControlEventTouchUpInside];
-            [buttonConfirmBlock.titleLabel setTextAlignment:NSTextAlignmentLeft];
+            //[buttonConfirmBlock.titleLabel setTextAlignment:NSTextAlignmentLeft];
             [buttonConfirmBlock setBackgroundColor:[UIColor blackColor]];
             [viewBlockAlert addSubview:buttonConfirmBlock];
             
             UIButton *buttonCancelBlock = [[UIButton alloc] initWithFrame:CGRectMake(viewBlockAlert.frame.size.width*3/4, viewBlockAlert.frame.size.height/2, viewBlockAlert.frame.size.width/4, 60)];
             [buttonCancelBlock setTitle:@"Cancel" forState:UIControlStateNormal];
             [buttonCancelBlock addTarget:self action:@selector(dismissBlockAlert) forControlEvents:UIControlEventTouchUpInside];
-            [buttonCancelBlock.titleLabel setTextAlignment:NSTextAlignmentRight];
+            //[buttonCancelBlock.titleLabel setTextAlignment:NSTextAlignmentRight];
             [buttonCancelBlock setBackgroundColor:[UIColor blackColor]];
             [viewBlockAlert addSubview:buttonCancelBlock];
         }
@@ -410,11 +410,13 @@ NSTimer *timerDimmer;
 {
     if (imageArray && imageArray.count > 0) {
         if (previous) {
+            directionNext = NO;
             imageIndex = imageIndex - 1;
             if (imageIndex < 0) {
                 imageIndex = imageArray.count - 1;
             }
         } else {
+            directionNext = YES;
             imageIndex = imageIndex + 1;
             if (imageIndex >= imageArray.count) {
                 imageIndex = 0;
@@ -423,6 +425,21 @@ NSTimer *timerDimmer;
         NSLog(@"Image Index: %d", imageIndex);
         
         [viewLoadingLabel setHidden:NO];
+        
+        // Animate the old image away
+        float xPosition = directionNext ? -imgView.frame.size.width : imgView.frame.size.width;
+        UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
+        [animatedImgView setImage:imgView.image];
+        [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
+        [self.view addSubview:animatedImgView];
+        [imgView setImage:nil];
+        CGRect finalFrame = animatedImgView.frame;
+        finalFrame.origin.x = xPosition;
+        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
+            [animatedImgView removeFromSuperview];
+        }];
+
+        
         [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
         NSOperationQueue *queue = [NSOperationQueue new];
         NSInvocationOperation *operation = [[NSInvocationOperation alloc]
@@ -510,7 +527,6 @@ NSTimer *timerDimmer;
     if (index >= imageArray.count) {
         index = 0;
     }
-    directionNext = YES;
     [self loadImage:index andDisplay:NO];
 }
 
@@ -520,7 +536,6 @@ NSTimer *timerDimmer;
     if (index < 0) {
         index = imageArray.count - 1;
     }
-    directionNext = NO;
     [self loadImage:index andDisplay:NO];
 }
 
@@ -557,10 +572,6 @@ NSTimer *timerDimmer;
                                        }
                                    }
                                }];
-       
-        //NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
-        //image = [[UIImage alloc] initWithData:imageData];
-        //[poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
     }
 }
 
@@ -580,7 +591,7 @@ NSTimer *timerDimmer;
     }];
     
     // Set the attribution and score
-    NSString *attributionText = imageArray[imageIndex][@"attribution_name"];
+    NSString *attributionText = [NSString stringWithFormat:@"%@  %@", imageArray[imageIndex][@"attribution_name"], imageArray[imageIndex][@"time_ago"]];
     [labelAttributionL setText:attributionText];
     [labelAttributionR setText:attributionText];
     NSString *sourceImageName = imageArray[imageIndex][@"source"];

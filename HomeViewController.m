@@ -25,6 +25,9 @@
 @implementation HomeViewController
 
 @synthesize viewConnectionAlert;
+@synthesize viewCalibrationAlert;
+
+BOOL showPopular;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -178,7 +181,7 @@
         [self addControlsToContainer:self.portraitView];
         
         UIButton *buttonRecalibrate = [self makeButton:@"Recalibrate" withPosition:5 withView:self.portraitView withImageName:@"cog"];
-        [buttonRecalibrate addTarget:self action:@selector(runCalibration) forControlEvents:UIControlEventTouchUpInside];
+        [buttonRecalibrate addTarget:self action:@selector(showCalibrationAlert) forControlEvents:UIControlEventTouchUpInside];
         [self.portraitView addSubview:buttonRecalibrate];
         
         UIButton *buttonHelp = [self makeButton:@"How to Share Photos" withPosition:6 withView:self.portraitView withImageName:@"question"];
@@ -280,6 +283,55 @@
     return image;
 }
 
+- (void)showCalibrationAlert
+{
+    viewCalibrationAlert = [[UIView alloc] initWithFrame:self.view.bounds];
+    [viewCalibrationAlert setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:self.view.bounds];
+    viewShadow.backgroundColor = [UIColor blackColor];
+    viewShadow.alpha = 0.8;
+    UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissCalibrationAlert)];
+    [viewShadow addGestureRecognizer:handleTap];
+    [viewCalibrationAlert addSubview:viewShadow];
+    
+    UILabel *calibrationLabel = [[UILabel alloc] init];
+    
+    [calibrationLabel setFrame:CGRectMake(0, 120, viewCalibrationAlert.frame.size.width, 60)];
+    [calibrationLabel setTextAlignment:NSTextAlignmentCenter];
+    [calibrationLabel setBackgroundColor:[UIColor blackColor]];
+    [calibrationLabel setTextColor:[UIColor whiteColor]];
+    [calibrationLabel setText: @"Would you like to recalibrate?"];
+    CALayer *bottomBorder = [CALayer layer];
+    bottomBorder.frame = CGRectMake(40, 59, calibrationLabel.frame.size.width-80, 1.0);
+    bottomBorder.backgroundColor = [UIColor whiteColor].CGColor;
+    [calibrationLabel.layer addSublayer:bottomBorder];
+    [viewCalibrationAlert addSubview:calibrationLabel];
+    
+    UIButton *buttonCalibration = [[UIButton alloc] initWithFrame:CGRectMake(calibrationLabel.frame.origin.x + 40,calibrationLabel.frame.origin.y + 60, calibrationLabel.frame.size.width/2 - 40, 60)];
+    [buttonCalibration setTitle:@"Recalibrate" forState:UIControlStateNormal];
+    [buttonCalibration addTarget:self action:@selector(runCalibration) forControlEvents:UIControlEventTouchUpInside];
+    buttonCalibration.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    [buttonCalibration setBackgroundColor:[UIColor blackColor]];
+    [viewCalibrationAlert addSubview:buttonCalibration];
+    
+    UIButton *buttonDismissCalibration = [[UIButton alloc] initWithFrame:CGRectMake(calibrationLabel.frame.size.width/2,calibrationLabel.frame.origin.y + 60, calibrationLabel.frame.size.width/2 - 40, 60)];
+    [buttonDismissCalibration setTitle:@"Cancel" forState:UIControlStateNormal];
+    [buttonDismissCalibration addTarget:self action:@selector(dismissCalibrationAlert) forControlEvents:UIControlEventTouchUpInside];
+    buttonDismissCalibration.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    [buttonDismissCalibration setBackgroundColor:[UIColor blackColor]];
+    [viewCalibrationAlert addSubview:buttonDismissCalibration];
+    
+    [self.view addSubview:viewCalibrationAlert];
+    [self.view bringSubviewToFront:viewCalibrationAlert];
+}
+
+- (void)dismissCalibrationAlert
+{
+    [viewCalibrationAlert removeFromSuperview];
+    self.viewCalibrationAlert = nil;
+}
+
 - (void)runCalibration
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -322,6 +374,7 @@
     } else {
         // show the No Connection popup
         [poppyAppDelegate loadImageArrays];
+        showPopular = NO;
         [self showConnectionAlert];
     }
 }
@@ -338,6 +391,7 @@
     } else {
         // show the No Connection popup
         [poppyAppDelegate loadImageArrays];
+        showPopular = YES;
         [self showConnectionAlert];
     }
 }
@@ -380,14 +434,27 @@
     
     UIButton *buttonConnection = [[UIButton alloc] initWithFrame:CGRectMake(connectionLabel.frame.origin.x,connectionLabel.frame.origin.y + 60, connectionLabel.frame.size.width, 60)];
     [buttonConnection setTitle:@"Try again" forState:UIControlStateNormal];
-    [buttonConnection addTarget:self action:@selector(dismissConnectionAlert) forControlEvents:UIControlEventTouchUpInside];
-    [buttonConnection.titleLabel setTextAlignment:NSTextAlignmentLeft];
+    [buttonConnection addTarget:self action:@selector(reattemptConnection) forControlEvents:UIControlEventTouchUpInside];
     [buttonConnection setBackgroundColor:[UIColor blackColor]];
     [viewConnectionAlert addSubview:buttonConnection];
 
     [self.view addSubview:viewConnectionAlert];
     [self.view bringSubviewToFront:viewConnectionAlert];
 }
+
+- (void)reattemptConnection
+{
+    [self dismissConnectionAlert];
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (poppyAppDelegate.isConnected) {
+        if(showPopular){
+            [self launchBest];
+        } else {
+            [self launchStream];
+        }
+    }
+}
+
 
 - (void)dismissConnectionAlert
 {
