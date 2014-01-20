@@ -81,7 +81,6 @@ int retry;
                                    [self performSelector:@selector(loadJSON:) withObject:sort afterDelay:0.5 inModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
                                }
                            } else {
-                               isConnected = YES;
                                // Now create an array from the JSON data
                                NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                                // Iterate through the array of dictionaries
@@ -89,6 +88,7 @@ int retry;
                                for (NSMutableDictionary *item in jsonArray) {
                                    [imageArray addObject:item];
                                }
+                               isConnected = YES;
                                [self getFirstImage:imageArray];
                            }
                        }];

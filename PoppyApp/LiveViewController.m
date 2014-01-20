@@ -295,6 +295,9 @@ int currentIndex = -1;
             }
         }
         
+        UIImage *tempImage = imgView.image;
+        [imgView setImage:nil];
+        
         [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
              {
                  if (asset) {
@@ -309,6 +312,7 @@ int currentIndex = -1;
                      NSLog(@"image stuff, wide: %f height: %f", fullScreenImage.size.width, fullScreenImage.size.height);
                      
                      // Animate the appearance of the next/prev image
+                     /*
                      float xPosition = directionNext ? imgView.frame.size.width : -imgView.frame.size.width;
                      UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:CGRectMake(xPosition, 0, imgView.frame.size.width, imgView.frame.size.height)];
                      [animatedImgView setImage:fullScreenImage];
@@ -325,10 +329,35 @@ int currentIndex = -1;
                                  [self playMovie:asset];
                          }
                      }];
+                      */
+                     
+                     [imgView setImage:fullScreenImage];
+                     [imgView setHidden:NO];
+                     
+                     if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
+                         [self playMovie:asset];
+                     }
+                     
+                     // Animate the old image away
+                     if (tempImage) {
+                         float xPosition = directionNext ? -imgView.frame.size.width : imgView.frame.size.width;
+                         UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
+                         [animatedImgView setImage:tempImage];
+                         [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
+                         [self.view addSubview:animatedImgView];
+                         
+                         CGRect finalFrame = animatedImgView.frame;
+                         finalFrame.origin.x = xPosition;
+                         [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
+                             [animatedImgView removeFromSuperview];
+
+                         }];
+                     }
 
                      *stop = YES;
                  }
              }];
+        NSLog(@"GOT HERE");
         [self showViewerControls];
     } else {
         NSLog(@"NO IMAGES IN THE ALBUM");
@@ -776,7 +805,7 @@ int currentIndex = -1;
             [viewDeleteAlert addSubview:deleteLabel];
             [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
                 if (asset) {
-                    if (asset.isEditable) {
+                    if (asset.editable) {
                         [deleteLabel setText: @"Delete this photo?"];
                         UIButton *buttonConfirmDelete = [[UIButton alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width/2,viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/4, 60)];
                         [buttonConfirmDelete setTitle:@"Delete" forState:UIControlStateNormal];
@@ -813,6 +842,7 @@ int currentIndex = -1;
 - (void)dismissDeleteAlert
 {
     [viewDeleteAlert removeFromSuperview];
+    viewDeleteAlert = nil;
 }
 
 - (void)deleteAsset

@@ -65,26 +65,6 @@ NSTimer *timerDimmer;
     imageArray = showPopular ? poppyAppDelegate.topImageArray : poppyAppDelegate.recentImageArray;
 }
 
-- (void) loadJSON:(NSURL *)url
-{
-    NSURLRequest *request = [NSURLRequest requestWithURL:url
-                                             cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                         timeoutInterval:30.0];
-    // Get the data
-    NSURLResponse *response;
-    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
-    
-    // Now create an array from the JSON data
-    NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-
-    // Iterate through the array of dictionaries
-    NSLog(@"Array count: %d", jsonArray.count);
-    for (NSMutableDictionary *item in jsonArray) {
-        [imageArray addObject:item];
-    }
-    imageIndex = -1;
-}
-
 - (void)activateButtonStealer
 {
     NSLog(@"ACTIVATING BUTTON STEALER");
@@ -424,7 +404,6 @@ NSTimer *timerDimmer;
                     imageIndex = imageArray.count - 1;
                 }
             }
-            NSLog(@"Image Index: %d", imageIndex);
             
             // Animate the old image away
             float xPosition = directionNext ? -imgView.frame.size.width : imgView.frame.size.width;
@@ -607,22 +586,7 @@ NSTimer *timerDimmer;
     isLoading = NO;
     [viewLoadingLabel setHidden:YES];
     NSLog(@"HIDE LOADING LABEL");
-    if (imgView.image == nil) {
-        [imgView setImage:image];
-    } else {
-        //Create a temporary animated view, slide it into view, load the correct image into imgView and then hide the animated view
-        float xPosition = directionNext ? imgView.frame.size.width : -imgView.frame.size.width;
-        UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:CGRectMake(xPosition, 0, imgView.frame.size.width, imgView.frame.size.height)];
-        [animatedImgView setImage:image];
-        [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
-        [self.view addSubview:animatedImgView];
-        CGRect finalFrame = animatedImgView.frame;
-        finalFrame.origin.x = 0;
-        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
-            [imgView setImage:image];
-            [animatedImgView removeFromSuperview];
-        }];
-    }
+    [imgView setImage:image];
     [self showViewerControls];
 }
 
