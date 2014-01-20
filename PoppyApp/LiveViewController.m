@@ -227,6 +227,7 @@ int currentIndex = -1;
     [self activateView];
     if (isWatching) {
         NSLog(@"RETURNING TO THE VIEWER");
+        imgView.image = nil;
         [buttonStealer startStealingVolumeButtonEvents];
         [self switchToViewerMode:self];
     } else {
@@ -315,12 +316,13 @@ int currentIndex = -1;
                      [self.view addSubview:animatedImgView];
                      CGRect finalFrame = animatedImgView.frame;
                      finalFrame.origin.x = 0;
-                     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
-                         [imgView setImage:fullScreenImage];
-                         [imgView setHidden:NO];
-                         [animatedImgView removeFromSuperview];
-                         if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
-                             [self playMovie:asset];
+                     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; }
+                         completion:^(BOOL finished){
+                             [imgView setImage:fullScreenImage];
+                             [imgView setHidden:NO];
+                             [animatedImgView removeFromSuperview];
+                             if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
+                                 [self playMovie:asset];
                          }
                      }];
 

@@ -38,6 +38,7 @@
 @synthesize buttonFavorite;
 
 BOOL directionNext;
+BOOL isLoading;
 int imageIndex;
 NSTimer *timerDimmer;
 
@@ -164,7 +165,7 @@ NSTimer *timerDimmer;
     [self addGestures:touchView];
     [displayView addSubview:touchView];
     
-    [self showMedia:NO];
+    [self showMedia:YES];
 }
 
 - (void)showViewerControls
@@ -349,7 +350,7 @@ NSTimer *timerDimmer;
     //Now remove the blocked photo from the stream
     [imageArray removeObjectAtIndex:imageIndex];
     
-    [self showMedia:YES];
+    [self showMedia:NO];
 }
 
 
@@ -377,13 +378,13 @@ NSTimer *timerDimmer;
 - (void)swipeScreenleft:(UISwipeGestureRecognizer *)sgr
 {
     NSLog(@"show next");
-    [self showMedia:NO];
+    [self showMedia:YES];
 }
 
 - (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr
 {
     NSLog(@"show previous");
-    [self showMedia:YES];
+    [self showMedia:NO];
 }
 
 - (void)handleDoubleTapAction:(UITapGestureRecognizer *)tgr
@@ -391,9 +392,9 @@ NSTimer *timerDimmer;
     if (tgr.state == UIGestureRecognizerStateRecognized) {
         CGPoint location = [tgr locationInView:self.view];
         if (location.x < self.view.frame.size.height/2) {
-            [self showMedia:YES];
-        } else {
             [self showMedia:NO];
+        } else {
+            [self showMedia:YES];
         }
     }
 }
@@ -406,65 +407,65 @@ NSTimer *timerDimmer;
     
 }
 
-- (void) showMedia:(BOOL)previous
+- (void) showMedia:(BOOL)showNext
 {
     if (imageArray && imageArray.count > 0) {
-        if (previous) {
-            directionNext = NO;
-            imageIndex = imageIndex - 1;
-            if (imageIndex < 0) {
-                imageIndex = imageArray.count - 1;
+        if(!isLoading || showNext != directionNext || imgView.image != nil){
+            if (showNext) {
+                directionNext = YES;
+                imageIndex = imageIndex + 1;
+                if (imageIndex >= imageArray.count) {
+                    imageIndex = 0;
+                }
+            } else {
+                directionNext = NO;
+                imageIndex = imageIndex - 1;
+                if (imageIndex < 0) {
+                    imageIndex = imageArray.count - 1;
+                }
             }
-        } else {
-            directionNext = YES;
-            imageIndex = imageIndex + 1;
-            if (imageIndex >= imageArray.count) {
-                imageIndex = 0;
-            }
-        }
-        NSLog(@"Image Index: %d", imageIndex);
-        
-        [viewLoadingLabel setHidden:NO];
-        
-        // Animate the old image away
-        float xPosition = directionNext ? -imgView.frame.size.width : imgView.frame.size.width;
-        UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
-        [animatedImgView setImage:imgView.image];
-        [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
-        [self.view addSubview:animatedImgView];
-        [imgView setImage:nil];
-        CGRect finalFrame = animatedImgView.frame;
-        finalFrame.origin.x = xPosition;
-        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
-            [animatedImgView removeFromSuperview];
-        }];
+            NSLog(@"Image Index: %d", imageIndex);
+            
+            // Animate the old image away
+            float xPosition = directionNext ? -imgView.frame.size.width : imgView.frame.size.width;
+            UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
+            [animatedImgView setImage:imgView.image];
+            [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
+            [self.view addSubview:animatedImgView];
+            [imgView setImage:nil];
+            CGRect finalFrame = animatedImgView.frame;
+            finalFrame.origin.x = xPosition;
+            [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
+                [animatedImgView removeFromSuperview];
+            }];
 
-        
-        [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
-        NSOperationQueue *queue = [NSOperationQueue new];
-        NSInvocationOperation *operation = [[NSInvocationOperation alloc]
-                                            initWithTarget:self
-                                            selector:@selector(loadAndDisplayCurrentImage)
-                                            object:nil];
-        [queue addOperation:operation];
-        // Now preload the next (or previous) image
-        NSInvocationOperation *preload;
-        if (previous) {
-            preload = [[NSInvocationOperation alloc]
-                       initWithTarget:self
-                       selector:@selector(loadPreviousImage)
-                       object:nil];
+            
+            [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
+            NSOperationQueue *queue = [NSOperationQueue new];
+            NSInvocationOperation *operation = [[NSInvocationOperation alloc]
+                                                initWithTarget:self
+                                                selector:@selector(loadAndDisplayCurrentImage)
+                                                object:nil];
+            [queue addOperation:operation];
+            // Now preload the next (or previous) image
+            NSInvocationOperation *preload;
+            if (showNext) {
+                preload = [[NSInvocationOperation alloc]
+                           initWithTarget:self
+                           selector:@selector(loadNextImage)
+                           object:nil];
+            } else {
+                preload = [[NSInvocationOperation alloc]
+                           initWithTarget:self
+                           selector:@selector(loadPreviousImage)
+                           object:nil];
+            }
+            [queue addOperation:preload];
+            
+            [self showViewerControls];
         } else {
-            preload = [[NSInvocationOperation alloc]
-                       initWithTarget:self
-                       selector:@selector(loadNextImage)
-                       object:nil];
+            NSLog(@"NO MEDIA");
         }
-        [queue addOperation:preload];
-        
-        [self showViewerControls];
-    } else {
-        NSLog(@"NO MEDIA");
     }
 }
 
@@ -539,21 +540,48 @@ NSTimer *timerDimmer;
     [self loadImage:index andDisplay:NO];
 }
 
-- (void)loadImage:(int)index andDisplay:(BOOL)displayImage
+- (void)loadImage:(int)index andDisplay:(BOOL)willDisplayImage
 {
+    if (willDisplayImage){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Set the attribution and score
+            NSString *attributionText = [NSString stringWithFormat:@"%@ - %@", imageArray[imageIndex][@"attribution_name"], imageArray[imageIndex][@"time_ago"]];
+            [labelAttributionL setText:attributionText];
+            [labelAttributionR setText:attributionText];
+            NSString *sourceImageName = imageArray[imageIndex][@"source"];
+            [imgSourceL setImage:[UIImage imageNamed:sourceImageName]];
+            [imgSourceR setImage:[UIImage imageNamed:sourceImageName]];
+            int likeCount = [imageArray[imageIndex][@"poppy_like_count"] intValue];
+            [self updateLikeLabels:likeCount];
+            [self showViewerControls];
+        });
+    }
+    
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     if ([poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]]) {
         // load from the cache
+        NSLog(@"LOAD FROM CACHE");
+        isLoading = NO;
         UIImage *image = [poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]];
         //if for display
-        if (displayImage) {
+        if (willDisplayImage) {
             [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
         }
     } else {
         // load from the web
+        NSLog(@"LOAD FROM WEB");
+        if (willDisplayImage){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [viewLoadingLabel setHidden:NO];
+                isLoading = YES;
+                NSLog(@"SHOW LOADING LABEL");
+            });
+        }
+        
         NSURL *imageURL = [NSURL URLWithString:imageArray[index][@"media_url"]];
         NSURL *url = imageURL;
+        NSLog(@"%@", imageURL);
         NSURLRequest *request = [NSURLRequest requestWithURL:url
                                                  cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                                              timeoutInterval:30.0];
@@ -567,7 +595,7 @@ NSTimer *timerDimmer;
                                        UIImage *image = [[UIImage alloc] initWithData:data];
                                        [poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
                                        //if for display
-                                       if (displayImage) {
+                                       if (willDisplayImage) {
                                            [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
                                        }
                                    }
@@ -576,29 +604,25 @@ NSTimer *timerDimmer;
 }
 
 - (void)displayImage:(UIImage *)image {
+    isLoading = NO;
     [viewLoadingLabel setHidden:YES];
-    //Create a temporary animated view, slide it into view, load the correct image into imgView and then hide the animated view
-    float xPosition = directionNext ? imgView.frame.size.width : -imgView.frame.size.width;
-    UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:CGRectMake(xPosition, 0, imgView.frame.size.width, imgView.frame.size.height)];
-    [animatedImgView setImage:image];
-    [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
-    [self.view addSubview:animatedImgView];
-    CGRect finalFrame = animatedImgView.frame;
-    finalFrame.origin.x = 0;
-    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
+    NSLog(@"HIDE LOADING LABEL");
+    if (imgView.image == nil) {
         [imgView setImage:image];
-        [animatedImgView removeFromSuperview];
-    }];
-    
-    // Set the attribution and score
-    NSString *attributionText = [NSString stringWithFormat:@"%@  %@", imageArray[imageIndex][@"attribution_name"], imageArray[imageIndex][@"time_ago"]];
-    [labelAttributionL setText:attributionText];
-    [labelAttributionR setText:attributionText];
-    NSString *sourceImageName = imageArray[imageIndex][@"source"];
-    [imgSourceL setImage:[UIImage imageNamed:sourceImageName]];
-    [imgSourceR setImage:[UIImage imageNamed:sourceImageName]];
-    int likeCount = [imageArray[imageIndex][@"poppy_like_count"] intValue];
-    [self updateLikeLabels:likeCount];
+    } else {
+        //Create a temporary animated view, slide it into view, load the correct image into imgView and then hide the animated view
+        float xPosition = directionNext ? imgView.frame.size.width : -imgView.frame.size.width;
+        UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:CGRectMake(xPosition, 0, imgView.frame.size.width, imgView.frame.size.height)];
+        [animatedImgView setImage:image];
+        [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
+        [self.view addSubview:animatedImgView];
+        CGRect finalFrame = animatedImgView.frame;
+        finalFrame.origin.x = 0;
+        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
+            [imgView setImage:image];
+            [animatedImgView removeFromSuperview];
+        }];
+    }
     [self showViewerControls];
 }
 

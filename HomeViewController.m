@@ -208,11 +208,11 @@ BOOL showPopular;
     [buttonPhotos addTarget:self action:@selector(launchViewer) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonPhotos];
     
-    UIButton *buttonRecent = [self makeButton:@"Twitter & Flickr" withPosition:3 withView:viewContainer withImageName:@"flicktweet"];
+    UIButton *buttonRecent = [self makeButton:@"Twitter & Flickr" withPosition:4 withView:viewContainer withImageName:@"flicktweet"];
     [buttonRecent addTarget:self action:@selector(launchStream) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonRecent];
     
-    UIButton *buttonBest = [self makeButton:@"Most Liked" withPosition:4 withView:viewContainer withImageName:@"favorite"];
+    UIButton *buttonBest = [self makeButton:@"Most Liked" withPosition:3 withView:viewContainer withImageName:@"favorite"];
     [buttonBest addTarget:self action:@selector(launchBest) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonBest];
 }
@@ -263,7 +263,6 @@ BOOL showPopular;
         button.imageEdgeInsets = UIEdgeInsetsMake(0.0, (containerView.bounds.size.width/2 - imageSize.width)/2, 0.0, 0.0);
         button.layer.borderWidth = 1.0;
     }
-    
     
     [containerView addSubview:button];
     return button;
