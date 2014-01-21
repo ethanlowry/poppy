@@ -134,7 +134,7 @@ BOOL showPopular;
         }
         [buttonStealer startStealingVolumeButtonEvents];
 
-        [self.view setBackgroundColor:[UIColor blackColor]];
+        [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]]];
         
         if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
             [self showLandscape];
@@ -142,7 +142,7 @@ BOOL showPopular;
             [self showPortrait];
         }
     }
-}
+    }
 
 -(void) showLandscape
 {
@@ -208,11 +208,11 @@ BOOL showPopular;
     [buttonPhotos addTarget:self action:@selector(launchViewer) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonPhotos];
     
-    UIButton *buttonRecent = [self makeButton:@"Twitter & Flickr" withPosition:4 withView:viewContainer withImageName:@"flicktweet"];
+    UIButton *buttonRecent = [self makeButton:@"#poppy3d" withPosition:4 withView:viewContainer withImageName:@"flicktweet"];
     [buttonRecent addTarget:self action:@selector(launchStream) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonRecent];
     
-    UIButton *buttonBest = [self makeButton:@"Most Liked" withPosition:3 withView:viewContainer withImageName:@"favorite"];
+    UIButton *buttonBest = [self makeButton:@"Most Popular" withPosition:3 withView:viewContainer withImageName:@"favorite"];
     [buttonBest addTarget:self action:@selector(launchBest) forControlEvents:UIControlEventTouchUpInside];
     [viewContainer addSubview:buttonBest];
 }
@@ -261,7 +261,6 @@ BOOL showPopular;
         button.titleLabel.font = [UIFont systemFontOfSize:12];
         //CGSize titleSize = button.titleLabel.frame.size;
         button.imageEdgeInsets = UIEdgeInsetsMake(0.0, (containerView.bounds.size.width/2 - imageSize.width)/2, 0.0, 0.0);
-        button.layer.borderWidth = 1.0;
     }
     
     [containerView addSubview:button];
@@ -333,6 +332,7 @@ BOOL showPopular;
 
 - (void)runCalibration
 {
+    [self dismissCalibrationAlert];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     CalibrationViewController *cvc = [[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     cvc.showOOBE = ![defaults boolForKey:@"isCalibrated"];

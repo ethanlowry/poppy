@@ -16,6 +16,10 @@
 @property (strong, nonatomic) NSTimer *screenTimer;
 @property (nonatomic) BOOL isConnected;
 @property (strong, nonatomic) UIWindow *window;
+@property (nonatomic) int recentPage;
+@property (nonatomic) int recentLimit;
+
 -(void)loadImageArrays;
+-(void)loadJSON:(NSString *)sort;
 
 @end

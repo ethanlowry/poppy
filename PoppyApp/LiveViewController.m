@@ -7,8 +7,6 @@
 //
 
 // TAGGED VIEWS:
-// 103 = the movie player view
-// 105 = the "no media available" label view
 // 107 = the "welcome" label view
 
 #import "LiveViewController.h"
@@ -49,6 +47,7 @@ CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
 @synthesize viewSaving;
 @synthesize isWatching;
 @synthesize viewViewerControls;
+@synthesize viewNoMedia;
 
 int next = 1;
 int prev = -1;
@@ -154,10 +153,10 @@ int currentIndex = -1;
     [galleryWebView removeFromSuperview];
     galleryWebView = nil;
     [self.mainMoviePlayer stop];
+    [mainMoviePlayer.view removeFromSuperview]; //remove the movie player
     self.mainMoviePlayer = nil;
     currentIndex = -1;
     
-    [[self.view viewWithTag:103] removeFromSuperview]; //remove the movie player
     [viewViewerControls removeFromSuperview]; //remove the camera button
     [demoClearView removeFromSuperview];
     demoClearView = nil;
@@ -277,7 +276,8 @@ int currentIndex = -1;
         }
         
         [mainMoviePlayer stop];
-        [[self.view viewWithTag:103] removeFromSuperview];
+        [mainMoviePlayer.view removeFromSuperview];
+        self.mainMoviePlayer = nil;
         
         if (direction == prev) {
             directionNext = NO;
@@ -310,26 +310,6 @@ int currentIndex = -1;
                      }
                      UIImage *fullScreenImage = [UIImage imageWithCGImage:[assetRepresentation fullScreenImage] scale:[assetRepresentation scale] orientation:orientation];
                      NSLog(@"image stuff, wide: %f height: %f", fullScreenImage.size.width, fullScreenImage.size.height);
-                     
-                     // Animate the appearance of the next/prev image
-                     /*
-                     float xPosition = directionNext ? imgView.frame.size.width : -imgView.frame.size.width;
-                     UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:CGRectMake(xPosition, 0, imgView.frame.size.width, imgView.frame.size.height)];
-                     [animatedImgView setImage:fullScreenImage];
-                     [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
-                     [self.view addSubview:animatedImgView];
-                     CGRect finalFrame = animatedImgView.frame;
-                     finalFrame.origin.x = 0;
-                     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; }
-                         completion:^(BOOL finished){
-                             [imgView setImage:fullScreenImage];
-                             [imgView setHidden:NO];
-                             [animatedImgView removeFromSuperview];
-                             if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
-                                 [self playMovie:asset];
-                         }
-                     }];
-                      */
                      
                      [imgView setImage:fullScreenImage];
                      [imgView setHidden:NO];
@@ -370,22 +350,30 @@ int currentIndex = -1;
 
 - (void)showNoMediaAlert
 {
-    UIView *viewNoMedia = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 150)/2, self.view.bounds.size.width/2, 75)];
-    [viewNoMedia setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
-    [viewNoMedia setTag:105];
-    
-    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewNoMedia.frame.size.width, viewNoMedia.frame.size.height)];
-    [viewShadow setBackgroundColor:[UIColor blackColor]];
-    [viewShadow setAlpha:0.3];
-    
-    UILabel *labelNoMedia = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewNoMedia.frame.size.width, viewNoMedia.frame.size.height)];
-    [labelNoMedia setTextColor:[UIColor whiteColor]];
-    [labelNoMedia setBackgroundColor:[UIColor clearColor]];
-    [labelNoMedia setTextAlignment:NSTextAlignmentCenter];
-    [labelNoMedia setText:@"Nothing to play!"];
-    
-    [viewNoMedia addSubview:viewShadow];
-    [viewNoMedia addSubview:labelNoMedia];
+    if (!viewNoMedia){
+        viewNoMedia = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 150)/2, self.view.bounds.size.width, 75)];
+        [viewNoMedia setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+        [viewNoMedia setAlpha:0.0];
+        
+        UIView *viewShadow = [[UIView alloc] initWithFrame:viewNoMedia.bounds];
+        [viewShadow setBackgroundColor:[UIColor blackColor]];
+        [viewShadow setAlpha:0.3];
+        
+        UILabel *labelNoMediaL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewNoMedia.frame.size.width/2, viewNoMedia.frame.size.height)];
+        [labelNoMediaL setTextColor:[UIColor whiteColor]];
+        [labelNoMediaL setBackgroundColor:[UIColor clearColor]];
+        [labelNoMediaL setTextAlignment:NSTextAlignmentCenter];
+        [labelNoMediaL setText:@"Nothing to play!"];
+        UILabel *labelNoMediaR = [[UILabel alloc] initWithFrame:CGRectMake(viewNoMedia.frame.size.width/2,0,viewNoMedia.frame.size.width/2, viewNoMedia.frame.size.height)];
+        [labelNoMediaR setTextColor:[UIColor whiteColor]];
+        [labelNoMediaR setBackgroundColor:[UIColor clearColor]];
+        [labelNoMediaR setTextAlignment:NSTextAlignmentCenter];
+        [labelNoMediaR setText:@"Nothing to play!"];
+        
+        [viewNoMedia addSubview:viewShadow];
+        [viewNoMedia addSubview:labelNoMediaL];
+        [viewNoMedia addSubview:labelNoMediaR];
+    }
     
     [self.view addSubview:viewNoMedia];
     
@@ -401,14 +389,13 @@ int currentIndex = -1;
 
 - (void)noMediaTimerFired:(NSTimer *)timer
 {
-    UIView *noMediaView = [self.view viewWithTag:105];
     [UIView animateWithDuration:0.5 delay:0.0
                         options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
                      animations:^{
-                         noMediaView.alpha = 0.0;
+                         viewNoMedia.alpha = 0.0;
                      }
                      completion:^(BOOL complete){
-                         [noMediaView removeFromSuperview];
+                         [viewNoMedia removeFromSuperview];
                      }];
 }
 
@@ -436,7 +423,6 @@ int currentIndex = -1;
     [mainMoviePlayer prepareToPlay];
     [mainMoviePlayer.view setFrame: CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
     [mainMoviePlayer setScalingMode:MPMovieScalingModeAspectFill];
-    [mainMoviePlayer.view setTag:103];
     [self.view addSubview: mainMoviePlayer.view];
     mainMoviePlayer.repeatMode = MPMovieRepeatModeOne;
     [mainMoviePlayer play];
@@ -452,7 +438,8 @@ int currentIndex = -1;
 - (void)moviePlayBackDidFinish:(id)sender {
     NSLog(@"Movie playback finished");
     [mainMoviePlayer stop];
-    [[self.view viewWithTag:103] removeFromSuperview];
+    [mainMoviePlayer.view removeFromSuperview];
+    self.mainMoviePlayer = nil;
 }
 
 
@@ -793,42 +780,40 @@ int currentIndex = -1;
             [viewShadow addGestureRecognizer:handleTap];
             [viewDeleteAlert addSubview:viewShadow];
             
-            UILabel *deleteLabel = [[UILabel alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width/2,(viewDeleteAlert.frame.size.height - 120)/2,viewDeleteAlert.frame.size.width/2,60)];
-            [deleteLabel setTextAlignment:NSTextAlignmentCenter];
-            [deleteLabel setBackgroundColor:[UIColor blackColor]];
-            [deleteLabel setTextColor:[UIColor whiteColor]];
-            CALayer *bottomBorder = [CALayer layer];
-            bottomBorder.frame = CGRectMake(40, 59, deleteLabel.frame.size.width-80, 1.0);
-            bottomBorder.backgroundColor = [UIColor whiteColor].CGColor;
-            [deleteLabel.layer addSublayer:bottomBorder];
+            UILabel *deleteLabelL = [[UILabel alloc] initWithFrame:CGRectMake(0.0,(viewDeleteAlert.frame.size.height - 120)/2,viewDeleteAlert.frame.size.width/2,60)];
+            [deleteLabelL setTextAlignment:NSTextAlignmentCenter];
+            [deleteLabelL setBackgroundColor:[UIColor blackColor]];
+            [deleteLabelL setTextColor:[UIColor whiteColor]];
+            CALayer *bottomBorderL = [CALayer layer];
+            bottomBorderL.frame = CGRectMake(40, 59, deleteLabelL.frame.size.width-80, 1.0);
+            bottomBorderL.backgroundColor = [UIColor whiteColor].CGColor;
+            [deleteLabelL.layer addSublayer:bottomBorderL];
             
-            [viewDeleteAlert addSubview:deleteLabel];
+            UILabel *deleteLabelR = [[UILabel alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width/2,(viewDeleteAlert.frame.size.height - 120)/2,viewDeleteAlert.frame.size.width/2,60)];
+            [deleteLabelR setTextAlignment:NSTextAlignmentCenter];
+            [deleteLabelR setBackgroundColor:[UIColor blackColor]];
+            [deleteLabelR setTextColor:[UIColor whiteColor]];
+            CALayer *bottomBorderR = [CALayer layer];
+            bottomBorderR.frame = CGRectMake(40, 59, deleteLabelR.frame.size.width-80, 1.0);
+            bottomBorderR.backgroundColor = [UIColor whiteColor].CGColor;
+            [deleteLabelR.layer addSublayer:bottomBorderR];
+            
+            [viewDeleteAlert addSubview:deleteLabelL];
+            [viewDeleteAlert addSubview:deleteLabelR];
             [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
                 if (asset) {
                     if (asset.editable) {
-                        [deleteLabel setText: @"Delete this photo?"];
-                        UIButton *buttonConfirmDelete = [[UIButton alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width/2,viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/4, 60)];
-                        [buttonConfirmDelete setTitle:@"Delete" forState:UIControlStateNormal];
-                        [buttonConfirmDelete addTarget:self action:@selector(deleteAsset) forControlEvents:UIControlEventTouchUpInside];
-                        //[buttonConfirmDelete.titleLabel setTextAlignment:NSTextAlignmentLeft];
-                        [buttonConfirmDelete setBackgroundColor:[UIColor blackColor]];
-                        [viewDeleteAlert addSubview:buttonConfirmDelete];
-                        
-                        UIButton *buttonCancelDelete = [[UIButton alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width*3/4, viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/4, 60)];
-                        [buttonCancelDelete setTitle:@"Cancel" forState:UIControlStateNormal];
-                        [buttonCancelDelete addTarget:self action:@selector(dismissDeleteAlert) forControlEvents:UIControlEventTouchUpInside];
-                        //[buttonCancelDelete.titleLabel setTextAlignment:NSTextAlignmentRight];
-                        [buttonCancelDelete setBackgroundColor:[UIColor blackColor]];
-                        [viewDeleteAlert addSubview:buttonCancelDelete];
+                        [deleteLabelL setText: @"Delete this photo?"];
+                        [deleteLabelR setText: @"Delete this photo?"];
+                        [self addDeleteButtons:0.0 withDelete:YES];
+                        [self addDeleteButtons:viewDeleteAlert.frame.size.width/2 withDelete:YES];
                         *stop = YES;
                     } else {
-                        [deleteLabel setText: @"This photo can't be deleted"];
-                        UIButton *buttonCancelDelete = [[UIButton alloc] initWithFrame:CGRectMake(viewDeleteAlert.frame.size.width/2, viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/2, 60)];
-                        [buttonCancelDelete setTitle:@"Dismiss" forState:UIControlStateNormal];
-                        [buttonCancelDelete addTarget:self action:@selector(dismissDeleteAlert) forControlEvents:UIControlEventTouchUpInside];
-                        [buttonCancelDelete.titleLabel setTextAlignment:NSTextAlignmentRight];
-                        [buttonCancelDelete setBackgroundColor:[UIColor blackColor]];
-                        [viewDeleteAlert addSubview:buttonCancelDelete];
+                        [deleteLabelL setText: @"This photo can't be deleted"];
+                        [deleteLabelR setText: @"This photo can't be deleted"];
+                        [self addDeleteButtons:0.0 withDelete:NO];
+                        [self addDeleteButtons:viewDeleteAlert.frame.size.width/2 withDelete:NO];
+                        *stop = YES;
                     }
                 }
             }];
@@ -836,6 +821,29 @@ int currentIndex = -1;
 
         [self.view addSubview:viewDeleteAlert];
         [self.view bringSubviewToFront:viewDeleteAlert];
+    }
+}
+
+- (void)addDeleteButtons:(float)offset withDelete:(BOOL)showDelete
+{
+    UIButton *buttonCancelDelete = [[UIButton alloc] init];
+    [buttonCancelDelete addTarget:self action:@selector(dismissDeleteAlert) forControlEvents:UIControlEventTouchUpInside];
+    [buttonCancelDelete.titleLabel setTextAlignment:NSTextAlignmentRight];
+    [buttonCancelDelete setBackgroundColor:[UIColor blackColor]];
+    [viewDeleteAlert addSubview:buttonCancelDelete];
+    
+    if(showDelete){
+        [buttonCancelDelete setFrame:CGRectMake(offset + viewDeleteAlert.frame.size.width/4, viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/4, 60)];
+        [buttonCancelDelete setTitle:@"Cancel" forState:UIControlStateNormal];
+        
+        UIButton *buttonConfirmDelete = [[UIButton alloc] initWithFrame:CGRectMake(offset,viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/4, 60)];
+        [buttonConfirmDelete setTitle:@"Delete" forState:UIControlStateNormal];
+        [buttonConfirmDelete addTarget:self action:@selector(deleteAsset) forControlEvents:UIControlEventTouchUpInside];
+        [buttonConfirmDelete setBackgroundColor:[UIColor blackColor]];
+        [viewDeleteAlert addSubview:buttonConfirmDelete];
+    } else {
+        [buttonCancelDelete setFrame:CGRectMake(offset, viewDeleteAlert.frame.size.height/2, viewDeleteAlert.frame.size.width/2, 60)];
+        [buttonCancelDelete setTitle:@"Dismiss" forState:UIControlStateNormal];
     }
 }
 
@@ -1012,21 +1020,28 @@ int currentIndex = -1;
 
 - (void)showSavingAlert
 {
-    viewSaving = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 150)/2, self.view.bounds.size.width/2, 75)];
+    viewSaving = [[UIView alloc] initWithFrame:CGRectMake(0.0, (self.view.bounds.size.height/2 - 75), self.view.bounds.size.width, 75)];
     [viewSaving setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
     
-    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,viewSaving.frame.size.width, viewSaving.frame.size.height)];
+    UIView *viewShadow = [[UIView alloc] initWithFrame:viewSaving.bounds];
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.3];
     
-    UILabel *labelSaving = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewSaving.frame.size.width, viewSaving.frame.size.height)];
-    [labelSaving setTextColor:[UIColor whiteColor]];
-    [labelSaving setBackgroundColor:[UIColor clearColor]];
-    [labelSaving setTextAlignment:NSTextAlignmentCenter];
-    [labelSaving setText:@"Saving..."];
+    UILabel *labelSavingL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewSaving.frame.size.width/2, viewSaving.frame.size.height)];
+    [labelSavingL setTextColor:[UIColor whiteColor]];
+    [labelSavingL setBackgroundColor:[UIColor clearColor]];
+    [labelSavingL setTextAlignment:NSTextAlignmentCenter];
+    [labelSavingL setText:@"Saving..."];
+    
+    UILabel *labelSavingR = [[UILabel alloc] initWithFrame:CGRectMake(viewSaving.frame.size.width/2,0,viewSaving.frame.size.width/2, viewSaving.frame.size.height)];
+    [labelSavingR setTextColor:[UIColor whiteColor]];
+    [labelSavingR setBackgroundColor:[UIColor clearColor]];
+    [labelSavingR setTextAlignment:NSTextAlignmentCenter];
+    [labelSavingR setText:@"Saving..."];
     
     [viewSaving addSubview:viewShadow];
-    [viewSaving addSubview:labelSaving];
+    [viewSaving addSubview:labelSavingL];
+    [viewSaving addSubview:labelSavingR];
     
     [self.view addSubview:viewSaving];
     
@@ -1142,6 +1157,13 @@ int currentIndex = -1;
         if (isWatching) {
             NSLog(@"VIEWER TAPPED!");
             [self showViewerControls];
+            if (mainMoviePlayer) {
+                if(mainMoviePlayer.playbackState == MPMoviePlaybackStatePlaying) {
+                    [mainMoviePlayer pause];
+                } else {
+                    [mainMoviePlayer play];
+                }
+            }
         } else {
             NSLog(@"CAMERA TAPPED!");
             [self showCameraControls];

@@ -20,6 +20,8 @@
 @synthesize imageCache;
 @synthesize screenTimer;
 @synthesize isConnected;
+@synthesize recentPage;
+@synthesize recentLimit;
 
 float previousBrightness;
 int retry;
@@ -40,6 +42,9 @@ int retry;
     HomeViewController *hvc = [[HomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     [self.window setRootViewController:hvc];
     [self.window makeKeyAndVisible];
+    
+    recentPage = 0;
+    recentLimit = 50;
     [self loadImageArrays];
     
     return YES;
@@ -58,11 +63,15 @@ int retry;
 
 - (void) loadJSON:(NSString *)sort
 {
+    NSMutableArray *imageArray = ([sort isEqualToString:@"top"]) ? topImageArray : recentImageArray;
     NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];;
     NSString *urlString = [NSString stringWithFormat:@"http://poppy3d.com/app/media_item/get.json?uuid=%@&sort=%@", uuid, sort];
+    if([sort isEqualToString:@"recent"]) {
+        urlString = [NSString stringWithFormat:@"%@&limit=%d&page=%d", urlString, recentLimit, recentPage];
+    }
+    NSLog(@"URL: %@", urlString);
     
     NSURL *url = [NSURL URLWithString:urlString];
-    NSMutableArray *imageArray = ([sort isEqualToString:@"top"]) ? topImageArray : recentImageArray;
 
     NSURLRequest *request = [NSURLRequest requestWithURL:url
                                              cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
@@ -81,21 +90,27 @@ int retry;
                                    [self performSelector:@selector(loadJSON:) withObject:sort afterDelay:0.5 inModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
                                }
                            } else {
-                               // Now create an array from the JSON data
-                               NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                               // Iterate through the array of dictionaries
-                               NSLog(@"Array count: %d", jsonArray.count);
-                               for (NSMutableDictionary *item in jsonArray) {
-                                   [imageArray addObject:item];
+                               NSDictionary *jsonHash = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                               
+                               if ([[jsonHash objectForKey:@"status"] isEqualToString:@"error"]){
+                                   NSLog(@"ERROR");
+                               } else {
+                                   // Now create an array from the JSON data
+                                   NSArray *jsonArray = [jsonHash objectForKey:@"results"];
+                                   // Iterate through the array of dictionaries
+                                   for (NSMutableDictionary *item in jsonArray) {
+                                       [imageArray addObject:item];
+                                   }
+                                   isConnected = YES;
+                                   [self getFirstImage:imageArray];
                                }
-                               isConnected = YES;
-                               [self getFirstImage:imageArray];
-                           }
+                            }
                        }];
 }
 
 - (void)getFirstImage:(NSMutableArray *)imageArray
 {
+    NSLog(@"PRE-LOADING FIRST IMAGE");
     NSOperationQueue *queue = [NSOperationQueue new];
     NSInvocationOperation *operation = [[NSInvocationOperation alloc]
                                         initWithTarget:self
@@ -106,11 +121,11 @@ int retry;
 
 - (void)loadImage:(NSMutableArray *)imageArray
 {
-    NSURL *imageURL = [NSURL URLWithString:imageArray[0][@"media_url"]];
+    NSURL *imageURL = [NSURL URLWithString:imageArray[recentPage * recentLimit][@"media_url"]];
     NSURL *url = imageURL;
     NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
     UIImage *image = [[UIImage alloc] initWithData:imageData];
-    [imageCache setObject:image forKey:imageArray[0][@"_id"]];
+    [imageCache setObject:image forKey:imageArray[recentPage * recentLimit][@"_id"]];
     
 }
 
@@ -167,7 +182,6 @@ int retry;
     screenTimer = [NSTimer scheduledTimerWithTimeInterval:600.0 target:self selector:@selector(screenTimerFired) userInfo:nil repeats:NO];
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     [[UIScreen mainScreen] setBrightness: 1.0];
-    NSLog(@"SCREEN TIMER RESET!");
 }
 
 - (void)screenTimerFired

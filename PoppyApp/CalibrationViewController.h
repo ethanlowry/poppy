@@ -19,5 +19,6 @@
 }
 
 @property (nonatomic) BOOL showOOBE;
+@property (nonatomic, strong) UIView *viewCalNumber;
 
 @end

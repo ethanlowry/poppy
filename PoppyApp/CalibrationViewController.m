@@ -22,6 +22,7 @@ UIView *viewWelcome;
 @implementation CalibrationViewController
 
 @synthesize showOOBE;
+@synthesize viewCalNumber;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -44,23 +45,6 @@ UIView *viewWelcome;
     }
     
     calibrationCropFactor = [self setCropFactor];
-    
-    /*
-    __weak typeof(self) weakSelf = self;
-    
-    buttonStealer = [[RBVolumeButtons alloc] init];
-    buttonStealer.upBlock = ^{
-        // + volume button pressed
-        [weakSelf calibrateRight:weakSelf];
-    };
-    buttonStealer.downBlock = ^{
-        // - volume button pressed
-        [weakSelf calibrateLeft:weakSelf];
-    };
-    
-    [buttonStealer startStealingVolumeButtonEvents];
-     */
-     
 }
 
 - (void)calibrateLeft: (id) sender
@@ -68,6 +52,7 @@ UIView *viewWelcome;
     cropPosition = cropPosition - 0.005;
     cropPosition = (cropPosition > -(1.0 - calibrationCropFactor)/2 ? cropPosition : -(1.0 - calibrationCropFactor)/2);
     [self applyFilter];
+    [self showCalNumber];
 }
 
 - (void)calibrateRight: (id) sender
@@ -75,6 +60,7 @@ UIView *viewWelcome;
     cropPosition = cropPosition + 0.005;
     cropPosition = (cropPosition < (1.0 - calibrationCropFactor)/2 ? cropPosition : (1.0 - calibrationCropFactor)/2);
     [self applyFilter];
+    [self showCalNumber];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -88,6 +74,40 @@ UIView *viewWelcome;
         mainView = (GPUImageView *)self.view;
         mainView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
         [self activateCamera];
+    }
+}
+
+-(void)showCalNumber
+{
+    if (!viewCalNumber) {
+        viewCalNumber = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 30)];
+        UIView *viewShadow = [[UIView alloc] initWithFrame:viewCalNumber.bounds];
+        [viewShadow setBackgroundColor:[UIColor blackColor]];
+        [viewShadow setAlpha:0.3];
+        [viewCalNumber addSubview:viewShadow];
+        UILabel *labelCalNumberL = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, viewCalNumber.frame.size.width/2, viewCalNumber.frame.size.height)];
+        [labelCalNumberL setTextColor:[UIColor whiteColor]];
+        [labelCalNumberL setFont:[UIFont systemFontOfSize:12.0]];
+        [labelCalNumberL setTextAlignment:NSTextAlignmentCenter];
+        
+        UILabel *labelCalNumberR = [[UILabel alloc] initWithFrame:CGRectMake(viewCalNumber.frame.size.width/2, 0, viewCalNumber.frame.size.width/2, viewCalNumber.frame.size.height)];
+        [labelCalNumberR setTextColor:[UIColor whiteColor]];
+        [labelCalNumberR setFont:[UIFont systemFontOfSize:12.0]];
+        [labelCalNumberR setTextAlignment:NSTextAlignmentCenter];
+        
+        [viewCalNumber addSubview:labelCalNumberL];
+        [viewCalNumber addSubview:labelCalNumberR];
+        [self.view addSubview:viewCalNumber];
+    }
+    for(UIView *subview in viewCalNumber.subviews )
+    {
+        if([subview isKindOfClass:[UILabel class]])
+        {
+            UILabel *label = (id)subview;
+            int num = (int)(cropPosition * 200);
+            NSString *sign = num > 0 ? @"+" : (num < 0 ? @"-" : @"");
+            label.text = [NSString stringWithFormat:@"%@ %d", sign , abs(num)];
+        }
     }
 }
 
@@ -149,16 +169,29 @@ UIView *viewWelcome;
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.3];
     
-    UILabel *labelWelcome = [[UILabel alloc] initWithFrame:CGRectMake(viewWelcome.frame.size.width/2,0,viewWelcome.frame.size.width/2, viewWelcome.frame.size.height)];
-    [labelWelcome setTextColor:[UIColor whiteColor]];
-    [labelWelcome setBackgroundColor:[UIColor clearColor]];
-    [labelWelcome setTextAlignment:NSTextAlignmentLeft];
-    labelWelcome.lineBreakMode = NSLineBreakByWordWrapping;
-    labelWelcome.numberOfLines = 0;
-    [labelWelcome setText:@"Put me in Poppy and move the image left or right to calibrate"];
+    NSString *labelText = @"Put me in Poppy and move the image left or right to calibrate";
+    
+    UILabel *labelWelcomeL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewWelcome.frame.size.width/2, viewWelcome.frame.size.height)];
+    [labelWelcomeL setTextColor:[UIColor whiteColor]];
+    [labelWelcomeL setBackgroundColor:[UIColor clearColor]];
+    [labelWelcomeL setTextAlignment:NSTextAlignmentCenter];
+    [labelWelcomeL setFont:[UIFont systemFontOfSize:14.0]];
+    labelWelcomeL.lineBreakMode = NSLineBreakByWordWrapping;
+    labelWelcomeL.numberOfLines = 0;
+    [labelWelcomeL setText:labelText];
+    
+    UILabel *labelWelcomeR = [[UILabel alloc] initWithFrame:CGRectMake(viewWelcome.frame.size.width/2,0,viewWelcome.frame.size.width/2, viewWelcome.frame.size.height)];
+    [labelWelcomeR setTextColor:[UIColor whiteColor]];
+    [labelWelcomeR setBackgroundColor:[UIColor clearColor]];
+    [labelWelcomeR setTextAlignment:NSTextAlignmentCenter];
+    [labelWelcomeR setFont:[UIFont systemFontOfSize:14.0]];
+    labelWelcomeR.lineBreakMode = NSLineBreakByWordWrapping;
+    labelWelcomeR.numberOfLines = 0;
+    [labelWelcomeR setText:labelText];
     
     [viewWelcome addSubview:viewShadow];
-    [viewWelcome addSubview:labelWelcome];
+    [viewWelcome addSubview:labelWelcomeL];
+    [viewWelcome addSubview:labelWelcomeR];
     
     [self.view addSubview:viewWelcome];
     
@@ -168,7 +201,7 @@ UIView *viewWelcome;
                          viewWelcome.alpha = 1.0;
                      }
                      completion:^(BOOL complete){
-                         [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(welcomeTimerFired:) userInfo:nil repeats:NO];
+                         [NSTimer scheduledTimerWithTimeInterval:4.0 target:self selector:@selector(welcomeTimerFired:) userInfo:nil repeats:NO];
                      }];
 }
 
@@ -181,6 +214,7 @@ UIView *viewWelcome;
                      }
                      completion:^(BOOL complete){
                          [viewWelcome removeFromSuperview];
+                         [self showCalNumber];
                          [self showControls];
                      }];
 }

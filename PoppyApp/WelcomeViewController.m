@@ -114,17 +114,30 @@ UIView *touchView;
     // On screen controls
     UIView *screenView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
     [screenView setBackgroundColor:[UIColor whiteColor]];
-    UIImageView *screenImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"screencontrols"]];
-    [screenImgView setFrame:CGRectMake((self.view.bounds.size.width - 245)/2,(self.view.bounds.size.height - 140)/2,245,120)];
-    [screenView addSubview:[self makeLabel:@"Screen Controls" withFrame:CGRectMake(0,20,self.view.bounds.size.width,25) withAlignment:NSTextAlignmentCenter withSize:20]];
-    [screenView addSubview:[self makeLabel:@"Take either video or photos" withFrame:CGRectMake(0,68,self.view.bounds.size.width/2,25) withAlignment:NSTextAlignmentCenter withSize:16]];
-    [screenView addSubview:[self makeLabel:@"Start or stop recording" withFrame:CGRectMake(self.view.bounds.size.width/2,68,self.view.bounds.size.width/2,25) withAlignment:NSTextAlignmentCenter withSize:16]];
-    [screenView addSubview:[self makeLabel:@"View what you've taken" withFrame:CGRectMake(0,205,self.view.bounds.size.width,25) withAlignment:NSTextAlignmentCenter withSize:16]];
-    [screenView addSubview:screenImgView];
+    //UIImageView *screenImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"screencontrols"]];
+    //[screenImgView setFrame:CGRectMake((self.view.bounds.size.width - 245)/2,(self.view.bounds.size.height - 140)/2,245,120)];
+    UIImageView *bulletView1 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bullet"]];
+    [bulletView1 setFrame: CGRectMake(32, 68, 10, 10)];
+    [screenView addSubview:bulletView1];
+    UIImageView *bulletView2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bullet"]];
+    [bulletView2 setFrame: CGRectMake(32, 108, 10, 10)];
+    [screenView addSubview:bulletView2];
+    UIImageView *bulletView3 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bullet"]];
+    [bulletView3 setFrame: CGRectMake(32, 148, 10, 10)];
+    [screenView addSubview:bulletView3];
+    UIImageView *bulletView4 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bullet"]];
+    [bulletView4 setFrame: CGRectMake(32, 188, 10, 10)];
+    [screenView addSubview:bulletView4];
+    [screenView addSubview:[self makeLabel:@"Gesture Controls" withFrame:CGRectMake(0,20,self.view.bounds.size.width,25) withAlignment:NSTextAlignmentCenter withSize:24]];
+    [screenView addSubview:[self makeLabel:@"Tap the screen to focus when taking pictures" withFrame:CGRectMake(50,60,self.view.bounds.size.width,25) withAlignment:NSTextAlignmentLeft withSize:20]];
+    [screenView addSubview:[self makeLabel:@"Tap the screen to pause or play a video" withFrame:CGRectMake(50,100,self.view.bounds.size.width,25) withAlignment:NSTextAlignmentLeft withSize:20]];
+    [screenView addSubview:[self makeLabel:@"Swipe left or right to see images you’ve taken" withFrame:CGRectMake(50,140,self.view.bounds.size.width,25) withAlignment:NSTextAlignmentLeft withSize:20]];
+    [screenView addSubview:[self makeLabel:@"Or double tap on the right or left side to see\nthe next or previous image" withFrame:CGRectMake(50,180,self.view.bounds.size.width,50) withAlignment:NSTextAlignmentLeft withSize:20]];
+    //[screenView addSubview:screenImgView];
     [frameArray addObject:screenView];
     
     // Playback controls
-    
+    /*
     UIView *playbackView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
     [playbackView setBackgroundColor:[UIColor whiteColor]];
     UIImageView *playbackImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"screencontrolscamera"]];
@@ -132,6 +145,7 @@ UIView *touchView;
     [playbackView addSubview:[self makeLabel:@"Swipe left and right to see images you’ve taken. Tap the camera button to switch back to taking pictures." withFrame:CGRectMake(40,0,self.view.bounds.size.width - 200, self.view.bounds.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
     [playbackView addSubview:playbackImgView];
     [frameArray addObject:playbackView];
+     */
     
     // Calibration
     UIView *calibrateView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];

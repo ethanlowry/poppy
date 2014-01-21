@@ -31,6 +31,8 @@
 @synthesize labelAttributionR;
 @synthesize labelLikeCountL;
 @synthesize labelLikeCountR;
+@synthesize likeImageL;
+@synthesize likeImageR;
 @synthesize viewAttribution;
 
 @synthesize viewBlockAlert;
@@ -104,20 +106,22 @@ NSTimer *timerDimmer;
     
     imgSourceL = [[UIImageView alloc] initWithFrame:CGRectMake(10, 5, 20, 20)];
     imgSourceR = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth + 10, 5, 20, 20)];
-    labelAttributionL = [[UILabel alloc] initWithFrame:CGRectMake(40, 5, frameWidth - 80, 20)];
-    labelAttributionR = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth + 40, 5, frameWidth - 80, 20)];
+    labelAttributionL = [[UILabel alloc] initWithFrame:CGRectMake(40, 5, frameWidth - 60, 20)];
+    labelAttributionR = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth + 40, 5, frameWidth - 60, 20)];
     [labelAttributionL setFont:[UIFont systemFontOfSize:12]];
     [labelAttributionL setTextColor:[UIColor whiteColor]];
     [labelAttributionR setFont:[UIFont systemFontOfSize:12]];
     [labelAttributionR setTextColor:[UIColor whiteColor]];
-    labelLikeCountL = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth - 65, 5, 60, 20)];
-    labelLikeCountR = [[UILabel alloc] initWithFrame:CGRectMake(2*frameWidth - 65, 5, 60, 20)];
+    labelLikeCountL = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth - 43, 5, 20, 20)];
+    labelLikeCountR = [[UILabel alloc] initWithFrame:CGRectMake(2*frameWidth - 43, 5, 20, 20)];
     [labelLikeCountL setFont:[UIFont systemFontOfSize:12]];
     [labelLikeCountL setTextColor:[UIColor whiteColor]];
     [labelLikeCountL setTextAlignment:NSTextAlignmentRight];
     [labelLikeCountR setFont:[UIFont systemFontOfSize:12]];
     [labelLikeCountR setTextColor:[UIColor whiteColor]];
     [labelLikeCountR setTextAlignment:NSTextAlignmentRight];
+    likeImageL = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth - 22, 11, 12, 9)];
+    likeImageR = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth*2 - 22, 11, 12, 9)];
     
     [viewAttribution addSubview:imgSourceL];
     [viewAttribution addSubview:imgSourceR];
@@ -125,19 +129,26 @@ NSTimer *timerDimmer;
     [viewAttribution addSubview:labelAttributionR];
     [viewAttribution addSubview:labelLikeCountL];
     [viewAttribution addSubview:labelLikeCountR];
+    [viewAttribution addSubview:likeImageL];
+    [viewAttribution addSubview:likeImageR];
     [displayView addSubview:viewAttribution];
     
-    viewLoadingLabel = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, (self.view.bounds.size.height - 130)/2, self.view.bounds.size.width/2, 75)];
+    viewLoadingLabel = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 130)/2, self.view.bounds.size.width, 75)];
     [viewLoadingLabel setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
     UIView *viewShadow = [[UIView alloc] initWithFrame:viewLoadingLabel.bounds];
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.3];
-    UILabel *loadingLabel = [[UILabel alloc] initWithFrame:viewLoadingLabel.bounds];
-    [loadingLabel setText:@"Loading..."];
-    [loadingLabel setTextColor:[UIColor whiteColor]];
-    [loadingLabel setTextAlignment:NSTextAlignmentCenter];
+    UILabel *loadingLabelL = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, viewLoadingLabel.frame.size.width/2, viewLoadingLabel.frame.size.height)];
+    [loadingLabelL setText:@"Loading..."];
+    [loadingLabelL setTextColor:[UIColor whiteColor]];
+    [loadingLabelL setTextAlignment:NSTextAlignmentCenter];
+    UILabel *loadingLabelR = [[UILabel alloc] initWithFrame:CGRectMake(viewLoadingLabel.frame.size.width/2, 0, viewLoadingLabel.frame.size.width/2, viewLoadingLabel.frame.size.height)];
+    [loadingLabelR setText:@"Loading..."];
+    [loadingLabelR setTextColor:[UIColor whiteColor]];
+    [loadingLabelR setTextAlignment:NSTextAlignmentCenter];
     [viewLoadingLabel addSubview:viewShadow];
-    [viewLoadingLabel addSubview:loadingLabel];
+    [viewLoadingLabel addSubview:loadingLabelL];
+    [viewLoadingLabel addSubview:loadingLabelR];
     [viewLoadingLabel setHidden:YES];
     [self.view addSubview:viewLoadingLabel];
     
@@ -164,7 +175,6 @@ NSTimer *timerDimmer;
         [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
     }
     
-    NSLog(@"showing viewer controls");
     [self dimView:0.5 withAlpha:1.0 withView:viewAttribution withTimer:NO];
     [self dimView:0.5 withAlpha:1.0 withView:viewViewerControls withTimer:YES];
 }
@@ -251,43 +261,47 @@ NSTimer *timerDimmer;
         if (!viewBlockAlert) {
             viewBlockAlert = [[UIView alloc] initWithFrame:self.view.bounds];
             [viewBlockAlert setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin];
-            
             UIView *viewShadow = [[UIView alloc] initWithFrame:self.view.bounds];
             viewShadow.backgroundColor = [UIColor blackColor];
             viewShadow.alpha = 0.3;
             UITapGestureRecognizer *handleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissBlockAlert)];
             [viewShadow addGestureRecognizer:handleTap];
             [viewBlockAlert addSubview:viewShadow];
-            
-            UILabel *blockLabel = [[UILabel alloc] initWithFrame:CGRectMake(viewBlockAlert.frame.size.width/2,(viewBlockAlert.frame.size.height - 120)/2,viewBlockAlert.frame.size.width/2,60)];
-            [blockLabel setTextAlignment:NSTextAlignmentCenter];
-            [blockLabel setBackgroundColor:[UIColor blackColor]];
-            [blockLabel setTextColor:[UIColor whiteColor]];
-            [blockLabel setText: @"Inappropriate or not 3D?"];
-            CALayer *bottomBorder = [CALayer layer];
-            bottomBorder.frame = CGRectMake(40, 59, blockLabel.frame.size.width-80, 1.0);
-            bottomBorder.backgroundColor = [UIColor whiteColor].CGColor;
-            [blockLabel.layer addSublayer:bottomBorder];
-            [viewBlockAlert addSubview:blockLabel];
-            
-            UIButton *buttonConfirmBlock = [[UIButton alloc] initWithFrame:CGRectMake(viewBlockAlert.frame.size.width/2,viewBlockAlert.frame.size.height/2, viewBlockAlert.frame.size.width/4, 60)];
-            [buttonConfirmBlock setTitle:@"Report" forState:UIControlStateNormal];
-            [buttonConfirmBlock addTarget:self action:@selector(markBlocked) forControlEvents:UIControlEventTouchUpInside];
-            //[buttonConfirmBlock.titleLabel setTextAlignment:NSTextAlignmentLeft];
-            [buttonConfirmBlock setBackgroundColor:[UIColor blackColor]];
-            [viewBlockAlert addSubview:buttonConfirmBlock];
-            
-            UIButton *buttonCancelBlock = [[UIButton alloc] initWithFrame:CGRectMake(viewBlockAlert.frame.size.width*3/4, viewBlockAlert.frame.size.height/2, viewBlockAlert.frame.size.width/4, 60)];
-            [buttonCancelBlock setTitle:@"Cancel" forState:UIControlStateNormal];
-            [buttonCancelBlock addTarget:self action:@selector(dismissBlockAlert) forControlEvents:UIControlEventTouchUpInside];
-            //[buttonCancelBlock.titleLabel setTextAlignment:NSTextAlignmentRight];
-            [buttonCancelBlock setBackgroundColor:[UIColor blackColor]];
-            [viewBlockAlert addSubview:buttonCancelBlock];
+            [self addBlockAlertContent:0.0];
+            [self addBlockAlertContent:viewBlockAlert.frame.size.width/2];
         }
         
         [self.view addSubview:viewBlockAlert];
         [self.view bringSubviewToFront:viewBlockAlert];
     }
+}
+
+- (void) addBlockAlertContent:(float)offset
+{
+    UILabel *blockLabel = [[UILabel alloc] initWithFrame:CGRectMake(offset,(viewBlockAlert.frame.size.height - 120)/2,viewBlockAlert.frame.size.width/2,60)];
+    [blockLabel setTextAlignment:NSTextAlignmentCenter];
+    [blockLabel setBackgroundColor:[UIColor blackColor]];
+    [blockLabel setTextColor:[UIColor whiteColor]];
+    [blockLabel setText: @"Inappropriate or not 3D?"];
+    CALayer *bottomBorder = [CALayer layer];
+    bottomBorder.frame = CGRectMake(40, 59, blockLabel.frame.size.width-80, 1.0);
+    bottomBorder.backgroundColor = [UIColor whiteColor].CGColor;
+    [blockLabel.layer addSublayer:bottomBorder];
+    [viewBlockAlert addSubview:blockLabel];
+    
+    UIButton *buttonConfirmBlock = [[UIButton alloc] initWithFrame:CGRectMake(offset,viewBlockAlert.frame.size.height/2, viewBlockAlert.frame.size.width/4, 60)];
+    [buttonConfirmBlock setTitle:@"Report" forState:UIControlStateNormal];
+    [buttonConfirmBlock addTarget:self action:@selector(markBlocked) forControlEvents:UIControlEventTouchUpInside];
+    //[buttonConfirmBlock.titleLabel setTextAlignment:NSTextAlignmentLeft];
+    [buttonConfirmBlock setBackgroundColor:[UIColor blackColor]];
+    [viewBlockAlert addSubview:buttonConfirmBlock];
+    
+    UIButton *buttonCancelBlock = [[UIButton alloc] initWithFrame:CGRectMake(offset + viewBlockAlert.frame.size.width/4, viewBlockAlert.frame.size.height/2, viewBlockAlert.frame.size.width/4, 60)];
+    [buttonCancelBlock setTitle:@"Cancel" forState:UIControlStateNormal];
+    [buttonCancelBlock addTarget:self action:@selector(dismissBlockAlert) forControlEvents:UIControlEventTouchUpInside];
+    //[buttonCancelBlock.titleLabel setTextAlignment:NSTextAlignmentRight];
+    [buttonCancelBlock setBackgroundColor:[UIColor blackColor]];
+    [viewBlockAlert addSubview:buttonCancelBlock];
 }
 
 - (void)dismissBlockAlert
@@ -394,52 +408,56 @@ NSTimer *timerDimmer;
             if (showNext) {
                 directionNext = YES;
                 imageIndex = imageIndex + 1;
-                if (imageIndex >= imageArray.count) {
-                    imageIndex = 0;
+                if (imageIndex > imageArray.count - 5 && !showPopular) {
+                    [self loadInfinite];
                 }
             } else {
                 directionNext = NO;
                 imageIndex = imageIndex - 1;
+            }
+            
+            if(imageIndex >= 0 && imageIndex < imageArray.count) {
+                // Animate the old image away
+                float xPosition = directionNext ? -imgView.frame.size.width : imgView.frame.size.width;
+                UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
+                [animatedImgView setImage:imgView.image];
+                [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
+                [self.view addSubview:animatedImgView];
+                [imgView setImage:nil];
+                CGRect finalFrame = animatedImgView.frame;
+                finalFrame.origin.x = xPosition;
+                [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
+                    [animatedImgView removeFromSuperview];
+                }];
+                
+                [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
+                NSOperationQueue *queue = [NSOperationQueue new];
+                NSInvocationOperation *operation = [[NSInvocationOperation alloc]
+                                                    initWithTarget:self
+                                                    selector:@selector(loadAndDisplayCurrentImage)
+                                                    object:nil];
+                [queue addOperation:operation];
+                // Now preload the next (or previous) image
+                NSInvocationOperation *preload;
+                if (showNext) {
+                    preload = [[NSInvocationOperation alloc]
+                               initWithTarget:self
+                               selector:@selector(loadNextImage)
+                               object:nil];
+                } else {
+                    preload = [[NSInvocationOperation alloc]
+                               initWithTarget:self
+                               selector:@selector(loadPreviousImage)
+                               object:nil];
+                }
+                [queue addOperation:preload];
+            } else {
                 if (imageIndex < 0) {
+                    imageIndex = 0;
+                } else {
                     imageIndex = imageArray.count - 1;
                 }
             }
-            
-            // Animate the old image away
-            float xPosition = directionNext ? -imgView.frame.size.width : imgView.frame.size.width;
-            UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
-            [animatedImgView setImage:imgView.image];
-            [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
-            [self.view addSubview:animatedImgView];
-            [imgView setImage:nil];
-            CGRect finalFrame = animatedImgView.frame;
-            finalFrame.origin.x = xPosition;
-            [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
-                [animatedImgView removeFromSuperview];
-            }];
-
-            
-            [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
-            NSOperationQueue *queue = [NSOperationQueue new];
-            NSInvocationOperation *operation = [[NSInvocationOperation alloc]
-                                                initWithTarget:self
-                                                selector:@selector(loadAndDisplayCurrentImage)
-                                                object:nil];
-            [queue addOperation:operation];
-            // Now preload the next (or previous) image
-            NSInvocationOperation *preload;
-            if (showNext) {
-                preload = [[NSInvocationOperation alloc]
-                           initWithTarget:self
-                           selector:@selector(loadNextImage)
-                           object:nil];
-            } else {
-                preload = [[NSInvocationOperation alloc]
-                           initWithTarget:self
-                           selector:@selector(loadPreviousImage)
-                           object:nil];
-            }
-            [queue addOperation:preload];
             
             [self showViewerControls];
         } else {
@@ -456,7 +474,6 @@ NSTimer *timerDimmer;
 
 - (void)dimView:(float)duration withAlpha:(float)alpha withView:(UIView *)view withTimer:(BOOL)showTimer
 {
-    NSLog(@"dim the view");
     [timerDimmer invalidate];
     timerDimmer = nil;
     
@@ -590,18 +607,31 @@ NSTimer *timerDimmer;
     [self showViewerControls];
 }
 
+- (void)loadInfinite
+{
+    NSLog(@"LOAD INFINITE: %d", imageArray.count);
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    if((poppyAppDelegate.recentPage + 1) * poppyAppDelegate.recentLimit <= imageArray.count) {
+        NSLog(@"LOAD MORE DATA!");
+        poppyAppDelegate.recentPage = poppyAppDelegate.recentPage + 1;
+        [poppyAppDelegate loadJSON:@"recent"];
+    }
+ }
+
 - (void)updateLikeLabels:(int)count
 {
-    NSString *likeCount;
-    if (count == 0) {
-        likeCount = @"";
-    } else if (count == 1) {
-        likeCount = [NSString stringWithFormat:@"%d Like", count];
+    if(count > 0) {
+        [likeImageL setImage:[UIImage imageNamed:@"favorite"]];
+        [likeImageR setImage:[UIImage imageNamed:@"favorite"]];
+        [labelLikeCountL setText:[NSString stringWithFormat:@"%d", count]];
+        [labelLikeCountR setText:[NSString stringWithFormat:@"%d", count]];
     } else {
-        likeCount = [NSString stringWithFormat:@"%d Likes", count];
+        [likeImageL setImage:nil];
+        [likeImageR setImage:nil];
+        [labelLikeCountL setText:@""];
+        [labelLikeCountR setText:@""];
     }
-    [labelLikeCountL setText:likeCount];
-    [labelLikeCountR setText:likeCount];
 }
 
 
