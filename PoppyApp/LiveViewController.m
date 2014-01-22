@@ -190,8 +190,6 @@ int currentIndex = -1;
     [self addGestures:touchView];
     [self.view addSubview:touchView];
     
-    [self activateCamera];
-    
     if (!videoBeep) {
         NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"beep" ofType:@"wav"];
         AudioServicesCreateSystemSoundID((__bridge CFURLRef)([NSURL fileURLWithPath: soundPath]), &videoBeep);
@@ -214,7 +212,7 @@ int currentIndex = -1;
         
          if (!ignoreVolumeDown) {
          NSLog(@"VOLUME DOWN!");
-         [weakSelf showMedia:prev];
+         [weakSelf showMedia:next];
          }
     };
     
@@ -230,6 +228,7 @@ int currentIndex = -1;
         [buttonStealer startStealingVolumeButtonEvents];
         [self switchToViewerMode:self];
     } else {
+        [self activateCamera];
         [self showCameraControls];
     }
 }
@@ -275,70 +274,79 @@ int currentIndex = -1;
             [self hideView:viewCameraControls];
         }
         
-        [mainMoviePlayer stop];
-        [mainMoviePlayer.view removeFromSuperview];
-        self.mainMoviePlayer = nil;
+        NSLog(@"CURRENT INDEX: %d", currentIndex);
+        NSLog(@"DIRECTION: %d", direction);
         
-        if (direction == prev) {
+        if(currentIndex == -1) {
+            currentIndex = assetCount;
+        }
+        
+        if (direction == next) {
+            directionNext = YES;
+            currentIndex = currentIndex - 1;
+        } else {
             directionNext = NO;
-            if (currentIndex > 0) {
-                currentIndex = currentIndex - 1;
+            currentIndex = currentIndex + 1;
+        }
+        NSLog(@"CURRENT INDEX: %d", currentIndex);
+        
+        if(currentIndex >= 0 && currentIndex < assetCount) {
+            [mainMoviePlayer stop];
+            [mainMoviePlayer.view removeFromSuperview];
+            self.mainMoviePlayer = nil;
+            
+            UIImage *tempImage = imgView.image;
+            [imgView setImage:nil];
+            
+            [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
+                 {
+                     if (asset) {
+                         NSLog(@"got the asset: %d", index);
+                         ALAssetRepresentation *assetRepresentation = [asset defaultRepresentation];
+                         UIImageOrientation orientation = UIImageOrientationUp;
+                         NSNumber* orientationValue = [asset valueForProperty:@"ALAssetPropertyOrientation"];
+                         if (orientationValue != nil) {
+                             orientation = [orientationValue intValue];
+                         }
+                         UIImage *fullScreenImage = [UIImage imageWithCGImage:[assetRepresentation fullScreenImage] scale:[assetRepresentation scale] orientation:orientation];
+                         NSLog(@"image stuff, wide: %f height: %f", fullScreenImage.size.width, fullScreenImage.size.height);
+                         
+                         [imgView setImage:fullScreenImage];
+                         [imgView setHidden:NO];
+                         
+                         if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
+                             [self playMovie:asset];
+                         }
+                         
+                         // Animate the old image away
+                         if (tempImage) {
+                             float xPosition = directionNext ? -imgView.frame.size.width : imgView.frame.size.width;
+                             UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
+                             [animatedImgView setImage:tempImage];
+                             [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
+                             [self.view addSubview:animatedImgView];
+                             
+                             CGRect finalFrame = animatedImgView.frame;
+                             finalFrame.origin.x = xPosition;
+                             [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
+                                 [animatedImgView removeFromSuperview];
+
+                             }];
+                         }
+
+                         *stop = YES;
+                     }
+                 }];
+            NSLog(@"GOT HERE");
+            [self showViewerControls];
+        } else {
+            if (currentIndex < 0) {
+                currentIndex = 0;
             } else {
                 currentIndex = assetCount - 1;
             }
-        } else {
-            directionNext = YES;
-            if (currentIndex < assetCount - 1) {
-                currentIndex = currentIndex + 1;
-            } else {
-                currentIndex = 0;
-            }
         }
         
-        UIImage *tempImage = imgView.image;
-        [imgView setImage:nil];
-        
-        [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
-             {
-                 if (asset) {
-                     NSLog(@"got the asset: %d", index);
-                     ALAssetRepresentation *assetRepresentation = [asset defaultRepresentation];
-                     UIImageOrientation orientation = UIImageOrientationUp;
-                     NSNumber* orientationValue = [asset valueForProperty:@"ALAssetPropertyOrientation"];
-                     if (orientationValue != nil) {
-                         orientation = [orientationValue intValue];
-                     }
-                     UIImage *fullScreenImage = [UIImage imageWithCGImage:[assetRepresentation fullScreenImage] scale:[assetRepresentation scale] orientation:orientation];
-                     NSLog(@"image stuff, wide: %f height: %f", fullScreenImage.size.width, fullScreenImage.size.height);
-                     
-                     [imgView setImage:fullScreenImage];
-                     [imgView setHidden:NO];
-                     
-                     if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
-                         [self playMovie:asset];
-                     }
-                     
-                     // Animate the old image away
-                     if (tempImage) {
-                         float xPosition = directionNext ? -imgView.frame.size.width : imgView.frame.size.width;
-                         UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
-                         [animatedImgView setImage:tempImage];
-                         [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
-                         [self.view addSubview:animatedImgView];
-                         
-                         CGRect finalFrame = animatedImgView.frame;
-                         finalFrame.origin.x = xPosition;
-                         [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ animatedImgView.frame = finalFrame; } completion:^(BOOL finished){
-                             [animatedImgView removeFromSuperview];
-
-                         }];
-                     }
-
-                     *stop = YES;
-                 }
-             }];
-        NSLog(@"GOT HERE");
-        [self showViewerControls];
     } else {
         NSLog(@"NO IMAGES IN THE ALBUM");
         [self showNoMediaAlert];
@@ -868,8 +876,7 @@ int currentIndex = -1;
             }
         }
     }];
-    [self showMedia:prev];
-    
+    [self showMedia:next];
 }
 
 - (void) switchToCameraMode
@@ -883,7 +890,7 @@ int currentIndex = -1;
 - (void) switchToViewerMode: (id) sender
 {
     [self showViewerControls];
-    [self showMedia:prev];
+    [self showMedia:next];
 }
 
 - (void)dimmerTimerFired:(NSTimer *)timer
