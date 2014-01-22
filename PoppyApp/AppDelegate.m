@@ -13,6 +13,8 @@
 #import "HomeViewController.h"
 #import "Flurry.h"
 
+#define kVersion @"1"
+
 @implementation AppDelegate
 
 @synthesize recentImageArray;
@@ -26,7 +28,6 @@
 
 float previousBrightness;
 int retry;
-int version = 1;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
@@ -55,15 +56,19 @@ int version = 1;
 
 - (void)checkVersion
 {
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://poppy3d.com/app/status.json?ver=%d", version]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://poppy3d.com/app/status.json?ver=%@", kVersion]];
     NSURLRequest *request = [NSURLRequest requestWithURL:url
                                              cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                                          timeoutInterval:30.0];
     NSURLResponse *response;
     NSError *error;
     NSData* data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    NSDictionary *jsonHash = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    versionCheck = [jsonHash objectForKey:@"status"];
+    if(!error){
+        NSDictionary *jsonHash = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        versionCheck = [jsonHash objectForKey:@"status"];
+    } else {
+        versionCheck = nil;
+    }
 }
 
 - (void)loadImageArrays

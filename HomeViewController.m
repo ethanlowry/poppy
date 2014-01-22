@@ -122,7 +122,7 @@ BOOL showPopular;
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if ([poppyAppDelegate.versionCheck isEqualToString:@"ok"]) {
+    if (!poppyAppDelegate.versionCheck || [poppyAppDelegate.versionCheck isEqualToString:@"ok"]) {
         if (![defaults boolForKey:@"isCalibrated"]) {
             [self runCalibration];
         } else {
