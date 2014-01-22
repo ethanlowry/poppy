@@ -212,7 +212,7 @@ NSTimer *timerDimmer;
         NSString *item_id = imageArray[imageIndex][@"_id"];
         NSString *addText;
         NSString *favorited;
-        int likeCount = [imageArray[imageIndex][@"poppy_like_count"] intValue];
+        int likeCount = [imageArray[imageIndex][@"display_points"] intValue];
         if ([imageArray[imageIndex][@"favorited"] isEqualToString:@"false"]) {
             addText = @"add";
             favorited = @"true";
@@ -248,7 +248,7 @@ NSTimer *timerDimmer;
         NSDictionary *oldItem = (NSDictionary *)[imageArray objectAtIndex:imageIndex];
         [newItem addEntriesFromDictionary:oldItem];
         [newItem setObject:favorited forKey:@"favorited"];
-        [newItem setObject:[NSNumber numberWithInt:likeCount] forKey:@"poppy_like_count"];
+        [newItem setObject:[NSNumber numberWithInt:likeCount] forKey:@"display_points"];
         [imageArray replaceObjectAtIndex:imageIndex withObject:newItem];
 
         [self showViewerControls];
@@ -547,7 +547,7 @@ NSTimer *timerDimmer;
             NSString *sourceImageName = imageArray[imageIndex][@"source"];
             [imgSourceL setImage:[UIImage imageNamed:sourceImageName]];
             [imgSourceR setImage:[UIImage imageNamed:sourceImageName]];
-            int likeCount = [imageArray[imageIndex][@"poppy_like_count"] intValue];
+            int likeCount = [imageArray[imageIndex][@"display_points"] intValue];
             [self updateLikeLabels:likeCount];
             [self showViewerControls];
         });
