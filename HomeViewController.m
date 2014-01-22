@@ -8,6 +8,7 @@
 
 #import "HomeViewController.h"
 #import "AppDelegate.h"
+#import "UpgradeViewController.h"
 
 @interface HomeViewController ()
 
@@ -120,29 +121,40 @@ BOOL showPopular;
 - (void)viewDidAppear:(BOOL)animated
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if (![defaults boolForKey:@"isCalibrated"]) {
-        [self runCalibration];
-    } else {
-        if (!buttonStealer) {
-            __weak typeof(self) weakSelf = self;
-            buttonStealer = [[RBVolumeButtons alloc] init];
-            buttonStealer.upBlock = ^{
-                // + volume button pressed
-                NSLog(@"VOLUME UP!");
-                [weakSelf launchCamera];
-            };
-        }
-        [buttonStealer startStealingVolumeButtonEvents];
-
-        [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]]];
-        
-        if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
-            [self showLandscape];
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if ([poppyAppDelegate.versionCheck isEqualToString:@"ok"]) {
+        if (![defaults boolForKey:@"isCalibrated"]) {
+            [self runCalibration];
         } else {
-            [self showPortrait];
+            if (!buttonStealer) {
+                __weak typeof(self) weakSelf = self;
+                buttonStealer = [[RBVolumeButtons alloc] init];
+                buttonStealer.upBlock = ^{
+                    // + volume button pressed
+                    NSLog(@"VOLUME UP!");
+                    [weakSelf launchCamera];
+                };
+            }
+            [buttonStealer startStealingVolumeButtonEvents];
+
+            [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]]];
+            
+            if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
+                [self showLandscape];
+            } else {
+                [self showPortrait];
+            }
         }
+    } else {
+        [self showUpgradeMessage];
     }
-    }
+}
+
+-(void) showUpgradeMessage
+{
+    UpgradeViewController *uvc = [[UpgradeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    [self presentViewController:uvc animated:NO completion:nil];
+}
 
 -(void) showLandscape
 {

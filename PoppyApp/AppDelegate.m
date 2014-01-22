@@ -22,9 +22,11 @@
 @synthesize isConnected;
 @synthesize recentPage;
 @synthesize recentLimit;
+@synthesize versionCheck;
 
 float previousBrightness;
 int retry;
+int version = 1;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
@@ -38,6 +40,7 @@ int retry;
     [self resetScreenTimer];
     self.window.backgroundColor = [UIColor blackColor];
     self.window.layer.speed = 1.5f;
+    [self checkVersion];
 
     HomeViewController *hvc = [[HomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     [self.window setRootViewController:hvc];
@@ -50,6 +53,19 @@ int retry;
     return YES;
 }
 
+- (void)checkVersion
+{
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://poppy3d.com/app/status.json?ver=%d", version]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url
+                                             cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                         timeoutInterval:30.0];
+    NSURLResponse *response;
+    NSError *error;
+    NSData* data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    NSDictionary *jsonHash = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    versionCheck = [jsonHash objectForKey:@"status"];
+}
+
 - (void)loadImageArrays
 {
     retry = 0;
@@ -57,6 +73,7 @@ int retry;
     recentImageArray = [[NSMutableArray alloc] init];
     imageCache = [[NSCache alloc] init];
     [imageCache setCountLimit:8];
+    
     [self loadJSON:@"top"];
     [self loadJSON:@"recent"];
 }

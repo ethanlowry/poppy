@@ -18,6 +18,7 @@
 @property (strong, nonatomic) UIWindow *window;
 @property (nonatomic) int recentPage;
 @property (nonatomic) int recentLimit;
+@property (strong, nonatomic) NSString *versionCheck;
 
 -(void)loadImageArrays;
 -(void)loadJSON:(NSString *)sort;
