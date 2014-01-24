@@ -19,7 +19,6 @@
 
 @synthesize recentImageArray;
 @synthesize topImageArray;
-@synthesize imageCache;
 @synthesize screenTimer;
 @synthesize isConnected;
 @synthesize recentPage;
@@ -76,8 +75,6 @@ int retry;
     retry = 0;
     topImageArray = [[NSMutableArray alloc] init];
     recentImageArray = [[NSMutableArray alloc] init];
-    imageCache = [[NSCache alloc] init];
-    [imageCache setCountLimit:8];
     
     [self loadJSON:@"top"];
     [self loadJSON:@"recent"];
@@ -146,8 +143,6 @@ int retry;
     NSURL *imageURL = [NSURL URLWithString:imageArray[recentPage * recentLimit][@"media_url"]];
     NSURL *url = imageURL;
     NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
-    UIImage *image = [[UIImage alloc] initWithData:imageData];
-    [imageCache setObject:image forKey:imageArray[recentPage * recentLimit][@"_id"]];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

@@ -3,3 +3,7 @@
 .DS_Store
 
 .DS_Store
+
+*.xcuserstate
+
+Poppy.xcodeproj/project.xcworkspace/xcuserdata/ethanlowry.xcuserdatad/UserInterfaceState.xcuserstate
