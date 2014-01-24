@@ -37,7 +37,6 @@ CATransform3D CATransform3DRotatedWithPerspectiveFactor(double factor) {
 @synthesize movieWriter;
 @synthesize uberView;
 @synthesize imgView;
-@synthesize galleryWebView;
 @synthesize finalFilter;
 @synthesize displayFilter;
 @synthesize viewDeleteAlert;
@@ -96,9 +95,9 @@ int currentIndex = -1;
         [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
                                       resultBlock:^(ALAssetsGroup *group) {
                                           if (group) {
-                                              NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
+                                              //NSLog(@"added album:%@", [group valueForProperty:ALAssetsGroupPropertyName]);
                                           } else {
-                                              NSLog(@"no group created, probably because it already exists");
+                                              //NSLog(@"no group created, probably because it already exists");
                                           }
                                           [self loadAlbumWithName:@"Poppy"];
                                       }
@@ -108,14 +107,14 @@ int currentIndex = -1;
     }
     
     xOffset = [[NSUserDefaults standardUserDefaults] floatForKey:@"xOffset"];
-    NSLog(@"xOffset: %f", xOffset);
+    //NSLog(@"xOffset: %f", xOffset);
     
     [self.view setBackgroundColor:[UIColor darkGrayColor]];
 }
 
 - (void) shutterPressed
 {
-    NSLog(@"SHUTTER PRESSED");
+    //NSLog(@"SHUTTER PRESSED");
     currentIndex = -1;
     if (isWatching) {
         [self hideViewer];
@@ -139,7 +138,7 @@ int currentIndex = -1;
 
 - (void) shutterButtonPressed: (id) sender
 {
-    NSLog(@"ON SCREEN SHUTTER BUTTON PRESSED");
+    //NSLog(@"ON SCREEN SHUTTER BUTTON PRESSED");
     [self showCameraControls];
     //[[MPMusicPlayerController applicationMusicPlayer] setVolume:1.0]; // this uses the volume button stealer as the trigger
     buttonStealer.upBlock();
@@ -150,13 +149,12 @@ int currentIndex = -1;
     // clear away the view mode UI
     isWatching = NO;
     [imgView setHidden:YES];
-    [galleryWebView removeFromSuperview];
-    galleryWebView = nil;
+    
     [self.mainMoviePlayer stop];
     [mainMoviePlayer.view removeFromSuperview]; //remove the movie player
     self.mainMoviePlayer = nil;
     currentIndex = -1;
-    
+    [viewNoMedia removeFromSuperview];
     [viewViewerControls removeFromSuperview]; //remove the camera button
     [demoClearView removeFromSuperview];
     demoClearView = nil;
@@ -203,7 +201,7 @@ int currentIndex = -1;
     buttonStealer.upBlock = ^{
         // + volume button pressed
         if (!ignoreVolumeDown) {
-            NSLog(@"VOLUME UP!");
+            //NSLog(@"VOLUME UP!");
             [weakSelf shutterPressed];
         }
     };
@@ -211,7 +209,7 @@ int currentIndex = -1;
         // - volume button pressed
         
          if (!ignoreVolumeDown) {
-         NSLog(@"VOLUME DOWN!");
+         //NSLog(@"VOLUME DOWN!");
          [weakSelf showMedia:next];
          }
     };
@@ -223,7 +221,7 @@ int currentIndex = -1;
 {
     [self activateView];
     if (isWatching) {
-        NSLog(@"RETURNING TO THE VIEWER");
+        //NSLog(@"RETURNING TO THE VIEWER");
         imgView.image = nil;
         [buttonStealer startStealingVolumeButtonEvents];
         [self switchToViewerMode:self];
@@ -254,28 +252,31 @@ int currentIndex = -1;
     [touchView addGestureRecognizer:swipeRightGesture];
 }
 
+- (void)hideCamera
+{
+    [videoCamera stopCameraCapture];
+    self.videoCamera = nil;
+    [stillCamera stopCameraCapture];
+    self.stillCamera = nil;
+    [finalFilter removeAllTargets];
+    [displayFilter removeAllTargets];
+    [self hideView:viewCameraControls];
+}
+
 
 - (void)showMedia:(int)direction
 {
     // show image or play video
     int assetCount = [assetsGroup numberOfAssets];
-    NSLog(@"album count %d", assetCount);
+    //NSLog(@"album count %d", assetCount);
+    isWatching = YES; // we're in view mode, not capture mode
+    [self showViewerControls];
+    //tear down everything about capture mode
+    [self hideCamera];
     if (assetCount > 0) {
-        if (!isWatching) {
-            isWatching = YES; // we're in view mode, not capture mode
-            [self showViewerControls];
-            //tear down everything about capture mode
-            [videoCamera stopCameraCapture];
-            self.videoCamera = nil;
-            [stillCamera stopCameraCapture];
-            self.stillCamera = nil;
-            [finalFilter removeAllTargets];
-            [displayFilter removeAllTargets];
-            [self hideView:viewCameraControls];
-        }
-        
-        NSLog(@"CURRENT INDEX: %d", currentIndex);
-        NSLog(@"DIRECTION: %d", direction);
+        //NSLog(@"CURRENT INDEX: %d", currentIndex);
+        //NSLog(@"DIRECTION: %d", direction);
+        [viewNoMedia removeFromSuperview];
         
         if(currentIndex == -1) {
             currentIndex = assetCount;
@@ -288,7 +289,7 @@ int currentIndex = -1;
             directionNext = NO;
             currentIndex = currentIndex + 1;
         }
-        NSLog(@"CURRENT INDEX: %d", currentIndex);
+        //NSLog(@"CURRENT INDEX: %d", currentIndex);
         
         if(currentIndex >= 0 && currentIndex < assetCount) {
             [mainMoviePlayer stop];
@@ -301,7 +302,7 @@ int currentIndex = -1;
             [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
                  {
                      if (asset) {
-                         NSLog(@"got the asset: %d", index);
+                         //NSLog(@"got the asset: %d", index);
                          ALAssetRepresentation *assetRepresentation = [asset defaultRepresentation];
                          UIImageOrientation orientation = UIImageOrientationUp;
                          NSNumber* orientationValue = [asset valueForProperty:@"ALAssetPropertyOrientation"];
@@ -309,7 +310,7 @@ int currentIndex = -1;
                              orientation = [orientationValue intValue];
                          }
                          UIImage *fullScreenImage = [UIImage imageWithCGImage:[assetRepresentation fullScreenImage] scale:[assetRepresentation scale] orientation:orientation];
-                         NSLog(@"image stuff, wide: %f height: %f", fullScreenImage.size.width, fullScreenImage.size.height);
+                         //NSLog(@"image stuff, wide: %f height: %f", fullScreenImage.size.width, fullScreenImage.size.height);
                          
                          [imgView setImage:fullScreenImage];
                          [imgView setHidden:NO];
@@ -317,6 +318,7 @@ int currentIndex = -1;
                          if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
                              [self playMovie:asset];
                          }
+                         [self showViewerControls];
                          
                          // Animate the old image away
                          if (tempImage) {
@@ -337,8 +339,7 @@ int currentIndex = -1;
                          *stop = YES;
                      }
                  }];
-            NSLog(@"GOT HERE");
-            [self showViewerControls];
+            //[self showViewerControls];
         } else {
             if (currentIndex < 0) {
                 currentIndex = 0;
@@ -350,8 +351,8 @@ int currentIndex = -1;
     } else {
         NSLog(@"NO IMAGES IN THE ALBUM");
         [self showNoMediaAlert];
-        //UNCOMMENT THE NEXT LINE FOR SIMULATOR TESTING PURPOSES ONLY. SHOW VIEWERCONTROLS EVEN WHEN THERE ARE NO PHOTOS
-        //[self showViewerControls];
+        imgView.image = [self imageWithColor:[UIColor darkGrayColor]];
+        [imgView setHidden:NO];
     }
 
 }
@@ -391,7 +392,7 @@ int currentIndex = -1;
                          viewNoMedia.alpha = 1.0;
                      }
                      completion:^(BOOL complete){
-                         [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(noMediaTimerFired:) userInfo:nil repeats:NO];
+                         //[NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(noMediaTimerFired:) userInfo:nil repeats:NO];
                      }];
 }
 
@@ -412,9 +413,9 @@ int currentIndex = -1;
     [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAlbum
                                 usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
                                     if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:name]) {
-                                        NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
+                                        //NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
                                         assetsGroup = group;
-                                        NSLog(@"assetGroup is now %@", [assetsGroup valueForProperty:ALAssetsGroupPropertyName]);
+                                        //NSLog(@"assetGroup is now %@", [assetsGroup valueForProperty:ALAssetsGroupPropertyName]);
                                      }
                                 }
                               failureBlock:^(NSError* error) {
@@ -444,7 +445,7 @@ int currentIndex = -1;
 }
 
 - (void)moviePlayBackDidFinish:(id)sender {
-    NSLog(@"Movie playback finished");
+    //NSLog(@"Movie playback finished");
     [mainMoviePlayer stop];
     [mainMoviePlayer.view removeFromSuperview];
     self.mainMoviePlayer = nil;
@@ -454,7 +455,6 @@ int currentIndex = -1;
 - (void)activateCamera
 {
     if (isVideo) {
-        NSLog(@"VIDEO");
         // video camera setup
         if ([self deviceModelNumber] == 40) {
             videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetiFrame960x540 cameraPosition:AVCaptureDevicePositionBack];
@@ -465,11 +465,10 @@ int currentIndex = -1;
         videoCamera.horizontallyMirrorRearFacingCamera = NO;
         [self showFilteredDisplay:videoCamera];
     } else {
-        NSLog(@"STILL");
         //still camera setup
         if ([self deviceModelNumber] == 40) {
             stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetiFrame960x540 cameraPosition:AVCaptureDevicePositionBack];
-        } else if ([self deviceModelNumber] == 41) {
+        } else if ([self deviceModelNumber] == 41 || [self deviceModelNumber] == 99) {
             stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1280x720  cameraPosition:AVCaptureDevicePositionBack];
         } else {
             stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto  cameraPosition:AVCaptureDevicePositionBack];
@@ -484,13 +483,7 @@ int currentIndex = -1;
 - (void)showFilteredDisplay:(id)camera
 {
 
-    CGRect finalCropRect;
-//    if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
-//        finalCropRect = CGRectMake(xOffset + (1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
-//    } else {
-        finalCropRect = CGRectMake(xOffset + (1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
-//    }
-    
+    CGRect finalCropRect = CGRectMake(xOffset + (1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
     displayFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
     [camera addTarget:displayFilter];
     [displayFilter addTarget:uberView];
@@ -500,27 +493,16 @@ int currentIndex = -1;
 - (void)applyFilters:(id)camera
 {
     @autoreleasepool {
-        CGRect finalCropRect;
-//        if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
-//            finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2 + cropFactor * .175, cropFactor, cropFactor * .65);
-//        } else {
-            finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
-//        }
-        
+        CGRect finalCropRect = CGRectMake((1.0 - cropFactor)/2, (1.0 - cropFactor)/2, cropFactor, cropFactor);
         finalFilter = [[GPUImageCropFilter alloc] initWithCropRegion:finalCropRect];
         
         GPUImageFilter *initialFilter = [[GPUImageFilter alloc] init];
         GPUImageCropFilter *cropLeft;
         GPUImageCropFilter *cropRight;
-        
-        //if([camera isKindOfClass:[GPUImageStillCamera class]] && [self deviceModelNumber] == 41) {
-        //    NSLog(@"still output for iPhone 4S");
-        //    //[initialFilter forceProcessingAtSize:CGSizeMake(1920, 1440)];
-        //}
 
         // SPLIT THE IMAGE IN HALF
         //take into account the xOffset
-        NSLog(@"XOFFSET: %f", xOffset);
+        //NSLog(@"XOFFSET: %f", xOffset);
         
         float frameWidth = 0.5 - fabs(xOffset);
         if (xOffset > 0) {
@@ -577,7 +559,7 @@ int currentIndex = -1;
 
 - (float)setCropFactor
 {
-    NSLog(@"MODEL: %i", [self deviceModelNumber]);
+    //NSLog(@"MODEL: %i", [self deviceModelNumber]);
     int phoneModel = [self deviceModelNumber];
     float modelCropFactor;
     
@@ -637,7 +619,7 @@ int currentIndex = -1;
     }
     
     isWatching = NO;
-    NSLog(@"show camera controls");
+    //NSLog(@"show camera controls");
     
     if (!viewCameraControls)
     {
@@ -648,9 +630,10 @@ int currentIndex = -1;
         
         [self.view addSubview:viewCameraControls];
     } else {
-        NSLog(@"FOO!");
         [self setShutterButtonImage];
     }
+    [viewViewerControls removeFromSuperview];
+    self.viewViewerControls = nil;
     [self.view bringSubviewToFront:viewCameraControls];
     [self dimView:0.5 withAlpha:1.0 withView:viewCameraControls withTimer:YES];
 }
@@ -694,7 +677,7 @@ int currentIndex = -1;
     [controlsView addSubview: buttonHome];
     
     // add the shutter button
-    NSLog(@"adding the shutter button");
+    //NSLog(@"adding the shutter button");
     buttonShutter = [[UIButton alloc] initWithFrame: CGRectMake(controlsView.frame.size.width - 150, 0, 70, 75)];
     [buttonShutter setImage:[UIImage imageNamed:@"shutterPressed"] forState:UIControlStateHighlighted];
     [self setShutterButtonImage];
@@ -731,8 +714,8 @@ int currentIndex = -1;
 
 - (void) showViewerControls
 {
-    NSLog(@"show viewer controls");
-    
+    //NSLog(@"show viewer controls");
+    [self hideCamera];
     if (isRecording) {
         [self stopRecording];
     }
@@ -861,19 +844,27 @@ int currentIndex = -1;
 
 - (void)deleteAsset
 {
-    NSLog(@"DELETE!!");
-    [self dismissDeleteAlert];
+    //NSLog(@"DELETE!!");
+    int assetCount = [assetsGroup numberOfAssets];
     [assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:currentIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
         if (asset) {
             if (asset.editable) {
                 [asset setImageData:nil metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
                     if (error) {
                         NSLog(@"Asset url %@ should be deleted. (Error %@)", assetURL, error);
+                    } else {
+                        if (assetCount == 1) {
+                            dispatch_async(dispatch_get_main_queue(),
+                                           ^{
+                                               [self showMedia:next];
+                                           });
+                        }
                     }
                 }];
             }
         }
     }];
+    [self dismissDeleteAlert];
     [self showMedia:next];
 }
 
@@ -908,7 +899,7 @@ int currentIndex = -1;
 
 - (void)dimView:(float)duration withAlpha:(float)alpha withView:(UIView *)view withTimer:(BOOL)showTimer
 {
-    NSLog(@"dim the view");
+    //NSLog(@"dim the view");
     [timerDimmer invalidate];
     timerDimmer = nil;
 
@@ -965,7 +956,7 @@ int currentIndex = -1;
 
 - (void)captureStill
 {
-    NSLog(@"CAPTURING STILL");
+    //NSLog(@"CAPTURING STILL");
     isSaving = YES;
     [self showSavingAlert];
     
@@ -991,14 +982,14 @@ int currentIndex = -1;
                  [self restartPreview];
              }
              else {
-                 NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
+                 //NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
                  
                  [assetLibrary assetForURL:assetURL
                                resultBlock:^(ALAsset *asset) {
                                    // assign the photo to the album
                                    [assetsGroup addAsset:asset];
-                                   NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [assetsGroup valueForProperty:ALAssetsGroupPropertyName]);
-                                   NSLog(@"SIZE: %f : %f", [asset defaultRepresentation].dimensions.height, [asset defaultRepresentation].dimensions.width);
+                                   //NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [assetsGroup valueForProperty:ALAssetsGroupPropertyName]);
+                                   //NSLog(@"SIZE: %f : %f", [asset defaultRepresentation].dimensions.height, [asset defaultRepresentation].dimensions.width);
                                    
                                    [self restartPreview];
                                }
@@ -1094,14 +1085,14 @@ int currentIndex = -1;
     
     __weak typeof(self) weakSelf = self;
     movieWriter.completionBlock = ^{
-        NSLog(@"in the completion block");
+        //NSLog(@"in the completion block");
         if (didFinishEffect)
         {
             NSLog(@"already called for this video - ignoring");
         } else
         {
             didFinishEffect = YES;
-            NSLog(@"GPU FILTER complete");
+            //NSLog(@"GPU FILTER complete");
             [weakSelf writeMovieToLibraryWithPath:movieURL];
         }
     };
@@ -1110,7 +1101,7 @@ int currentIndex = -1;
     
     dispatch_async(dispatch_get_main_queue(),
        ^{
-           NSLog(@"Start recording");
+           //NSLog(@"Start recording");
            [self playVideoStartSound];
            videoCamera.audioEncodingTarget = movieWriter;
            [movieWriter startRecording];
@@ -1127,14 +1118,14 @@ int currentIndex = -1;
                        videoCamera.audioEncodingTarget = nil;
                        [finalFilter removeTarget:movieWriter];
                        [movieWriter finishRecording];
-                       NSLog(@"Movie completed");
+                       //NSLog(@"Movie completed");
                    });
 }
 
 
 - (void)activateVolumeDown:(NSTimer *)timer
 {
-    NSLog(@"reactivate the volume down button");
+    //NSLog(@"reactivate the volume down button");
     ignoreVolumeDown = NO;
 }
 
@@ -1145,13 +1136,13 @@ int currentIndex = -1;
 
 - (void)swipeScreenleft:(UISwipeGestureRecognizer *)sgr
 {
-    NSLog(@"SWIPED LEFT");
+    //NSLog(@"SWIPED LEFT");
     [self showMedia:next];
 }
 
 - (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr
 {
-    NSLog(@"SWIPED RIGHT");
+    //NSLog(@"SWIPED RIGHT");
     [self showMedia:prev];
 }
 
@@ -1160,7 +1151,7 @@ int currentIndex = -1;
     if (tgr.state == UIGestureRecognizerStateRecognized) {
         
         if (isWatching) {
-            NSLog(@"VIEWER TAPPED!");
+            //NSLog(@"VIEWER TAPPED!");
             [self showViewerControls];
             if (mainMoviePlayer) {
                 if(mainMoviePlayer.playbackState == MPMoviePlaybackStatePlaying) {
@@ -1170,7 +1161,7 @@ int currentIndex = -1;
                 }
             }
         } else {
-            NSLog(@"CAMERA TAPPED!");
+            //NSLog(@"CAMERA TAPPED!");
             [self showCameraControls];
             CGPoint location = [tgr locationInView:uberView];
             [self showFocusSquare:location];
@@ -1214,9 +1205,9 @@ int currentIndex = -1;
     // translate the location to the position in the image coming from the device
     CGPoint pointOfInterest = CGPointMake((1.f + cropFactor)/2 - location.x * cropFactor / frameSize.height, (1.f + cropFactor)/2 - location.y * cropFactor / frameSize.width);
     
-    NSLog(@"frame width = %f height = %f", frameSize.width, frameSize.height);
-    NSLog(@"location x = %f y = %f", location.x, location.y);
-    NSLog(@"POI x = %f y = %f", pointOfInterest.x, pointOfInterest.y);
+    //NSLog(@"frame width = %f height = %f", frameSize.width, frameSize.height);
+    //NSLog(@"location x = %f y = %f", location.x, location.y);
+    //NSLog(@"POI x = %f y = %f", pointOfInterest.x, pointOfInterest.y);
     
     if ([device isFocusPointOfInterestSupported] && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
         NSError *error;
@@ -1234,7 +1225,7 @@ int currentIndex = -1;
             
             [device unlockForConfiguration];
             
-            NSLog(@"FOCUS OK");
+            //NSLog(@"FOCUS OK");
         } else {
             NSLog(@"ERROR = %@", error);
         }
@@ -1256,8 +1247,8 @@ int currentIndex = -1;
     
     [imgFocusSquare setFrame:CGRectMake(x, y, 65, 65)];
     [uberView addSubview:imgFocusSquare];
-    NSLog(@"uber size: %f, %f", uberView.frame.size.width, uberView.frame.size.height);
-    NSLog(@"focus position: %f, %f", x, y);
+    //NSLog(@"uber size: %f, %f", uberView.frame.size.width, uberView.frame.size.height);
+    //NSLog(@"focus position: %f, %f", x, y);
 
     [UIView animateWithDuration:0.5 delay:0.0
                         options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
@@ -1284,7 +1275,7 @@ int currentIndex = -1;
 
 - (void)writeMovieToLibraryWithPath:(NSURL *)path
 {
-    NSLog(@"writing %@ to library", path);
+    //NSLog(@"writing %@ to library", path);
     [assetLibrary writeVideoAtPathToSavedPhotosAlbum:path
                                 completionBlock:^(NSURL *assetURL, NSError *error) {
                                     if (error)
@@ -1292,13 +1283,13 @@ int currentIndex = -1;
                                         NSLog(@"Error saving to library%@", [error localizedDescription]);
                                     } else
                                     {
-                                        NSLog(@"SAVED %@ to photo lib",path);
+                                        //NSLog(@"SAVED %@ to photo lib",path);
                                         [assetLibrary assetForURL:assetURL
                                                       resultBlock:^(ALAsset *asset) {
                                                           // assign the photo to the album
                                                           [assetsGroup addAsset:asset];
-                                                          NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [assetsGroup valueForProperty:ALAssetsGroupPropertyName]);
-                                                          NSLog(@"SIZE: %f : %f", [asset defaultRepresentation].dimensions.height, [asset defaultRepresentation].dimensions.width);
+                                                          //NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [assetsGroup valueForProperty:ALAssetsGroupPropertyName]);
+                                                          //NSLog(@"SIZE: %f : %f", [asset defaultRepresentation].dimensions.height, [asset defaultRepresentation].dimensions.width);
                                                       }
                                                      failureBlock:^(NSError* error) {
                                                          NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
@@ -1307,17 +1298,18 @@ int currentIndex = -1;
                                 }];
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    //intercept web links in poppy: scheme
-    if ([request.URL.scheme isEqualToString:@"poppy"]) {
-        if ([request.URL.host isEqualToString:@"viewer"]) {
-            [galleryWebView removeFromSuperview];
-            galleryWebView = nil;
-            [self showViewerControls];
-        }
-        return NO;
-    }
-    return YES;
+- (UIImage *)imageWithColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
 }
 
 //- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

@@ -138,7 +138,7 @@ BOOL showPopular;
             [buttonStealer startStealingVolumeButtonEvents];
 
             [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]]];
-            
+            //NSLog(@"ORIENTATION: %@", (UIDeviceOrientationIsLandscape(self.interfaceOrientation)) ? @"Landscape": @"Portrait" );
             if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
                 [self showLandscape];
             } else {
@@ -180,6 +180,7 @@ BOOL showPopular;
 
 -(void) showPortrait
 {
+    [self.portraitView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"backgroundP"]]];
     if(self.landscapeRView) {
         [self.landscapeRView removeFromSuperview];
         self.landscapeRView = nil;

@@ -37,6 +37,7 @@
 		9D5EE03617FB4FDB008EB372 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EE03117FB4FB6008EB372 /* libGPUImage.a */; };
 		9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D5EE03917FB521C008EB372 /* LiveViewController.m */; };
 		9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EE03D17FB6572008EB372 /* LiveView.xib */; };
+		9D62B8AA1893223500203FE9 /* backgroundP@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D62B8A91893223500203FE9 /* backgroundP@2x.png */; };
 		9D761EE118242A94005412AC /* record@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D761EE018242A94005412AC /* record@2x.png */; };
 		9D761EE318245A24005412AC /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D761EE218245A24005412AC /* MediaPlayer.framework */; };
 		9D761EE518245B50005412AC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D761EE418245B50005412AC /* AudioToolbox.framework */; };
@@ -160,6 +161,7 @@
 		9D5EE03817FB521C008EB372 /* LiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveViewController.h; sourceTree = "<group>"; };
 		9D5EE03917FB521C008EB372 /* LiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LiveViewController.m; sourceTree = "<group>"; };
 		9D5EE03D17FB6572008EB372 /* LiveView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LiveView.xib; sourceTree = "<group>"; };
+		9D62B8A91893223500203FE9 /* backgroundP@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "backgroundP@2x.png"; sourceTree = "<group>"; };
 		9D761EE018242A94005412AC /* record@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "record@2x.png"; sourceTree = "<group>"; };
 		9D761EE218245A24005412AC /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		9D761EE418245B50005412AC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -329,6 +331,7 @@
 			isa = PBXGroup;
 			children = (
 				9DF96D85188F127700EB6B7B /* background@2x.png */,
+				9D62B8A91893223500203FE9 /* backgroundP@2x.png */,
 				9DE576FF185667DC0048A6D6 /* logo@2x.png */,
 				9D2E49C11884991F00D9871F /* logo_white@2x.png */,
 				9DF96D731889EDA400EB6B7B /* flag@2x.png */,
@@ -523,6 +526,7 @@
 				9D8FC07B184D53C8007D0D53 /* AppIcon57x57.png in Resources */,
 				9DFA6303182AECB400F1B262 /* Icon.png in Resources */,
 				9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */,
+				9D62B8AA1893223500203FE9 /* backgroundP@2x.png in Resources */,
 				9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */,
 				9DE5770A185681A20048A6D6 /* screencontrols@2x.png in Resources */,
 				9DF96D761889EDA400EB6B7B /* trash@2x.png in Resources */,
@@ -712,7 +716,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -729,7 +732,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
-				PROVISIONING_PROFILE = "FE417E61-B4B3-493B-B013-1E8FB6274BF1";
+				PROVISIONING_PROFILE = "B2F5C503-064B-4EC8-B4F6-79CE1A03F21A";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -738,7 +741,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -755,7 +757,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
-				PROVISIONING_PROFILE = "FE417E61-B4B3-493B-B013-1E8FB6274BF1";
+				PROVISIONING_PROFILE = "B2F5C503-064B-4EC8-B4F6-79CE1A03F21A";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

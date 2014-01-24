@@ -65,7 +65,7 @@ NSMutableArray *recentRequests;
     [self.view setBackgroundColor:[UIColor darkGrayColor]];
     
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    NSLog(@"top count: %d", poppyAppDelegate.topImageArray.count);
+    //NSLog(@"top count: %d", poppyAppDelegate.topImageArray.count);
     //NSLog(@"recent count: %d", poppyAppDelegate.recentImageArray.count);
     imageArray = showPopular ? poppyAppDelegate.topImageArray : poppyAppDelegate.recentImageArray;
     queue = [NSOperationQueue new];
@@ -90,7 +90,7 @@ NSMutableArray *recentRequests;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    NSLog(@"viewDidAppear");
+    //NSLog(@"viewDidAppear");
     imageIndex = -1;
     
     frameWidth = self.view.frame.size.height/2;
@@ -330,7 +330,7 @@ NSMutableArray *recentRequests;
     NSString *urlString = [NSString stringWithFormat:@"http://poppy3d.com/app/action/post.json?uuid=%@&media_item_id=%@&action=flag&v=add", uuid, item_id];
     NSURL *url = [NSURL URLWithString:urlString];
     
-    NSLog(@"URL: %@", url);
+    //NSLog(@"URL: %@", url);
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                                                        timeoutInterval:30.0];
@@ -453,7 +453,6 @@ NSMutableArray *recentRequests;
                     for (int i = startIndex; i < startIndex + quantityToPreload; i++) {
                         if (i >= 0 && i < imageArray.count) {
                             [self preloadImage:i usingQueue:queue];
-                            NSLog(@"preload: %d", i);
                         }
                     }
                 } else {
@@ -461,7 +460,6 @@ NSMutableArray *recentRequests;
                     for (int i = startIndex; i > startIndex - quantityToPreload; i--) {
                         if (i >= 0 && i < imageArray.count) {
                             [self preloadImage:i usingQueue:queue];
-                            NSLog(@"preload: %d", i);
                         }
                     }
                 }
@@ -583,14 +581,11 @@ NSMutableArray *recentRequests;
     NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
     
     if (cachedResponse) {
-        if (index == imageIndex) {
+        if (willDisplayImage) {
+            // if we're going to show it anyway and already have the image, skip the extra stuff
             NSData *data = cachedResponse.data;
             UIImage *image = [[UIImage alloc] initWithData:data];
-            //if for display
-            if (willDisplayImage || (imgView.image == nil && index == imageIndex) ) {
-                [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
-            }
-            
+            [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
             NSInvocationOperation *operation = [[NSInvocationOperation alloc]
                                                 initWithTarget:self
                                                 selector:@selector(removeRecentRequest:)
@@ -598,14 +593,14 @@ NSMutableArray *recentRequests;
             [queue addOperation:operation];
         }
     } else {
-        if (index == imageIndex) {
-            NSLog(@"NOT IN CACHE: %d", index);
+        if (willDisplayImage) {
+            //NSLog(@"NOT IN CACHE: %d", index);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [viewLoadingLabel setHidden:NO];
                 isLoading = YES;
             });
         }
-        NSLog(@"recent requests count: %d", recentRequests.count);
+        //NSLog(@"recent requests count: %d", recentRequests.count);
         
         if(![recentRequests containsObject:mediaURL] || willDisplayImage) {
             if (![recentRequests containsObject:mediaURL]) {
@@ -619,10 +614,10 @@ NSMutableArray *recentRequests;
                                        if (error) {
                                            NSLog(@"ERROR: %@", error);
                                        } else {
-                                           NSLog(@"LOADED: %d", index);
+                                           //NSLog(@"LOADED: %d", index);
                                            UIImage *image = [[UIImage alloc] initWithData:data];
                                            //if for display
-                                           if (willDisplayImage || (imgView.image == nil && index == imageIndex) ) {
+                                           if (willDisplayImage) {
                                                [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
                                            }
                                            
@@ -631,7 +626,6 @@ NSMutableArray *recentRequests;
                                                                                selector:@selector(removeRecentRequest:)
                                                                                object:mediaURL];
                                            [queue addOperation:operation];
-                                        
                                        }
                                    }];
         }
@@ -646,7 +640,7 @@ NSMutableArray *recentRequests;
 }
 
 - (void)displayImage:(UIImage *)image {
-    NSLog(@"SHOWING: %d", imageIndex);
+    //NSLog(@"SHOWING: %d", imageIndex);
     isLoading = NO;
     [viewLoadingLabel setHidden:YES];
     [imgView setImage:image];

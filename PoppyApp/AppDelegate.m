@@ -32,7 +32,7 @@ int retry;
 {
     [Flurry setCrashReportingEnabled:YES];
     [Flurry startSession:@"5HPNH9RXVG3HQY5SWGW8"];
-    
+    [UIApplication sharedApplication].statusBarHidden = YES;
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
@@ -55,10 +55,11 @@ int retry;
 
 - (void)checkVersion
 {
+    //NSLog(@"Checking Version");
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://poppy3d.com/app/status.json?ver=%@", kVersion]];
     NSURLRequest *request = [NSURLRequest requestWithURL:url
                                              cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                         timeoutInterval:30.0];
+                                         timeoutInterval:5.0];
     NSURLResponse *response;
     NSError *error;
     NSData* data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
@@ -148,7 +149,7 @@ int retry;
                                if (error) {
                                    NSLog(@"ERROR: %@", error);
                                } else {
-                                   NSLog(@"LOADED FIRST IMAGE");
+                                   //NSLog(@"LOADED FIRST IMAGE");
                                }
                            }];
 }
