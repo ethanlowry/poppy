@@ -575,65 +575,66 @@ NSMutableArray *recentRequests;
     }
         
     // load from the web
-    if (willDisplayImage){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [viewLoadingLabel setHidden:NO];
-            isLoading = YES;
-        });
-    }
     
     NSString *mediaURL = imageArray[index][@"media_url"];
     NSURL *url = [NSURL URLWithString:mediaURL];
     NSURLRequest *request = [self imageRequestWithURL:url];
     
-    if (![[NSURLCache sharedURLCache] cachedResponseForRequest:request]) {
+    NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
+    
+    if (cachedResponse) {
+        if (index == imageIndex) {
+            NSData *data = cachedResponse.data;
+            UIImage *image = [[UIImage alloc] initWithData:data];
+            //if for display
+            if (willDisplayImage || (imgView.image == nil && index == imageIndex) ) {
+                [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+            }
+            
+            NSInvocationOperation *operation = [[NSInvocationOperation alloc]
+                                                initWithTarget:self
+                                                selector:@selector(removeRecentRequest:)
+                                                object:mediaURL];
+            [queue addOperation:operation];
+        }
+    } else {
         if (index == imageIndex) {
             NSLog(@"NOT IN CACHE: %d", index);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [viewLoadingLabel setHidden:NO];
+                isLoading = YES;
+            });
         }
-    }
-    NSLog(@"recent requests count: %d", recentRequests.count);
-    
-    if(![recentRequests containsObject:mediaURL]) {
-        [recentRequests addObject:mediaURL];
+        NSLog(@"recent requests count: %d", recentRequests.count);
+        
+        if(![recentRequests containsObject:mediaURL] || willDisplayImage) {
+            if (![recentRequests containsObject:mediaURL]) {
+                [recentRequests addObject:mediaURL];
+            }
 
-        // Get the data
-        [NSURLConnection sendAsynchronousRequest:request
-                                           queue:[NSOperationQueue mainQueue]
-                               completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                                   if (error) {
-                                       NSLog(@"ERROR: %@", error);
-                                   } else {
-                                       NSLog(@"LOADED: %d", index);
-                                       UIImage *image = [[UIImage alloc] initWithData:data];
-                                       //if for display
-                                       if (willDisplayImage || (imgView.image == nil && index == imageIndex) ) {
-                                           [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+            // Get the data
+            [NSURLConnection sendAsynchronousRequest:request
+                                               queue:[NSOperationQueue mainQueue]
+                                   completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                       if (error) {
+                                           NSLog(@"ERROR: %@", error);
+                                       } else {
+                                           NSLog(@"LOADED: %d", index);
+                                           UIImage *image = [[UIImage alloc] initWithData:data];
+                                           //if for display
+                                           if (willDisplayImage || (imgView.image == nil && index == imageIndex) ) {
+                                               [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+                                           }
+                                           
+                                            NSInvocationOperation *operation = [[NSInvocationOperation alloc]
+                                                                               initWithTarget:self
+                                                                               selector:@selector(removeRecentRequest:)
+                                                                               object:mediaURL];
+                                           [queue addOperation:operation];
+                                        
                                        }
-                                       
-                                        NSInvocationOperation *operation = [[NSInvocationOperation alloc]
-                                                                           initWithTarget:self
-                                                                           selector:@selector(removeRecentRequest:)
-                                                                           object:mediaURL];
-                                       [queue addOperation:operation];
-                                    
-                                   }
-                               }];
-    } else if (willDisplayImage) {
-        [NSURLConnection sendAsynchronousRequest:request
-                                           queue:[NSOperationQueue mainQueue]
-                               completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                                   if (error) {
-                                       NSLog(@"ERROR: %@", error);
-                                   } else {
-                                       NSLog(@"LOADED: %d", index);
-                                       UIImage *image = [[UIImage alloc] initWithData:data];
-                                       //if for display
-                                       if (willDisplayImage || (imgView.image == nil && index == imageIndex) ) {
-                                           [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
-                                       }
-                                   }
-                               }];
-
+                                   }];
+        }
     }
 }
 

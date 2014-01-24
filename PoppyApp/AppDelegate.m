@@ -140,9 +140,28 @@ int retry;
 
 - (void)loadImage:(NSMutableArray *)imageArray
 {
-    NSURL *imageURL = [NSURL URLWithString:imageArray[recentPage * recentLimit][@"media_url"]];
-    NSURL *url = imageURL;
-    NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
+    NSURL *url = [NSURL URLWithString:imageArray[recentPage * recentLimit][@"media_url"]];
+    NSURLRequest *request = [self imageRequestWithURL:url];
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               if (error) {
+                                   NSLog(@"ERROR: %@", error);
+                               } else {
+                                   NSLog(@"LOADED FIRST IMAGE");
+                               }
+                           }];
+}
+
+- (NSMutableURLRequest *)imageRequestWithURL:(NSURL *)url {
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    
+    request.cachePolicy = NSURLRequestReturnCacheDataElseLoad; // this will make sure the request always returns the cached image
+    request.HTTPShouldHandleCookies = NO;
+    request.HTTPShouldUsePipelining = YES;
+    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+    
+    return request;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
