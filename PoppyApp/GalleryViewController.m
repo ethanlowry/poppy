@@ -45,6 +45,8 @@ int imageIndex;
 NSTimer *timerDimmer;
 NSOperationQueue *queue;
 
+NSMutableArray *recentRequests;
+
 @synthesize showPopular;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -53,7 +55,6 @@ NSOperationQueue *queue;
     if (self) {
         // Custom initialization
     }
-    queue = [NSOperationQueue new];
     
     return self;
 }
@@ -67,6 +68,8 @@ NSOperationQueue *queue;
     NSLog(@"top count: %d", poppyAppDelegate.topImageArray.count);
     //NSLog(@"recent count: %d", poppyAppDelegate.recentImageArray.count);
     imageArray = showPopular ? poppyAppDelegate.topImageArray : poppyAppDelegate.recentImageArray;
+    queue = [NSOperationQueue new];
+    recentRequests = [[NSMutableArray alloc] init];
 }
 
 - (void)activateButtonStealer
@@ -586,22 +589,38 @@ NSOperationQueue *queue;
         }
     }
     
-    // Get the data
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                               if (error) {
-                                   NSLog(@"ERROR: %@", error);
-                               } else {
-                                   NSLog(@"LOADED: %d", index);
-                                   UIImage *image = [[UIImage alloc] initWithData:data];
-                                   [poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
-                                   //if for display
-                                   if (willDisplayImage || (imgView.image == nil && index == imageIndex) ) {
-                                       [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+    if(![recentRequests containsObject:request]) {
+        [recentRequests addObject:request];
+
+        // Get the data
+        [NSURLConnection sendAsynchronousRequest:request
+                                           queue:[NSOperationQueue mainQueue]
+                               completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                   if (error) {
+                                       NSLog(@"ERROR: %@", error);
+                                   } else {
+                                       NSLog(@"LOADED: %d", index);
+                                       UIImage *image = [[UIImage alloc] initWithData:data];
+                                       [poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
+                                       //if for display
+                                       if (willDisplayImage || (imgView.image == nil && index == imageIndex) ) {
+                                           [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+                                       }
+                                       NSInvocationOperation *operation = [[NSInvocationOperation alloc]
+                                                                           initWithTarget:self
+                                                                           selector:@selector(removeRecentRequest:)
+                                                                           object:request];
+                                       [queue addOperation:operation];
                                    }
-                               }
-                           }];
+                               }];
+    }
+}
+
+-(void)removeRecentRequest:(NSURLRequest *)request
+{
+    if([recentRequests containsObject:request]) {
+        [recentRequests removeObject:request];
+    }
 }
 
 - (void)displayImage:(UIImage *)image {
