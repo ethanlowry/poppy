@@ -30,7 +30,7 @@ float previousBrightness;
 int retry;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{    
+{
     [Flurry setCrashReportingEnabled:YES];
     [Flurry startSession:@"5HPNH9RXVG3HQY5SWGW8"];
     
@@ -42,7 +42,7 @@ int retry;
     self.window.backgroundColor = [UIColor blackColor];
     self.window.layer.speed = 1.5f;
     [self checkVersion];
-
+    
     HomeViewController *hvc = [[HomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     [self.window setRootViewController:hvc];
     [self.window makeKeyAndVisible];
@@ -91,49 +91,49 @@ int retry;
     if([sort isEqualToString:@"recent"]) {
         urlString = [NSString stringWithFormat:@"%@&limit=%d&page=%d", urlString, recentLimit, recentPage];
     }
-    NSLog(@"URL: %@", urlString);
+    //NSLog(@"URL: %@", urlString);
     
     NSURL *url = [NSURL URLWithString:urlString];
-
+    
     NSURLRequest *request = [NSURLRequest requestWithURL:url
                                              cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                                          timeoutInterval:30.0];
     // Get the data
-    NSLog(@"url: %@", url);
+    //NSLog(@"url: %@", url);
     [NSURLConnection sendAsynchronousRequest:request
-                                   queue:[NSOperationQueue mainQueue]
-                       completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                           if (error) {
-                               NSLog(@"ERROR: %@", error);
-                               isConnected = NO;
-                               if (retry < 3) {
-                                   NSLog(@"RETRY # %d", retry);
-                                   retry = retry + 1;
-                                   [self performSelector:@selector(loadJSON:) withObject:sort afterDelay:0.5 inModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
-                               }
-                           } else {
-                               NSDictionary *jsonHash = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                               
-                               if ([[jsonHash objectForKey:@"status"] isEqualToString:@"error"]){
-                                   NSLog(@"ERROR");
-                               } else {
-                                   // Now create an array from the JSON data
-                                   NSArray *jsonArray = [jsonHash objectForKey:@"results"];
-                                   // Iterate through the array of dictionaries
-                                   for (NSMutableDictionary *item in jsonArray) {
-                                       [imageArray addObject:item];
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               if (error) {
+                                   NSLog(@"ERROR: %@", error);
+                                   isConnected = NO;
+                                   if (retry < 3) {
+                                       NSLog(@"RETRY # %d", retry);
+                                       retry = retry + 1;
+                                       [self performSelector:@selector(loadJSON:) withObject:sort afterDelay:0.5 inModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
                                    }
-                                   isConnected = YES;
-                                   [self getFirstImage:imageArray];
+                               } else {
+                                   NSDictionary *jsonHash = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                                   
+                                   if ([[jsonHash objectForKey:@"status"] isEqualToString:@"error"]){
+                                       NSLog(@"ERROR");
+                                   } else {
+                                       // Now create an array from the JSON data
+                                       NSArray *jsonArray = [jsonHash objectForKey:@"results"];
+                                       // Iterate through the array of dictionaries
+                                       for (NSMutableDictionary *item in jsonArray) {
+                                           [imageArray addObject:item];
+                                       }
+                                       isConnected = YES;
+                                       [self getFirstImage:imageArray];
+                                   }
                                }
-                            }
-                       }];
+                           }];
 }
 
 - (void)getFirstImage:(NSMutableArray *)imageArray
 {
-    NSLog(@"PRE-LOADING FIRST IMAGE");
     NSOperationQueue *queue = [NSOperationQueue new];
+    
     NSInvocationOperation *operation = [[NSInvocationOperation alloc]
                                         initWithTarget:self
                                         selector:@selector(loadImage:)
@@ -148,7 +148,6 @@ int retry;
     NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
     UIImage *image = [[UIImage alloc] initWithData:imageData];
     [imageCache setObject:image forKey:imageArray[recentPage * recentLimit][@"_id"]];
-    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -159,7 +158,7 @@ int retry;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
 }
 

@@ -169,7 +169,7 @@ UIView *viewWelcome;
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.3];
     
-    NSString *labelText = @"Put me in Poppy and move the image left or right to calibrate";
+    NSString *labelText = @"Put me in Poppy and move\nimage left or right to calibrate";
     
     UILabel *labelWelcomeL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,viewWelcome.frame.size.width/2, viewWelcome.frame.size.height)];
     [labelWelcomeL setTextColor:[UIColor whiteColor]];

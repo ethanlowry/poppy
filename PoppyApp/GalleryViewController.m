@@ -43,6 +43,7 @@ BOOL directionNext;
 BOOL isLoading;
 int imageIndex;
 NSTimer *timerDimmer;
+NSOperationQueue *queue;
 
 @synthesize showPopular;
 
@@ -52,6 +53,8 @@ NSTimer *timerDimmer;
     if (self) {
         // Custom initialization
     }
+    queue = [NSOperationQueue new];
+    
     return self;
 }
 
@@ -62,20 +65,19 @@ NSTimer *timerDimmer;
     
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     NSLog(@"top count: %d", poppyAppDelegate.topImageArray.count);
-    NSLog(@"recent count: %d", poppyAppDelegate.recentImageArray.count);
-    
+    //NSLog(@"recent count: %d", poppyAppDelegate.recentImageArray.count);
     imageArray = showPopular ? poppyAppDelegate.topImageArray : poppyAppDelegate.recentImageArray;
 }
 
 - (void)activateButtonStealer
 {
-    NSLog(@"ACTIVATING BUTTON STEALER");
+    //NSLog(@"ACTIVATING BUTTON STEALER");
     if (!buttonStealer) {
         __weak typeof(self) weakSelf = self;
         buttonStealer = [[RBVolumeButtons alloc] init];
         buttonStealer.upBlock = ^{
             // + volume button pressed
-            NSLog(@"volume button pressed");
+            //NSLog(@"volume button pressed");
             [weakSelf goHome];
         };
     }
@@ -85,6 +87,7 @@ NSTimer *timerDimmer;
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    NSLog(@"viewDidAppear");
     imageIndex = -1;
     
     frameWidth = self.view.frame.size.height/2;
@@ -207,7 +210,7 @@ NSTimer *timerDimmer;
 - (void)markFavorite
 {
     if (imageArray[imageIndex]){
-        NSLog(@"There's a pic to Favorite");
+        //NSLog(@"There's a pic to Favorite");
         NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
         NSString *item_id = imageArray[imageIndex][@"_id"];
         NSString *addText;
@@ -227,7 +230,7 @@ NSTimer *timerDimmer;
         
         NSURL *url = [NSURL URLWithString:urlString];
         
-        NSLog(@"URL: %@", url);
+        //NSLog(@"URL: %@", url);
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                                cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                                                            timeoutInterval:30.0];
@@ -250,7 +253,7 @@ NSTimer *timerDimmer;
         [newItem setObject:favorited forKey:@"favorited"];
         [newItem setObject:[NSNumber numberWithInt:likeCount] forKey:@"display_points"];
         [imageArray replaceObjectAtIndex:imageIndex withObject:newItem];
-
+        
         [self showViewerControls];
     }
 }
@@ -311,15 +314,14 @@ NSTimer *timerDimmer;
 
 - (void)markBlocked
 {
-    NSLog(@"BLOCK!!");
+    //NSLog(@"BLOCK!!");
     [self dismissBlockAlert];
     
     // post a block message
     // remove from the imageArray
     // step to the next image
     
-    
-    NSLog(@"There's a pic to Block");
+    //NSLog(@"There's a pic to Block");
     NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     NSString *item_id = imageArray[imageIndex][@"_id"];
     NSString *urlString = [NSString stringWithFormat:@"http://poppy3d.com/app/action/post.json?uuid=%@&media_item_id=%@&action=flag&v=add", uuid, item_id];
@@ -329,6 +331,8 @@ NSTimer *timerDimmer;
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                                                        timeoutInterval:30.0];
+    
+    
     
     [request setHTTPMethod:@"POST"];
     
@@ -340,7 +344,7 @@ NSTimer *timerDimmer;
                                    NSLog(@"ERROR: %@", error);
                                }
                            }];
-
+    
     //Now remove the blocked photo from the stream
     [imageArray removeObjectAtIndex:imageIndex];
     
@@ -371,13 +375,13 @@ NSTimer *timerDimmer;
 
 - (void)swipeScreenleft:(UISwipeGestureRecognizer *)sgr
 {
-    NSLog(@"show next");
+    //NSLog(@"show next");
     [self showMedia:YES];
 }
 
 - (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr
 {
-    NSLog(@"show previous");
+    //NSLog(@"show previous");
     [self showMedia:NO];
 }
 
@@ -431,26 +435,33 @@ NSTimer *timerDimmer;
                 }];
                 
                 [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
-                NSOperationQueue *queue = [NSOperationQueue new];
                 NSInvocationOperation *operation = [[NSInvocationOperation alloc]
                                                     initWithTarget:self
                                                     selector:@selector(loadAndDisplayCurrentImage)
                                                     object:nil];
                 [queue addOperation:operation];
-                // Now preload the next (or previous) image
-                NSInvocationOperation *preload;
+                
+                // Now preload some images out in front of us
+                // Built-in cache should take care of going backwards.
+                // But the cache can get filled, and then you need it when you go back
+                int quantityToPreload = 5;
                 if (showNext) {
-                    preload = [[NSInvocationOperation alloc]
-                               initWithTarget:self
-                               selector:@selector(loadNextImage)
-                               object:nil];
+                    int startIndex = imageIndex + 1;
+                    for (int i = startIndex; i < startIndex + quantityToPreload; i++) {
+                        if (i >= 0 && i < imageArray.count) {
+                            [self preloadImage:i usingQueue:queue];
+                            NSLog(@"preload: %d", i);
+                        }
+                    }
                 } else {
-                    preload = [[NSInvocationOperation alloc]
-                               initWithTarget:self
-                               selector:@selector(loadPreviousImage)
-                               object:nil];
+                    int startIndex = imageIndex - 1;
+                    for (int i = startIndex; i > startIndex - quantityToPreload; i--) {
+                        if (i >= 0 && i < imageArray.count) {
+                            [self preloadImage:i usingQueue:queue];
+                            NSLog(@"preload: %d", i);
+                        }
+                    }
                 }
-                [queue addOperation:preload];
             } else {
                 if (imageIndex < 0) {
                     imageIndex = 0;
@@ -518,22 +529,24 @@ NSTimer *timerDimmer;
     [self loadImage:imageIndex andDisplay:YES];
 }
 
-- (void)loadNextImage
+- (void)preloadImage:(int)index usingQueue:(NSOperationQueue*)queue
 {
-    int index = imageIndex + 1;
-    if (index >= imageArray.count) {
-        index = 0;
-    }
-    [self loadImage:index andDisplay:NO];
+    [queue addOperationWithBlock:^{
+        [self loadImage:(index) andDisplay:NO];
+    }];
 }
 
-- (void)loadPreviousImage
-{
-    int index = imageIndex - 1;
-    if (index < 0) {
-        index = imageArray.count - 1;
-    }
-    [self loadImage:index andDisplay:NO];
+// Create a NSURLRequest manually and make it load only cached values
+// See: http://www.raywenderlich.com/31166/25-ios-app-performance-tips-tricks#mainthread
+- (NSMutableURLRequest *)imageRequestWithURL:(NSURL *)url {
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    
+    request.cachePolicy = NSURLRequestReturnCacheDataElseLoad; // this will make sure the request always returns the cached image
+    request.HTTPShouldHandleCookies = NO;
+    request.HTTPShouldUsePipelining = YES;
+    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+    
+    return request;
 }
 
 - (void)loadImage:(int)index andDisplay:(BOOL)willDisplayImage
@@ -555,69 +568,61 @@ NSTimer *timerDimmer;
     
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    if ([poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]]) {
-        // load from the cache
-        NSLog(@"LOAD FROM CACHE");
-        isLoading = NO;
-        UIImage *image = [poppyAppDelegate.imageCache objectForKey:imageArray[index][@"_id"]];
-        //if for display
-        if (willDisplayImage) {
-            [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
-        }
-    } else {
-        // load from the web
-        NSLog(@"LOAD FROM WEB");
-        if (willDisplayImage){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [viewLoadingLabel setHidden:NO];
-                isLoading = YES;
-                NSLog(@"SHOW LOADING LABEL");
-            });
-        }
-        
-        NSURL *imageURL = [NSURL URLWithString:imageArray[index][@"media_url"]];
-        NSURL *url = imageURL;
-        NSLog(@"%@", imageURL);
-        NSURLRequest *request = [NSURLRequest requestWithURL:url
-                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                             timeoutInterval:30.0];
-        // Get the data
-        [NSURLConnection sendAsynchronousRequest:request
-                                           queue:[NSOperationQueue mainQueue]
-                               completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                                   if (error) {
-                                       NSLog(@"ERROR: %@", error);
-                                   } else {
-                                       UIImage *image = [[UIImage alloc] initWithData:data];
-                                       [poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
-                                       //if for display
-                                       if (willDisplayImage) {
-                                           [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
-                                       }
-                                   }
-                               }];
+    // load from the web
+    if (willDisplayImage){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [viewLoadingLabel setHidden:NO];
+            isLoading = YES;
+        });
     }
+    
+    NSURL *imageURL = [NSURL URLWithString:imageArray[index][@"media_url"]];
+    NSURL *url = imageURL;
+    NSURLRequest *request = [self imageRequestWithURL:url];
+    
+    if (![[NSURLCache sharedURLCache] cachedResponseForRequest:request]) {
+        if (index == imageIndex) {
+            NSLog(@"NOT IN CACHE: %d", index);
+        }
+    }
+    
+    // Get the data
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               if (error) {
+                                   NSLog(@"ERROR: %@", error);
+                               } else {
+                                   NSLog(@"LOADED: %d", index);
+                                   UIImage *image = [[UIImage alloc] initWithData:data];
+                                   [poppyAppDelegate.imageCache setObject:image forKey:imageArray[index][@"_id"]];
+                                   //if for display
+                                   if (willDisplayImage || (imgView.image == nil && index == imageIndex) ) {
+                                       [self performSelectorOnMainThread:@selector(displayImage:) withObject:image waitUntilDone:NO];
+                                   }
+                               }
+                           }];
 }
 
 - (void)displayImage:(UIImage *)image {
+    NSLog(@"SHOWING: %d", imageIndex);
     isLoading = NO;
     [viewLoadingLabel setHidden:YES];
-    NSLog(@"HIDE LOADING LABEL");
     [imgView setImage:image];
     [self showViewerControls];
 }
 
 - (void)loadInfinite
 {
-    NSLog(@"LOAD INFINITE: %d", imageArray.count);
+    //NSLog(@"LOAD INFINITE: %d", imageArray.count);
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
+    
     if((poppyAppDelegate.recentPage + 1) * poppyAppDelegate.recentLimit <= imageArray.count) {
-        NSLog(@"LOAD MORE DATA!");
+        //NSLog(@"LOAD MORE DATA!");
         poppyAppDelegate.recentPage = poppyAppDelegate.recentPage + 1;
         [poppyAppDelegate loadJSON:@"recent"];
     }
- }
+}
 
 - (void)updateLikeLabels:(int)count
 {
