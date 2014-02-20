@@ -12,7 +12,6 @@
 #import "RBVolumeButtons.h"
 #import "PODFilterFactory.h"
 #import "PODDeviceSettingsManager.h"
-#import "PODAppDelegate.h"
 #import "PODAssetsManager.h"
 
 @interface PODTestFilterChainViewController ()

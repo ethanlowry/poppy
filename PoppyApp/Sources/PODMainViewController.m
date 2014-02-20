@@ -8,7 +8,6 @@
 
 #import "PODMainViewController.h"
 @class PODMainViewController;
-#import "PODAppDelegate.h"
 #import "PODShowContentViewController.h"
 #import "PODRecordViewController.h"
 #import "PODTestFilterChainViewController.h"
