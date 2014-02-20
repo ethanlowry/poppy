@@ -371,7 +371,6 @@ BOOL showPopular;
     */
     //[buttonStealer stopStealingVolumeButtonEvents];
     PODRecordViewController *recordViewController = [[PODRecordViewController alloc] initWithNibName:nil bundle:nil];
-	[self presentViewController:recordViewController animated:YES completion:NULL];
     
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if(poppyAppDelegate.switchToCamera) {
