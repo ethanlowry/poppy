@@ -1,0 +1,40 @@
+{
+	"photo" : {
+		"filterChainSettings" :
+		{
+			"center" : "{0.493, 0.5}",
+			"rotation" : 0.4,
+			"leftDistance" : 0.20,
+			"rightDistance" : 0.20,
+			"keystoneFactor" : 0.029,
+			"cropHeight" : 0.82,
+			"sideCropSize" : "{0.345, 0.873}",
+		},
+		"cameraSettings" : {
+			"fps" : 24,
+			"resolution" : "{2592, 1936}",
+			"zoom" : 1.0,
+		}
+	},
+	"video" : {
+		"filterChainSettings" :
+		{
+			"center" : "{0.493, 0.5}",
+			"rotation" : 0.4,
+			"leftDistance" : 0.20,
+			"rightDistance" : 0.20,
+			"keystoneFactor" : 0.029,
+			"cropHeight" : 0.82,
+			"sideCropSize" : "{0.345, 0.873}",
+		},
+		"cameraSettings" : {
+			"fps" : 30,
+			"resolution" : "{1280, 720}",
+			"outputResolution" : "{960,540}",
+			"zoom" : 1.0, 
+			"smoothAutoFocus" : true,
+			"simplePreview" : true,
+		}
+	}
+
+}

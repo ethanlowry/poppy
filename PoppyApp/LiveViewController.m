@@ -10,7 +10,7 @@
 // 107 = the "welcome" label view
 
 #import "LiveViewController.h"
-#import "GalleryViewController.h"
+//#import "GalleryViewController.h"
 #import "AppDelegate.h"
 #import <sys/utsname.h>
 
@@ -210,11 +210,19 @@ int currentIndex = -1;
         
          if (!ignoreVolumeDown) {
          //NSLog(@"VOLUME DOWN!");
-         [weakSelf showMedia:next];
+         [weakSelf switchToViewer];
+         //[weakSelf showMedia:next];
          }
     };
     
     [buttonStealer startStealingVolumeButtonEvents];
+}
+
+- (void) switchToViewer
+{
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    poppyAppDelegate.switchToViewer = YES;
+    [self dismissViewControllerAnimated:NO completion:^{}];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -707,8 +715,8 @@ int currentIndex = -1;
     self.stillCamera = nil;
     self.videoCamera = nil;
     
-    [buttonStealer stopStealingVolumeButtonEvents];
-    buttonStealer = nil;
+    //[buttonStealer stopStealingVolumeButtonEvents];
+    //buttonStealer = nil;
     [self dismissViewControllerAnimated:YES completion:^{}];
 }
 
@@ -895,6 +903,12 @@ int currentIndex = -1;
 - (void)hideView:(UIView *)view
 {
     [self dimView:0 withAlpha:0 withView:view withTimer:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	[buttonStealer stopStealingVolumeButtonEvents];
+    //buttonStealer = nil;
 }
 
 - (void)dimView:(float)duration withAlpha:(float)alpha withView:(UIView *)view withTimer:(BOOL)showTimer
@@ -1137,13 +1151,15 @@ int currentIndex = -1;
 - (void)swipeScreenleft:(UISwipeGestureRecognizer *)sgr
 {
     //NSLog(@"SWIPED LEFT");
-    [self showMedia:next];
+    //[self showMedia:next];
+    [self switchToViewer];
 }
 
 - (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr
 {
     //NSLog(@"SWIPED RIGHT");
-    [self showMedia:prev];
+    //[self showMedia:prev];
+    [self switchToViewer];
 }
 
 - (void)handleTapAction:(UITapGestureRecognizer *)tgr

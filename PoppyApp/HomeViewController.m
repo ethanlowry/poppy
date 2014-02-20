@@ -9,6 +9,7 @@
 #import "HomeViewController.h"
 #import "AppDelegate.h"
 #import "UpgradeViewController.h"
+#import "PODRecordViewController.h"
 
 @interface HomeViewController ()
 
@@ -125,6 +126,10 @@ BOOL showPopular;
     if (!poppyAppDelegate.versionCheck || [poppyAppDelegate.versionCheck isEqualToString:@"ok"]) {
         if (![defaults boolForKey:@"isCalibrated"]) {
             [self runCalibration];
+        } else if (poppyAppDelegate.switchToCamera) {
+            [self launchCamera];
+        } else if (poppyAppDelegate.switchToViewer) {
+            [self launchViewer];
         } else {
             if (!buttonStealer) {
                 __weak typeof(self) weakSelf = self;
@@ -358,27 +363,46 @@ BOOL showPopular;
 
 - (void)launchCamera
 {
+    
+    /*
     LiveViewController *lvc = [[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     lvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
     lvc.isWatching = NO;
-    [buttonStealer stopStealingVolumeButtonEvents];
-    [self presentViewController:lvc animated:YES completion:nil];
+    */
+    //[buttonStealer stopStealingVolumeButtonEvents];
+    PODRecordViewController *recordViewController = [[PODRecordViewController alloc] initWithNibName:nil bundle:nil];
+	[self presentViewController:recordViewController animated:YES completion:NULL];
+    
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if(poppyAppDelegate.switchToCamera) {
+        poppyAppDelegate.switchToCamera = NO;
+        [self presentViewController:recordViewController animated:NO completion:nil];
+    } else {
+        recordViewController.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
+        [self presentViewController:recordViewController animated:YES completion:nil];
+    }
 }
 
 - (void)launchViewer
 {
-    LiveViewController *lvc = [[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    lvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
-    lvc.isWatching = YES;
-    [buttonStealer stopStealingVolumeButtonEvents];
-    [self presentViewController:lvc animated:YES completion:nil];
+    ViewerViewController *vvc = [[ViewerViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    vvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
+    //[buttonStealer stopStealingVolumeButtonEvents];
+    
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if(poppyAppDelegate.switchToViewer) {
+        poppyAppDelegate.switchToViewer = NO;
+        [self presentViewController:vvc animated:NO completion:nil];
+    } else {
+        [self presentViewController:vvc animated:YES completion:nil];
+    }
 }
 
 - (void)launchStream
 {
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if (poppyAppDelegate.isConnected) {
-        [buttonStealer stopStealingVolumeButtonEvents];
+        //[buttonStealer stopStealingVolumeButtonEvents];
         GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
         gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
         gvc.showPopular = NO;
@@ -395,7 +419,7 @@ BOOL showPopular;
 {
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if (poppyAppDelegate.isConnected) {
-        [buttonStealer stopStealingVolumeButtonEvents];
+        //[buttonStealer stopStealingVolumeButtonEvents];
         GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
         gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
         gvc.showPopular = YES;
@@ -498,6 +522,12 @@ BOOL showPopular;
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	[buttonStealer stopStealingVolumeButtonEvents];
+    //buttonStealer = nil;
 }
 
 @end

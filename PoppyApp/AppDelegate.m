@@ -24,6 +24,8 @@
 @synthesize recentPage;
 @synthesize recentLimit;
 @synthesize versionCheck;
+@synthesize switchToCamera;
+@synthesize switchToViewer;
 
 float previousBrightness;
 int retry;

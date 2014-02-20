@@ -13,9 +13,37 @@
 		9D10BC69182B0313008C8D1C /* AppIcon40x40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC63182B0313008C8D1C /* AppIcon40x40@2x.png */; };
 		9D10BC6A182B0313008C8D1C /* AppIcon60x60.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC64182B0313008C8D1C /* AppIcon60x60.png */; };
 		9D10BC6B182B0313008C8D1C /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D10BC65182B0313008C8D1C /* AppIcon60x60@2x.png */; };
-		9D2E49BE18846F2E00D9871F /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D2E49BD18846F2E00D9871F /* HomeViewController.m */; };
 		9D2E49C21884991F00D9871F /* logo_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D2E49C11884991F00D9871F /* logo_white@2x.png */; };
-		9D4F5F6B1821767B00542AE0 /* RBVolumeButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		9D48363818B426E400796217 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48363718B426E400796217 /* HomeViewController.m */; };
+		9D48363B18B427F600796217 /* ViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48363A18B427F600796217 /* ViewerViewController.m */; };
+		9D48364118B577D700796217 /* saving-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D48363F18B577D700796217 /* saving-icon.png */; };
+		9D48364218B577D700796217 /* saving-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D48364018B577D700796217 /* saving-icon@2x.png */; };
+		9D48365D18B5781700796217 /* PODCalibrateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48365118B5781700796217 /* PODCalibrateViewController.m */; };
+		9D48365E18B5781700796217 /* PODCalibrateViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D48365218B5781700796217 /* PODCalibrateViewController.xib */; };
+		9D48365F18B5781700796217 /* PODCameraSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48365418B5781700796217 /* PODCameraSettings.m */; };
+		9D48366018B5781700796217 /* PODCaptureDebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48365618B5781700796217 /* PODCaptureDebugViewController.m */; };
+		9D48366118B5781700796217 /* PODCaptureDebugViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D48365718B5781700796217 /* PODCaptureDebugViewController.xib */; };
+		9D48366218B5781700796217 /* PODDeviceSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48365918B5781700796217 /* PODDeviceSettings.m */; };
+		9D48366318B5781700796217 /* PODFilterChainSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48365B18B5781700796217 /* PODFilterChainSettings.m */; };
+		9D48368718B578A800796217 /* RBVolumeButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48366718B578A800796217 /* RBVolumeButtons.m */; };
+		9D48368818B578A800796217 /* AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48366A18B578A800796217 /* AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.m */; };
+		9D48368918B578A800796217 /* NSOperationQueue+TCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48366C18B578A800796217 /* NSOperationQueue+TCMAdditions.m */; };
+		9D48368A18B578A800796217 /* TCMCALayerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48366E18B578A800796217 /* TCMCALayerAdditions.m */; };
+		9D48368B18B578A800796217 /* TCMCGGeometryAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48367018B578A800796217 /* TCMCGGeometryAdditions.m */; };
+		9D48368C18B578A800796217 /* PODAssetsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48367218B578A800796217 /* PODAssetsManager.m */; };
+		9D48368D18B578A800796217 /* PODCaptureControlsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48367418B578A800796217 /* PODCaptureControlsView.m */; };
+		9D48368E18B578A800796217 /* PODDeviceSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48367618B578A800796217 /* PODDeviceSettingsManager.m */; };
+		9D48368F18B578A800796217 /* PODFilterFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48367818B578A800796217 /* PODFilterFactory.m */; };
+		9D48369018B578A800796217 /* PODMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48367A18B578A800796217 /* PODMainViewController.m */; };
+		9D48369118B578A800796217 /* PODMainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D48367B18B578A800796217 /* PODMainViewController.xib */; };
+		9D48369218B578A800796217 /* PODRecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48367D18B578A800796217 /* PODRecordViewController.m */; };
+		9D48369318B578A800796217 /* PODRecordViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D48367E18B578A800796217 /* PODRecordViewController.xib */; };
+		9D48369418B578A800796217 /* PODShowContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48368018B578A800796217 /* PODShowContentViewController.m */; };
+		9D48369518B578A800796217 /* PODShowContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D48368118B578A800796217 /* PODShowContentViewController.xib */; };
+		9D48369618B578A800796217 /* PODTestFilterChainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48368318B578A800796217 /* PODTestFilterChainViewController.m */; };
+		9D48369718B578A800796217 /* PODTestFilterChainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D48368418B578A800796217 /* PODTestFilterChainViewController.xib */; };
+		9D48369818B578A800796217 /* TCMCaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48368618B578A800796217 /* TCMCaptureManager.m */; };
+		9D48369C18B5807A00796217 /* DeviceSettings in Resources */ = {isa = PBXBuildFile; fileRef = 9D48369B18B5807A00796217 /* DeviceSettings */; };
 		9D5EDE4617FB4386008EB372 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4517FB4386008EB372 /* Foundation.framework */; };
 		9D5EDE4817FB4386008EB372 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */; };
 		9D5EDE4A17FB4386008EB372 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4917FB4386008EB372 /* UIKit.framework */; };
@@ -45,6 +73,10 @@
 		9D8FC07B184D53C8007D0D53 /* AppIcon57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D8FC07A184D53C8007D0D53 /* AppIcon57x57.png */; };
 		9D99EF22187744BC002D9B14 /* GalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D99EF21187744BC002D9B14 /* GalleryViewController.m */; };
 		9D99EF2618777AD2002D9B14 /* listArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D99EF2518777AD2002D9B14 /* listArrow@2x.png */; };
+		9DAB3CDD18B673CB00EDFB98 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DAB3CDC18B673CB00EDFB98 /* GLKit.framework */; };
+		9DAB3CE118B673DA00EDFB98 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DAB3CE018B673DA00EDFB98 /* CoreLocation.framework */; };
+		9DAB3CE318B673E900EDFB98 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DAB3CE218B673E900EDFB98 /* CoreMotion.framework */; };
+		9DBA00F918A58F2D00A8537A /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DBA00F818A58F2D00A8537A /* UIImage+animatedGIF.m */; };
 		9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576E6184FE5930048A6D6 /* focus@2x.png */; };
 		9DE576EA1850039C0048A6D6 /* CalibrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DE576E91850039C0048A6D6 /* CalibrationViewController.m */; };
 		9DE576EF18510EF20048A6D6 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576EE18510EF20048A6D6 /* Settings.bundle */; };
@@ -130,11 +162,58 @@
 		9D10BC63182B0313008C8D1C /* AppIcon40x40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon40x40@2x.png"; sourceTree = "<group>"; };
 		9D10BC64182B0313008C8D1C /* AppIcon60x60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon60x60.png; sourceTree = "<group>"; };
 		9D10BC65182B0313008C8D1C /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@2x.png"; sourceTree = "<group>"; };
-		9D2E49BC18846F2E00D9871F /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HomeViewController.h; path = ../HomeViewController.h; sourceTree = "<group>"; };
-		9D2E49BD18846F2E00D9871F /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HomeViewController.m; path = ../HomeViewController.m; sourceTree = "<group>"; };
 		9D2E49C11884991F00D9871F /* logo_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_white@2x.png"; sourceTree = "<group>"; };
-		9D4F5F691821767B00542AE0 /* RBVolumeButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBVolumeButtons.h; sourceTree = "<group>"; };
-		9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBVolumeButtons.m; sourceTree = "<group>"; };
+		9D48363618B426E400796217 /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
+		9D48363718B426E400796217 /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
+		9D48363918B427F600796217 /* ViewerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewerViewController.h; sourceTree = "<group>"; };
+		9D48363A18B427F600796217 /* ViewerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewerViewController.m; sourceTree = "<group>"; };
+		9D48363F18B577D700796217 /* saving-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "saving-icon.png"; sourceTree = "<group>"; };
+		9D48364018B577D700796217 /* saving-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "saving-icon@2x.png"; sourceTree = "<group>"; };
+		9D48365018B5781700796217 /* PODCalibrateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PODCalibrateViewController.h; path = ../PODCalibrateViewController.h; sourceTree = "<group>"; };
+		9D48365118B5781700796217 /* PODCalibrateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PODCalibrateViewController.m; path = ../PODCalibrateViewController.m; sourceTree = "<group>"; };
+		9D48365218B5781700796217 /* PODCalibrateViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PODCalibrateViewController.xib; path = ../PODCalibrateViewController.xib; sourceTree = "<group>"; };
+		9D48365318B5781700796217 /* PODCameraSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PODCameraSettings.h; path = ../PODCameraSettings.h; sourceTree = "<group>"; };
+		9D48365418B5781700796217 /* PODCameraSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PODCameraSettings.m; path = ../PODCameraSettings.m; sourceTree = "<group>"; };
+		9D48365518B5781700796217 /* PODCaptureDebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PODCaptureDebugViewController.h; path = ../PODCaptureDebugViewController.h; sourceTree = "<group>"; };
+		9D48365618B5781700796217 /* PODCaptureDebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PODCaptureDebugViewController.m; path = ../PODCaptureDebugViewController.m; sourceTree = "<group>"; };
+		9D48365718B5781700796217 /* PODCaptureDebugViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PODCaptureDebugViewController.xib; path = ../PODCaptureDebugViewController.xib; sourceTree = "<group>"; };
+		9D48365818B5781700796217 /* PODDeviceSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PODDeviceSettings.h; path = ../PODDeviceSettings.h; sourceTree = "<group>"; };
+		9D48365918B5781700796217 /* PODDeviceSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PODDeviceSettings.m; path = ../PODDeviceSettings.m; sourceTree = "<group>"; };
+		9D48365A18B5781700796217 /* PODFilterChainSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PODFilterChainSettings.h; path = ../PODFilterChainSettings.h; sourceTree = "<group>"; };
+		9D48365B18B5781700796217 /* PODFilterChainSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PODFilterChainSettings.m; path = ../PODFilterChainSettings.m; sourceTree = "<group>"; };
+		9D48366618B578A800796217 /* RBVolumeButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBVolumeButtons.h; sourceTree = "<group>"; };
+		9D48366718B578A800796217 /* RBVolumeButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBVolumeButtons.m; sourceTree = "<group>"; };
+		9D48366918B578A800796217 /* AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.h"; sourceTree = "<group>"; };
+		9D48366A18B578A800796217 /* AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.m"; sourceTree = "<group>"; };
+		9D48366B18B578A800796217 /* NSOperationQueue+TCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSOperationQueue+TCMAdditions.h"; sourceTree = "<group>"; };
+		9D48366C18B578A800796217 /* NSOperationQueue+TCMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSOperationQueue+TCMAdditions.m"; sourceTree = "<group>"; };
+		9D48366D18B578A800796217 /* TCMCALayerAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCMCALayerAdditions.h; sourceTree = "<group>"; };
+		9D48366E18B578A800796217 /* TCMCALayerAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCMCALayerAdditions.m; sourceTree = "<group>"; };
+		9D48366F18B578A800796217 /* TCMCGGeometryAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCMCGGeometryAdditions.h; sourceTree = "<group>"; };
+		9D48367018B578A800796217 /* TCMCGGeometryAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCMCGGeometryAdditions.m; sourceTree = "<group>"; };
+		9D48367118B578A800796217 /* PODAssetsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PODAssetsManager.h; sourceTree = "<group>"; };
+		9D48367218B578A800796217 /* PODAssetsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PODAssetsManager.m; sourceTree = "<group>"; };
+		9D48367318B578A800796217 /* PODCaptureControlsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PODCaptureControlsView.h; sourceTree = "<group>"; };
+		9D48367418B578A800796217 /* PODCaptureControlsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PODCaptureControlsView.m; sourceTree = "<group>"; };
+		9D48367518B578A800796217 /* PODDeviceSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PODDeviceSettingsManager.h; sourceTree = "<group>"; };
+		9D48367618B578A800796217 /* PODDeviceSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PODDeviceSettingsManager.m; sourceTree = "<group>"; };
+		9D48367718B578A800796217 /* PODFilterFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PODFilterFactory.h; sourceTree = "<group>"; };
+		9D48367818B578A800796217 /* PODFilterFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PODFilterFactory.m; sourceTree = "<group>"; };
+		9D48367918B578A800796217 /* PODMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PODMainViewController.h; sourceTree = "<group>"; };
+		9D48367A18B578A800796217 /* PODMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PODMainViewController.m; sourceTree = "<group>"; };
+		9D48367B18B578A800796217 /* PODMainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PODMainViewController.xib; sourceTree = "<group>"; };
+		9D48367C18B578A800796217 /* PODRecordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PODRecordViewController.h; sourceTree = "<group>"; };
+		9D48367D18B578A800796217 /* PODRecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PODRecordViewController.m; sourceTree = "<group>"; };
+		9D48367E18B578A800796217 /* PODRecordViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PODRecordViewController.xib; sourceTree = "<group>"; };
+		9D48367F18B578A800796217 /* PODShowContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PODShowContentViewController.h; sourceTree = "<group>"; };
+		9D48368018B578A800796217 /* PODShowContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PODShowContentViewController.m; sourceTree = "<group>"; };
+		9D48368118B578A800796217 /* PODShowContentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PODShowContentViewController.xib; sourceTree = "<group>"; };
+		9D48368218B578A800796217 /* PODTestFilterChainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PODTestFilterChainViewController.h; sourceTree = "<group>"; };
+		9D48368318B578A800796217 /* PODTestFilterChainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PODTestFilterChainViewController.m; sourceTree = "<group>"; };
+		9D48368418B578A800796217 /* PODTestFilterChainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PODTestFilterChainViewController.xib; sourceTree = "<group>"; };
+		9D48368518B578A800796217 /* TCMCaptureManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCMCaptureManager.h; sourceTree = "<group>"; };
+		9D48368618B578A800796217 /* TCMCaptureManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCMCaptureManager.m; sourceTree = "<group>"; };
+		9D48369B18B5807A00796217 /* DeviceSettings */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DeviceSettings; sourceTree = "<group>"; };
 		9D5EDE4217FB4386008EB372 /* Poppy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Poppy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D5EDE4517FB4386008EB372 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -170,6 +249,11 @@
 		9D99EF20187744BC002D9B14 /* GalleryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GalleryViewController.h; sourceTree = "<group>"; };
 		9D99EF21187744BC002D9B14 /* GalleryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GalleryViewController.m; sourceTree = "<group>"; };
 		9D99EF2518777AD2002D9B14 /* listArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "listArrow@2x.png"; sourceTree = "<group>"; };
+		9DAB3CDC18B673CB00EDFB98 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		9DAB3CE018B673DA00EDFB98 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		9DAB3CE218B673E900EDFB98 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		9DBA00F718A58F2D00A8537A /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+animatedGIF.h"; path = "../../uiimage-from-animated-gif/uiimage-from-animated-gif/UIImage+animatedGIF.h"; sourceTree = "<group>"; };
+		9DBA00F818A58F2D00A8537A /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+animatedGIF.m"; path = "../../uiimage-from-animated-gif/uiimage-from-animated-gif/UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		9DE576E6184FE5930048A6D6 /* focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "focus@2x.png"; sourceTree = "<group>"; };
 		9DE576E81850039C0048A6D6 /* CalibrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalibrationViewController.h; sourceTree = "<group>"; };
 		9DE576E91850039C0048A6D6 /* CalibrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalibrationViewController.m; sourceTree = "<group>"; };
@@ -226,6 +310,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DAB3CE318B673E900EDFB98 /* CoreMotion.framework in Frameworks */,
+				9DAB3CE118B673DA00EDFB98 /* CoreLocation.framework in Frameworks */,
+				9DAB3CDD18B673CB00EDFB98 /* GLKit.framework in Frameworks */,
 				9DF96D84188A428000EB6B7B /* libFlurry_4.3.1.a in Frameworks */,
 				9DF96D6D1888B82800EB6B7B /* Security.framework in Frameworks */,
 				9DF96D6B1888B81A00EB6B7B /* SystemConfiguration.framework in Frameworks */,
@@ -257,6 +344,181 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9D48366418B578A800796217 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				9D48365018B5781700796217 /* PODCalibrateViewController.h */,
+				9D48365118B5781700796217 /* PODCalibrateViewController.m */,
+				9D48365218B5781700796217 /* PODCalibrateViewController.xib */,
+				9D48365318B5781700796217 /* PODCameraSettings.h */,
+				9D48365418B5781700796217 /* PODCameraSettings.m */,
+				9D48365518B5781700796217 /* PODCaptureDebugViewController.h */,
+				9D48365618B5781700796217 /* PODCaptureDebugViewController.m */,
+				9D48365718B5781700796217 /* PODCaptureDebugViewController.xib */,
+				9D48365818B5781700796217 /* PODDeviceSettings.h */,
+				9D48365918B5781700796217 /* PODDeviceSettings.m */,
+				9D48365A18B5781700796217 /* PODFilterChainSettings.h */,
+				9D48365B18B5781700796217 /* PODFilterChainSettings.m */,
+				9D48367118B578A800796217 /* PODAssetsManager.h */,
+				9D48367218B578A800796217 /* PODAssetsManager.m */,
+				9D48367318B578A800796217 /* PODCaptureControlsView.h */,
+				9D48367418B578A800796217 /* PODCaptureControlsView.m */,
+				9D48367518B578A800796217 /* PODDeviceSettingsManager.h */,
+				9D48367618B578A800796217 /* PODDeviceSettingsManager.m */,
+				9D48367718B578A800796217 /* PODFilterFactory.h */,
+				9D48367818B578A800796217 /* PODFilterFactory.m */,
+				9D48367918B578A800796217 /* PODMainViewController.h */,
+				9D48367A18B578A800796217 /* PODMainViewController.m */,
+				9D48367B18B578A800796217 /* PODMainViewController.xib */,
+				9D48367C18B578A800796217 /* PODRecordViewController.h */,
+				9D48367D18B578A800796217 /* PODRecordViewController.m */,
+				9D48367E18B578A800796217 /* PODRecordViewController.xib */,
+				9D48367F18B578A800796217 /* PODShowContentViewController.h */,
+				9D48368018B578A800796217 /* PODShowContentViewController.m */,
+				9D48368118B578A800796217 /* PODShowContentViewController.xib */,
+				9D48368218B578A800796217 /* PODTestFilterChainViewController.h */,
+				9D48368318B578A800796217 /* PODTestFilterChainViewController.m */,
+				9D48368418B578A800796217 /* PODTestFilterChainViewController.xib */,
+				9D48368518B578A800796217 /* TCMCaptureManager.h */,
+				9D48368618B578A800796217 /* TCMCaptureManager.m */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		9D48366518B578A800796217 /* 3rdParty */ = {
+			isa = PBXGroup;
+			children = (
+				9D48366618B578A800796217 /* RBVolumeButtons.h */,
+				9D48366718B578A800796217 /* RBVolumeButtons.m */,
+			);
+			name = 3rdParty;
+			path = Sources/3rdParty;
+			sourceTree = "<group>";
+		};
+		9D48366818B578A800796217 /* Additions */ = {
+			isa = PBXGroup;
+			children = (
+				9D48366918B578A800796217 /* AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.h */,
+				9D48366A18B578A800796217 /* AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.m */,
+				9D48366B18B578A800796217 /* NSOperationQueue+TCMAdditions.h */,
+				9D48366C18B578A800796217 /* NSOperationQueue+TCMAdditions.m */,
+				9D48366D18B578A800796217 /* TCMCALayerAdditions.h */,
+				9D48366E18B578A800796217 /* TCMCALayerAdditions.m */,
+				9D48366F18B578A800796217 /* TCMCGGeometryAdditions.h */,
+				9D48367018B578A800796217 /* TCMCGGeometryAdditions.m */,
+			);
+			name = Additions;
+			path = Sources/Additions;
+			sourceTree = "<group>";
+		};
+		9D48369918B57FE000796217 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9DFCB15A18297DB000332D7C /* beep.wav */,
+				9D48369E18B5809E00796217 /* App Icons */,
+				9D48369D18B5808300796217 /* Images */,
+				9D48369B18B5807A00796217 /* DeviceSettings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		9D48369A18B57FEF00796217 /* POD */ = {
+			isa = PBXGroup;
+			children = (
+				9D48366418B578A800796217 /* Sources */,
+			);
+			name = POD;
+			sourceTree = "<group>";
+		};
+		9D48369D18B5808300796217 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				9D48363F18B577D700796217 /* saving-icon.png */,
+				9D48364018B577D700796217 /* saving-icon@2x.png */,
+				9DF96D85188F127700EB6B7B /* background@2x.png */,
+				9D62B8A91893223500203FE9 /* backgroundP@2x.png */,
+				9DE576FF185667DC0048A6D6 /* logo@2x.png */,
+				9D2E49C11884991F00D9871F /* logo_white@2x.png */,
+				9DF96D731889EDA400EB6B7B /* flag@2x.png */,
+				9DF96D741889EDA400EB6B7B /* trash@2x.png */,
+				9DF96D5F1888A66000EB6B7B /* cog@2x.png */,
+				9DF96D6E1888BA6600EB6B7B /* video@2x.png */,
+				9DF96D611888A87600EB6B7B /* question@2x.png */,
+				9DF96D631888A8B000EB6B7B /* twitter@2x.png */,
+				9DF96D87188F130F00EB6B7B /* flickr@2x.png */,
+				9DF96D531885DDA100EB6B7B /* home@2x.png */,
+				9DF96D5D1887B6C900EB6B7B /* is_favorite@2x.png */,
+				9DF96D57188724E700EB6B7B /* delete@2x.png */,
+				9DE5770118566D2C0048A6D6 /* adapter@2x.png */,
+				9DE57703185672AB0048A6D6 /* twist@2x.png */,
+				9DE57705185679140048A6D6 /* thumbs@2x.png */,
+				9DE57709185681A20048A6D6 /* screencontrols@2x.png */,
+				9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */,
+				9D99EF2518777AD2002D9B14 /* listArrow@2x.png */,
+				9DE576F61853DCEB0048A6D6 /* arrow-left@2x.png */,
+				9DE576F71853DCEB0048A6D6 /* arrow-right@2x.png */,
+				9DF96D89188F37CE00EB6B7B /* bullet@2x.png */,
+				9DE576E6184FE5930048A6D6 /* focus@2x.png */,
+				9DF96D4E1884F5B300EB6B7B /* favorite@2x.png */,
+				9DF96D4A1884F2E500EB6B7B /* flicktweet@2x.png */,
+				9DE57711185EB2F50048A6D6 /* gallery@2x.png */,
+				9DFCB1601829C68200332D7C /* play@2x.png */,
+				9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */,
+				9DFCB15D182983FC00332D7C /* shutter@2x.png */,
+				9DF96D7A188A0FFD00EB6B7B /* shutter_recording@2x.png */,
+				9DF96D7E188A10DA00EB6B7B /* shutter_video@2x.png */,
+				9DFCB1521828764400332D7C /* camera@2x.png */,
+				9D761EE018242A94005412AC /* record@2x.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
+		9D48369E18B5809E00796217 /* App Icons */ = {
+			isa = PBXGroup;
+			children = (
+				9DFCB162182ACA4300332D7C /* Default-568h@2x.png */,
+				9DFA62F7182AE68400F1B262 /* Default.png */,
+				9DFA62F8182AE68400F1B262 /* Default@2x.png */,
+				9D10BC60182B0313008C8D1C /* AppIcon29x29.png */,
+				9D10BC61182B0313008C8D1C /* AppIcon29x29@2x.png */,
+				9D10BC62182B0313008C8D1C /* AppIcon40x40.png */,
+				9D10BC63182B0313008C8D1C /* AppIcon40x40@2x.png */,
+				9D8FC07A184D53C8007D0D53 /* AppIcon57x57.png */,
+				9D8FC076184D5107007D0D53 /* AppIcon57x57@2x.png */,
+				9D10BC64182B0313008C8D1C /* AppIcon60x60.png */,
+				9D10BC65182B0313008C8D1C /* AppIcon60x60@2x.png */,
+				9DFA62FD182AECB400F1B262 /* Icon-Small.png */,
+				9DFA62FE182AECB400F1B262 /* Icon-Small@2x.png */,
+				9DFA62FF182AECB400F1B262 /* Icon.png */,
+				9DFA6300182AECB400F1B262 /* Icon@2x.png */,
+			);
+			name = "App Icons";
+			sourceTree = "<group>";
+		};
+		9D48369F18B580C300796217 /* Core app */ = {
+			isa = PBXGroup;
+			children = (
+				9DF96D8B188F4CF600EB6B7B /* UpgradeViewController.h */,
+				9DF96D8C188F4CF600EB6B7B /* UpgradeViewController.m */,
+				9D48363618B426E400796217 /* HomeViewController.h */,
+				9D48363718B426E400796217 /* HomeViewController.m */,
+				9DE576FA1853F13A0048A6D6 /* WelcomeViewController.h */,
+				9DE576FB1853F13A0048A6D6 /* WelcomeViewController.m */,
+				9DE576E81850039C0048A6D6 /* CalibrationViewController.h */,
+				9DE576E91850039C0048A6D6 /* CalibrationViewController.m */,
+				9D99EF20187744BC002D9B14 /* GalleryViewController.h */,
+				9D99EF21187744BC002D9B14 /* GalleryViewController.m */,
+				9D5EE03817FB521C008EB372 /* LiveViewController.h */,
+				9D5EE03917FB521C008EB372 /* LiveViewController.m */,
+				9D48363918B427F600796217 /* ViewerViewController.h */,
+				9D48363A18B427F600796217 /* ViewerViewController.m */,
+				9DBA00F718A58F2D00A8537A /* UIImage+animatedGIF.h */,
+				9DBA00F818A58F2D00A8537A /* UIImage+animatedGIF.m */,
+				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
+			);
+			name = "Core app";
+			sourceTree = "<group>";
+		};
 		9D5EDE3917FB4385008EB372 = {
 			isa = PBXGroup;
 			children = (
@@ -279,6 +541,9 @@
 		9D5EDE4417FB4386008EB372 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9DAB3CE218B673E900EDFB98 /* CoreMotion.framework */,
+				9DAB3CE018B673DA00EDFB98 /* CoreLocation.framework */,
+				9DAB3CDC18B673CB00EDFB98 /* GLKit.framework */,
 				9DF96D6C1888B82800EB6B7B /* Security.framework */,
 				9DF96D6A1888B81A00EB6B7B /* SystemConfiguration.framework */,
 				9D761EE418245B50005412AC /* AudioToolbox.framework */,
@@ -303,24 +568,14 @@
 			children = (
 				9D5EDE5417FB4386008EB372 /* AppDelegate.h */,
 				9D5EDE5517FB4386008EB372 /* AppDelegate.m */,
-				9DF96D8B188F4CF600EB6B7B /* UpgradeViewController.h */,
-				9DF96D8C188F4CF600EB6B7B /* UpgradeViewController.m */,
-				9D2E49BC18846F2E00D9871F /* HomeViewController.h */,
-				9D2E49BD18846F2E00D9871F /* HomeViewController.m */,
-				9DE576FA1853F13A0048A6D6 /* WelcomeViewController.h */,
-				9DE576FB1853F13A0048A6D6 /* WelcomeViewController.m */,
-				9DE576E81850039C0048A6D6 /* CalibrationViewController.h */,
-				9DE576E91850039C0048A6D6 /* CalibrationViewController.m */,
-				9D99EF20187744BC002D9B14 /* GalleryViewController.h */,
-				9D99EF21187744BC002D9B14 /* GalleryViewController.m */,
-				9D5EE03817FB521C008EB372 /* LiveViewController.h */,
-				9D5EE03917FB521C008EB372 /* LiveViewController.m */,
-				9D4F5F691821767B00542AE0 /* RBVolumeButtons.h */,
-				9D4F5F6A1821767B00542AE0 /* RBVolumeButtons.m */,
-				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
+				9D48369F18B580C300796217 /* Core app */,
+				9D48369A18B57FEF00796217 /* POD */,
+				9D48369918B57FE000796217 /* Resources */,
 				9DF96D80188A408D00EB6B7B /* Flurry.h */,
 				9DF96D81188A408D00EB6B7B /* libFlurry_4.3.1.a */,
 				9D5EDE5717FB4386008EB372 /* Images.xcassets */,
+				9D48366818B578A800796217 /* Additions */,
+				9D48366518B578A800796217 /* 3rdParty */,
 				9D5EDE4C17FB4386008EB372 /* Supporting Files */,
 				9DE576EE18510EF20048A6D6 /* Settings.bundle */,
 			);
@@ -330,60 +585,10 @@
 		9D5EDE4C17FB4386008EB372 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				9DF96D85188F127700EB6B7B /* background@2x.png */,
-				9D62B8A91893223500203FE9 /* backgroundP@2x.png */,
-				9DE576FF185667DC0048A6D6 /* logo@2x.png */,
-				9D2E49C11884991F00D9871F /* logo_white@2x.png */,
-				9DF96D731889EDA400EB6B7B /* flag@2x.png */,
-				9DF96D741889EDA400EB6B7B /* trash@2x.png */,
-				9DF96D5F1888A66000EB6B7B /* cog@2x.png */,
-				9DF96D6E1888BA6600EB6B7B /* video@2x.png */,
-				9DF96D611888A87600EB6B7B /* question@2x.png */,
-				9DF96D631888A8B000EB6B7B /* twitter@2x.png */,
-				9DF96D87188F130F00EB6B7B /* flickr@2x.png */,
-				9DF96D531885DDA100EB6B7B /* home@2x.png */,
-				9DF96D5D1887B6C900EB6B7B /* is_favorite@2x.png */,
-				9DF96D57188724E700EB6B7B /* delete@2x.png */,
-				9DE5770118566D2C0048A6D6 /* adapter@2x.png */,
-				9DE57703185672AB0048A6D6 /* twist@2x.png */,
-				9DE57705185679140048A6D6 /* thumbs@2x.png */,
-				9DE57709185681A20048A6D6 /* screencontrols@2x.png */,
-				9DE5770B185786B70048A6D6 /* screencontrolscamera@2x.png */,
-				9D99EF2518777AD2002D9B14 /* listArrow@2x.png */,
-				9DE576F61853DCEB0048A6D6 /* arrow-left@2x.png */,
-				9DE576F71853DCEB0048A6D6 /* arrow-right@2x.png */,
-				9DF96D89188F37CE00EB6B7B /* bullet@2x.png */,
-				9DFCB15A18297DB000332D7C /* beep.wav */,
-				9DE576E6184FE5930048A6D6 /* focus@2x.png */,
-				9DF96D4E1884F5B300EB6B7B /* favorite@2x.png */,
-				9DF96D4A1884F2E500EB6B7B /* flicktweet@2x.png */,
-				9DE57711185EB2F50048A6D6 /* gallery@2x.png */,
-				9DFCB1601829C68200332D7C /* play@2x.png */,
-				9DFCB15C182983FC00332D7C /* shutterPressed@2x.png */,
-				9DFCB15D182983FC00332D7C /* shutter@2x.png */,
-				9DF96D7A188A0FFD00EB6B7B /* shutter_recording@2x.png */,
-				9DF96D7E188A10DA00EB6B7B /* shutter_video@2x.png */,
-				9DFCB1521828764400332D7C /* camera@2x.png */,
-				9D761EE018242A94005412AC /* record@2x.png */,
 				9D5EDE4D17FB4386008EB372 /* Poppy-Info.plist */,
 				9D5EDE4E17FB4386008EB372 /* InfoPlist.strings */,
 				9D5EDE5117FB4386008EB372 /* main.m */,
 				9D5EDE5317FB4386008EB372 /* Poppy-Prefix.pch */,
-				9DFCB162182ACA4300332D7C /* Default-568h@2x.png */,
-				9DFA62F7182AE68400F1B262 /* Default.png */,
-				9DFA62F8182AE68400F1B262 /* Default@2x.png */,
-				9D10BC60182B0313008C8D1C /* AppIcon29x29.png */,
-				9D10BC61182B0313008C8D1C /* AppIcon29x29@2x.png */,
-				9D10BC62182B0313008C8D1C /* AppIcon40x40.png */,
-				9D10BC63182B0313008C8D1C /* AppIcon40x40@2x.png */,
-				9D8FC07A184D53C8007D0D53 /* AppIcon57x57.png */,
-				9D8FC076184D5107007D0D53 /* AppIcon57x57@2x.png */,
-				9D10BC64182B0313008C8D1C /* AppIcon60x60.png */,
-				9D10BC65182B0313008C8D1C /* AppIcon60x60@2x.png */,
-				9DFA62FD182AECB400F1B262 /* Icon-Small.png */,
-				9DFA62FE182AECB400F1B262 /* Icon-Small@2x.png */,
-				9DFA62FF182AECB400F1B262 /* Icon.png */,
-				9DFA6300182AECB400F1B262 /* Icon@2x.png */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -521,15 +726,19 @@
 				9DE57704185672AB0048A6D6 /* twist@2x.png in Resources */,
 				9DFCB163182ACA4300332D7C /* Default-568h@2x.png in Resources */,
 				9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */,
+				9D48369518B578A800796217 /* PODShowContentViewController.xib in Resources */,
 				9DFA6302182AECB400F1B262 /* Icon-Small@2x.png in Resources */,
 				9DF96D5E1887B6C900EB6B7B /* is_favorite@2x.png in Resources */,
 				9D8FC07B184D53C8007D0D53 /* AppIcon57x57.png in Resources */,
 				9DFA6303182AECB400F1B262 /* Icon.png in Resources */,
 				9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */,
 				9D62B8AA1893223500203FE9 /* backgroundP@2x.png in Resources */,
+				9D48369C18B5807A00796217 /* DeviceSettings in Resources */,
 				9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */,
+				9D48369718B578A800796217 /* PODTestFilterChainViewController.xib in Resources */,
 				9DE5770A185681A20048A6D6 /* screencontrols@2x.png in Resources */,
 				9DF96D761889EDA400EB6B7B /* trash@2x.png in Resources */,
+				9D48366118B5781700796217 /* PODCaptureDebugViewController.xib in Resources */,
 				9DE5770218566D2C0048A6D6 /* adapter@2x.png in Resources */,
 				9D2E49C21884991F00D9871F /* logo_white@2x.png in Resources */,
 				9DF96D651888A8B000EB6B7B /* twitter@2x.png in Resources */,
@@ -538,6 +747,7 @@
 				9DE57700185667DC0048A6D6 /* logo@2x.png in Resources */,
 				9D10BC69182B0313008C8D1C /* AppIcon40x40@2x.png in Resources */,
 				9DF96D4B1884F2E500EB6B7B /* flicktweet@2x.png in Resources */,
+				9D48364218B577D700796217 /* saving-icon@2x.png in Resources */,
 				9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */,
 				9D8FC077184D5107007D0D53 /* AppIcon57x57@2x.png in Resources */,
 				9DF96D7F188A10DA00EB6B7B /* shutter_video@2x.png in Resources */,
@@ -548,6 +758,7 @@
 				9DFA6301182AECB400F1B262 /* Icon-Small.png in Resources */,
 				9DE5770C185786B70048A6D6 /* screencontrolscamera@2x.png in Resources */,
 				9D10BC6B182B0313008C8D1C /* AppIcon60x60@2x.png in Resources */,
+				9D48364118B577D700796217 /* saving-icon.png in Resources */,
 				9DF96D58188724E700EB6B7B /* delete@2x.png in Resources */,
 				9DF96D541885DDA100EB6B7B /* home@2x.png in Resources */,
 				9DF96D621888A87600EB6B7B /* question@2x.png in Resources */,
@@ -560,6 +771,8 @@
 				9DE576F91853DCEB0048A6D6 /* arrow-right@2x.png in Resources */,
 				9DF96D601888A66000EB6B7B /* cog@2x.png in Resources */,
 				9D5EDE5817FB4386008EB372 /* Images.xcassets in Resources */,
+				9D48369118B578A800796217 /* PODMainViewController.xib in Resources */,
+				9D48369318B578A800796217 /* PODRecordViewController.xib in Resources */,
 				9D99EF2618777AD2002D9B14 /* listArrow@2x.png in Resources */,
 				9DFA6304182AECB400F1B262 /* Icon@2x.png in Resources */,
 				9DFCB1531828764400332D7C /* camera@2x.png in Resources */,
@@ -570,6 +783,7 @@
 				9DE57706185679140048A6D6 /* thumbs@2x.png in Resources */,
 				9DF96D88188F130F00EB6B7B /* flickr@2x.png in Resources */,
 				9DFCB1611829C68200332D7C /* play@2x.png in Resources */,
+				9D48365E18B5781700796217 /* PODCalibrateViewController.xib in Resources */,
 				9D10BC6A182B0313008C8D1C /* AppIcon60x60.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -589,15 +803,35 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D48365D18B5781700796217 /* PODCalibrateViewController.m in Sources */,
+				9D48366318B5781700796217 /* PODFilterChainSettings.m in Sources */,
 				9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */,
+				9D48368818B578A800796217 /* AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.m in Sources */,
+				9D48368718B578A800796217 /* RBVolumeButtons.m in Sources */,
+				9D48366218B5781700796217 /* PODDeviceSettings.m in Sources */,
 				9D5EDE5617FB4386008EB372 /* AppDelegate.m in Sources */,
+				9D48363B18B427F600796217 /* ViewerViewController.m in Sources */,
 				9D5EDE5217FB4386008EB372 /* main.m in Sources */,
+				9D48368D18B578A800796217 /* PODCaptureControlsView.m in Sources */,
+				9D48369418B578A800796217 /* PODShowContentViewController.m in Sources */,
+				9DBA00F918A58F2D00A8537A /* UIImage+animatedGIF.m in Sources */,
+				9D48368A18B578A800796217 /* TCMCALayerAdditions.m in Sources */,
 				9DF96D8D188F4CF600EB6B7B /* UpgradeViewController.m in Sources */,
+				9D48369218B578A800796217 /* PODRecordViewController.m in Sources */,
+				9D48368918B578A800796217 /* NSOperationQueue+TCMAdditions.m in Sources */,
+				9D48369618B578A800796217 /* PODTestFilterChainViewController.m in Sources */,
+				9D48365F18B5781700796217 /* PODCameraSettings.m in Sources */,
+				9D48368C18B578A800796217 /* PODAssetsManager.m in Sources */,
+				9D48369818B578A800796217 /* TCMCaptureManager.m in Sources */,
 				9DE576EA1850039C0048A6D6 /* CalibrationViewController.m in Sources */,
-				9D4F5F6B1821767B00542AE0 /* RBVolumeButtons.m in Sources */,
+				9D48363818B426E400796217 /* HomeViewController.m in Sources */,
+				9D48368B18B578A800796217 /* TCMCGGeometryAdditions.m in Sources */,
 				9D99EF22187744BC002D9B14 /* GalleryViewController.m in Sources */,
+				9D48368E18B578A800796217 /* PODDeviceSettingsManager.m in Sources */,
+				9D48368F18B578A800796217 /* PODFilterFactory.m in Sources */,
+				9D48369018B578A800796217 /* PODMainViewController.m in Sources */,
+				9D48366018B5781700796217 /* PODCaptureDebugViewController.m in Sources */,
 				9DE576FC1853F13A0048A6D6 /* WelcomeViewController.m in Sources */,
-				9D2E49BE18846F2E00D9871F /* HomeViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -716,7 +950,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Hack Things LLC (TDD7PUZN8B)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
@@ -732,7 +966,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
-				PROVISIONING_PROFILE = "B2F5C503-064B-4EC8-B4F6-79CE1A03F21A";
+				PROVISIONING_PROFILE = "0BC1ABDB-399A-4104-A9C1-82D942D14033";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -741,7 +975,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Hack Things LLC (TDD7PUZN8B)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
@@ -757,7 +991,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
-				PROVISIONING_PROFILE = "B2F5C503-064B-4EC8-B4F6-79CE1A03F21A";
+				PROVISIONING_PROFILE = "0BC1ABDB-399A-4104-A9C1-82D942D14033";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

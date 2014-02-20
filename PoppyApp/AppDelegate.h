@@ -18,6 +18,9 @@
 @property (nonatomic) int recentPage;
 @property (nonatomic) int recentLimit;
 @property (strong, nonatomic) NSString *versionCheck;
+@property (nonatomic) BOOL switchToCamera;
+@property (nonatomic) BOOL switchToViewer;
+
 
 -(void)loadImageArrays;
 -(void)loadJSON:(NSString *)sort;

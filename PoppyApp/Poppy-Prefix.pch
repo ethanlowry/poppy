@@ -11,6 +11,15 @@
 #endif
 
 #ifdef __OBJC__
-    #import <UIKit/UIKit.h>
-    #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
+#import <CoreGraphics/CoreGraphics.h>
+#import "PODAppDelegate.h"
+#import "TCMCALayerAdditions.h"
+#import "AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.h"
+#import "NSOperationQueue+TCMAdditions.h"
+#import "TCMCGGeometryAdditions.h"
 #endif
+
+

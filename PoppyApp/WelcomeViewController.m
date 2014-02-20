@@ -185,7 +185,13 @@ UIView *touchView;
 
 - (void)swipeScreenleft:(UISwipeGestureRecognizer *)sgr
 {
-    [self showNext];
+    [self switchToViewer];
+}
+
+- (void) switchToViewer
+{
+    
+    [self dismissViewControllerAnimated:NO completion:^{}];
 }
 
 - (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr

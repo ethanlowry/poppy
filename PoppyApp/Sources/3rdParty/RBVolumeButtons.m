@@ -135,7 +135,7 @@ void volumeListenerCallback (
 	
 	AudioSessionSetActive(YES);
 	
-	CGRect frame = CGRectMake(-20, -20, 1, 1);
+	CGRect frame = CGRectMake(0, -10, 1, 1);
 	self.volumeView = [[MPVolumeView alloc] initWithFrame:frame];
 	[[[[UIApplication sharedApplication] windows] objectAtIndex:0] insertSubview:self.volumeView atIndex:0];
 	
@@ -199,6 +199,7 @@ void volumeListenerCallback (
     {
         [self startStealingVolumeButtonEvents];
         self.suspended = NO; // Call last!
+		[self initializeVolumeButtonStealer]; // wasn't executing before because we were suspended
     }
 }
 

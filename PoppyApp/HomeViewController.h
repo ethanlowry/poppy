@@ -13,6 +13,7 @@
 
 #import <CalibrationViewController.h>
 #import <LiveViewController.h>
+#import <ViewerViewController.h>
 #import <GalleryViewController.h>
 
 @interface HomeViewController : UIViewController
