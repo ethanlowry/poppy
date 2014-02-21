@@ -55,6 +55,13 @@ int retry;
     recentLimit = 50;
     [self loadImageArrays];
     
+    self.assetsGroup = nil;
+    [[PODAssetsManager assetsManager] ensuredAssetsAlbumNamed:@"Poppy" completion:^(ALAssetsGroup *group, NSError *anError) {
+		if (group) {
+			self.assetsGroup = group;
+		}
+	}];
+    
     return YES;
 }
 

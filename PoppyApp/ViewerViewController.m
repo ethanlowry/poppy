@@ -91,7 +91,11 @@ int curIndex = -1;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [self.buttonStealer startStealingVolumeButtonEvents];
+    int64_t delayInSeconds = 0.01;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self.buttonStealer startStealingVolumeButtonEvents];
+    });
     
     if (!imgView) {
         imgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
@@ -104,7 +108,6 @@ int curIndex = -1;
     [self.view addSubview:touchView];
     
     [self showViewerControls];
-    NSLog(@"!!!!!!!!!!!!! SHOW MEDIA FROM VIEWDIDAPPEAR !!!!!!!!!!!!!!");
     [self showMedia:YES];
 }
 
@@ -591,7 +594,11 @@ int curIndex = -1;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[self.buttonStealer stopStealingVolumeButtonEvents];
+    int64_t delayInSeconds = 0.01;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self.buttonStealer stopStealingVolumeButtonEvents];
+    });
 }
 
 - (void)dealloc {

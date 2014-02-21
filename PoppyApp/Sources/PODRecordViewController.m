@@ -711,7 +711,12 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[self.buttonStealer stopStealingVolumeButtonEvents];
+    int64_t delayInSeconds = 0.01;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self.buttonStealer stopStealingVolumeButtonEvents];
+    });
+    
 	
 	[[TCMCaptureManager captureManager] enqueueBlockToSessionQueue:^{
 		[[TCMCaptureManager captureManager].captureSession removeOutput:self.videoOutput];
@@ -752,7 +757,12 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	[self.buttonStealer startStealingVolumeButtonEvents];
+    
+    int64_t delayInSeconds = 0.01;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self.buttonStealer startStealingVolumeButtonEvents];
+    });
 }
 
 - (void)panAction:(UIPanGestureRecognizer *)panRecognizer {

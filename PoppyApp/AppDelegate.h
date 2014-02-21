@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PODAssetsManager.h"
 
 @interface AppDelegate : UIApplication <UIApplicationDelegate>
 
@@ -20,6 +21,7 @@
 @property (strong, nonatomic) NSString *versionCheck;
 @property (nonatomic) BOOL switchToCamera;
 @property (nonatomic) BOOL switchToViewer;
+@property (strong, nonatomic) ALAssetsGroup *assetsGroup;
 
 
 -(void)loadImageArrays;

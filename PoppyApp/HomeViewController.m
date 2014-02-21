@@ -146,7 +146,11 @@ BOOL showPopular;
         } else if (poppyAppDelegate.switchToViewer) {
             [self launchViewer];
         } else {
-            [self.buttonStealer startStealingVolumeButtonEvents];
+            int64_t delayInSeconds = 0.01;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                [self.buttonStealer startStealingVolumeButtonEvents];
+            });
             [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]]];
             //NSLog(@"ORIENTATION: %@", (UIDeviceOrientationIsLandscape(self.interfaceOrientation)) ? @"Landscape": @"Portrait" );
             if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
@@ -533,7 +537,12 @@ BOOL showPopular;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[self.buttonStealer stopStealingVolumeButtonEvents];
+    
+    int64_t delayInSeconds = 0.01;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self.buttonStealer stopStealingVolumeButtonEvents];
+            });
 }
 
 - (void)dealloc {

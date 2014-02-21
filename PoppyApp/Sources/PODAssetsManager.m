@@ -7,6 +7,7 @@
 //
 
 #import "PODAssetsManager.h"
+#import "AppDelegate.h"
 
 @implementation PODAssetsManager
 
@@ -89,24 +90,29 @@
 }
 
 - (void)ensuredAssetsAlbumNamed:(NSString *)aName completion:(void(^)(ALAssetsGroup *, NSError *))aGroupCompletion {
-	ALAssetsLibrary *library = self.assetsLibrary;
-	__block BOOL didFindGroup = NO;
-	[library enumerateGroupsWithTypes:ALAssetsGroupAlbum
-						   usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-							   if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:aName]) {
-								   NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
-								   didFindGroup = YES;
-								   aGroupCompletion(group, nil);
-								   *stop = YES;
-							   }
-							   if (group == nil && !didFindGroup) {
-								   [self addAssetsGroupAlbumWithName:aName completion:aGroupCompletion];
-							   }
-						   }
-						 failureBlock:^(NSError *error) {
-							 NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
-							 aGroupCompletion(nil,error);
-						 }];
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (poppyAppDelegate.assetsGroup) {
+        aGroupCompletion(poppyAppDelegate.assetsGroup, nil);
+    } else {    
+        ALAssetsLibrary *library = self.assetsLibrary;
+        __block BOOL didFindGroup = NO;
+        [library enumerateGroupsWithTypes:ALAssetsGroupAlbum
+                               usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                                   if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:aName]) {
+                                       NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
+                                       didFindGroup = YES;
+                                       aGroupCompletion(group, nil);
+                                       *stop = YES;
+                                   }
+                                   if (group == nil && !didFindGroup) {
+                                       [self addAssetsGroupAlbumWithName:aName completion:aGroupCompletion];
+                                   }
+                               }
+                             failureBlock:^(NSError *error) {
+                                 NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
+                                 aGroupCompletion(nil,error);
+                             }];
+    }
 }
 
 
