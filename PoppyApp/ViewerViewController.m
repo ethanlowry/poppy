@@ -12,9 +12,10 @@
 #import "LiveViewController.h"
 #import "AppDelegate.h"
 #import <sys/utsname.h>
+#import "PODAssetsManager.h"
 
 @interface ViewerViewController ()
-
+@property (nonatomic, strong) RBVolumeButtons *buttonStealer;
 @end
 
 @implementation ViewerViewController
@@ -44,6 +45,14 @@ int curIndex = -1;
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    // get poppy group for saving
+	[[PODAssetsManager assetsManager] ensuredAssetsAlbumNamed:@"Poppy" completion:^(ALAssetsGroup *group, NSError *anError) {
+		if (group) {
+			assetsGroup = group;
+		}
+	}];
+    
+    /*
     if (!assetLibrary) {
         assetLibrary = [[ALAssetsLibrary alloc] init];
         [assetLibrary addAssetsGroupAlbumWithName:@"Poppy"
@@ -59,17 +68,30 @@ int curIndex = -1;
                                          NSLog(@"error adding album");
                                      }];
     }
+     */
+    self.buttonStealer = [[RBVolumeButtons alloc] init];
+    
+    __weak __typeof__(self) weakSelf = self;
+    self.buttonStealer.upBlock = ^{
+        [weakSelf plusVolumeButtonPressedAction];
+    };
+    self.buttonStealer.downBlock = ^{
+        [weakSelf minusVolumeButtonPressedAction];
+    };
+}
+
+
+- (void)minusVolumeButtonPressedAction {
+    [self showMedia:YES];
+}
+
+- (void)plusVolumeButtonPressedAction {
+    [self launchCamera];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if (!buttonStealer) {
-        NSLog(@"MAKE A NEW BS");
-        [self activateButtonStealer];
-    } else {
-        NSLog(@"START STEALING");
-        [buttonStealer startStealingVolumeButtonEvents];
-    }
+    [self.buttonStealer startStealingVolumeButtonEvents];
     
     if (!imgView) {
         imgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
@@ -82,23 +104,8 @@ int curIndex = -1;
     [self.view addSubview:touchView];
     
     [self showViewerControls];
+    NSLog(@"!!!!!!!!!!!!! SHOW MEDIA FROM VIEWDIDAPPEAR !!!!!!!!!!!!!!");
     [self showMedia:YES];
-}
-
-- (void)activateButtonStealer
-{
-    __weak typeof(self) weakSelf = self;
-    buttonStealer = [[RBVolumeButtons alloc] init];
-    buttonStealer.upBlock = ^{
-        // + volume button pressed
-        [weakSelf launchCamera];
-    };
-    buttonStealer.downBlock = ^{
-        // - volume button pressed
-        [weakSelf showMedia:YES];
-    };
-    
-    [buttonStealer startStealingVolumeButtonEvents];
 }
 
 - (void)launchCamera
@@ -106,13 +113,10 @@ int curIndex = -1;
     self.imgView = nil;
     [self hideViewer];
     
-    //[buttonStealer stopStealingVolumeButtonEvents];
-    //buttonStealer = nil;
-    
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     poppyAppDelegate.switchToCamera = YES;
     
-    [self dismissViewControllerAnimated:NO completion:^{}];
+    [self dismissAction:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -173,13 +177,16 @@ int curIndex = -1;
 
 - (void) goHome
 {
-    //TO DO: Fix this ugly, hacky way to clear away everything
     self.imgView = nil;
     [self hideViewer];
+    [self dismissAction:YES];
+}
 
-    //[buttonStealer stopStealingVolumeButtonEvents];
-    //buttonStealer = nil;
-    [self dismissViewControllerAnimated:YES completion:^{}];
+- (void) dismissAction:(BOOL)animated
+{
+    if (![self isBeingDismissed]) {
+        [self dismissViewControllerAnimated:animated completion:^{}];
+    }
 }
 
 
@@ -448,7 +455,7 @@ int curIndex = -1;
     [self showMedia:YES];
 }
 
-
+/*
 - (void)loadAlbumWithName:(NSString *)name
 {
     [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAlbum
@@ -463,6 +470,7 @@ int curIndex = -1;
                                   NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
                               }];
 }
+ */
 
 - (void)playMovie:(ALAsset*)asset {
     mainMoviePlayer = [[MPMoviePlayerController alloc] initWithContentURL:[[asset defaultRepresentation] url]];
@@ -583,8 +591,12 @@ int curIndex = -1;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[buttonStealer stopStealingVolumeButtonEvents];
-    //buttonStealer = nil;
+	[self.buttonStealer stopStealingVolumeButtonEvents];
+}
+
+- (void)dealloc {
+	self.buttonStealer.upBlock = nil;
+	self.buttonStealer.downBlock = nil;
 }
 
 - (NSUInteger)supportedInterfaceOrientations

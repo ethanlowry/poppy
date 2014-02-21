@@ -44,6 +44,9 @@ int retry;
     self.window.layer.speed = 1.5f;
     [self checkVersion];
     
+    switchToViewer = NO;
+    switchToCamera = NO;
+    
     HomeViewController *hvc = [[HomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     [self.window setRootViewController:hvc];
     [self.window makeKeyAndVisible];

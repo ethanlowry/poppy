@@ -93,16 +93,13 @@
 	__block BOOL didFindGroup = NO;
 	[library enumerateGroupsWithTypes:ALAssetsGroupAlbum
 						   usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                               NSLog(@"!!!!!!!!!!! GOT HERE X !!!!!!!!!!!!!!");
 							   if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:aName]) {
 								   NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
 								   didFindGroup = YES;
 								   aGroupCompletion(group, nil);
 								   *stop = YES;
-                                   NSLog(@"!!!!!!!!!!! GOT HERE Y !!!!!!!!!!!!!!");
 							   }
 							   if (group == nil && !didFindGroup) {
-                                   NSLog(@"!!!!!!!!!!! GOT HERE Z !!!!!!!!!!!!!!");
 								   [self addAssetsGroupAlbumWithName:aName completion:aGroupCompletion];
 							   }
 						   }

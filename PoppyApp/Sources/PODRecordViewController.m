@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Dominik Wagner. All rights reserved.
 //
 
-#define ENABLE_DEBUG_VIEW_RAW
+//#define ENABLE_DEBUG_VIEW_RAW
 
 #import "PODRecordViewController.h"
 #import "TCMCaptureManager.h"
@@ -18,6 +18,7 @@
 #import "PODCaptureControlsView.h"
 #import "PODDeviceSettingsManager.h"
 #import "PODAssetsManager.h"
+#import "AppDelegate.h"
 
 #ifdef ENABLE_DEBUG_VIEW_RAW
 #import "PODTestFilterChainViewController.h"
@@ -755,6 +756,7 @@
 }
 
 - (void)panAction:(UIPanGestureRecognizer *)panRecognizer {
+    [self switchToViewer];
 }
 
 - (void)singleTapAction:(UITapGestureRecognizer *)tapRecognizer {
@@ -895,7 +897,7 @@
 	if (self.controlsView.currentControlMode == kPODCaptureControlModePhoto) {
 		[self grabImage];
         if(self.forCalibration){
-            [self dismissAction];
+            [self dismissAction:YES];
         }
 	} else {
 		// toggle video on or off depeding on the state
@@ -907,8 +909,11 @@
 	}
 }
 
-- (void)dismissAction {
-	[self dismissViewControllerAnimated:YES completion:nil];
+- (void) dismissAction:(BOOL)animated
+{
+    if (![self isBeingDismissed]) {
+        [self dismissViewControllerAnimated:animated completion:^{}];
+    }
 }
 
 
@@ -916,7 +921,7 @@
 
 - (void)captureControlsViewDidPressHome:(PODCaptureControlsView *)aView {
 	if (!self.isSaving) {
-		[self dismissAction];
+		[self dismissAction:YES];
 	}
 }
 - (void)captureControlsViewDidPressModeChange:(PODCaptureControlsView *)aView {
@@ -946,10 +951,11 @@
 		return;
 	}
 	if (!self.isSaving) {
+        
 #ifdef ENABLE_DEBUG_VIEW_RAW
 		[self presentViewController:[[PODTestFilterChainViewController alloc] initWithNibName:nil bundle:nil] animated:NO completion:NULL];
 #else
-		[self dismissAction];
+        [self switchToViewer];
 #endif
 	}
 }
@@ -961,6 +967,13 @@
 		return;
 	}
 	[self shutterPressedAction];
+}
+
+- (void) switchToViewer
+{
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    poppyAppDelegate.switchToViewer = YES;
+    [self dismissAction:NO];
 }
 
 

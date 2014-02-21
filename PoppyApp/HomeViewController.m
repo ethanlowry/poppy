@@ -10,13 +10,10 @@
 #import "AppDelegate.h"
 #import "UpgradeViewController.h"
 #import "PODRecordViewController.h"
+#import "PODCalibrateViewController.h"
 
 @interface HomeViewController ()
-
-{
-    RBVolumeButtons *buttonStealer;
-}
-
+@property (nonatomic, strong) RBVolumeButtons *buttonStealer;
 @property (strong, nonatomic) UIView *portraitView;
 @property (strong, nonatomic) UIView *landscapeLView;
 @property (strong, nonatomic) UIView *landscapeRView;
@@ -79,6 +76,24 @@ BOOL showPopular;
     
     [self authorizeAccess:AVMediaTypeVideo]; // apparently permission is needed in some regions for video
     [self authorizeAccess:AVMediaTypeAudio]; // asks the user for permission to use the microphone
+    
+    self.buttonStealer = [[RBVolumeButtons alloc] init];
+    
+    __weak __typeof__(self) weakSelf = self;
+    self.buttonStealer.upBlock = ^{
+        [weakSelf plusVolumeButtonPressedAction];
+    };
+    self.buttonStealer.downBlock = ^{
+        [weakSelf minusVolumeButtonPressedAction];
+    };
+}
+
+- (void)minusVolumeButtonPressedAction {
+    [self launchViewer];
+}
+
+- (void)plusVolumeButtonPressedAction {
+    [self launchCamera];
 }
 
 
@@ -131,17 +146,7 @@ BOOL showPopular;
         } else if (poppyAppDelegate.switchToViewer) {
             [self launchViewer];
         } else {
-            if (!buttonStealer) {
-                __weak typeof(self) weakSelf = self;
-                buttonStealer = [[RBVolumeButtons alloc] init];
-                buttonStealer.upBlock = ^{
-                    // + volume button pressed
-                    NSLog(@"VOLUME UP!");
-                    [weakSelf launchCamera];
-                };
-            }
-            [buttonStealer startStealingVolumeButtonEvents];
-
+            [self.buttonStealer startStealingVolumeButtonEvents];
             [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]]];
             //NSLog(@"ORIENTATION: %@", (UIDeviceOrientationIsLandscape(self.interfaceOrientation)) ? @"Landscape": @"Portrait" );
             if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
@@ -351,14 +356,17 @@ BOOL showPopular;
 - (void)runCalibration
 {
     [self dismissCalibrationAlert];
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    CalibrationViewController *cvc = [[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    cvc.showOOBE = ![defaults boolForKey:@"isCalibrated"];
-    
+    //NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    //CalibrationViewController *cvc = [[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    //cvc.showOOBE = ![defaults boolForKey:@"isCalibrated"];
+    PODCalibrateViewController *vc = [[PODCalibrateViewController alloc] initWithNibName:nil bundle:nil];
+	[self presentViewController:vc animated:NO completion:NULL];
+    /*
     [defaults setFloat:0.0 forKey:@"xOffset"];
     [defaults setBool:NO forKey:@"isCalibrated"];
     [defaults synchronize];
-    [self presentViewController:cvc animated:NO completion:nil];
+    [self presentViewController:vc animated:NO completion:nil];
+     */
 }
 
 - (void)launchCamera
@@ -525,8 +533,12 @@ BOOL showPopular;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[buttonStealer stopStealingVolumeButtonEvents];
-    //buttonStealer = nil;
+	[self.buttonStealer stopStealingVolumeButtonEvents];
+}
+
+- (void)dealloc {
+	self.buttonStealer.upBlock = nil;
+	self.buttonStealer.downBlock = nil;
 }
 
 @end

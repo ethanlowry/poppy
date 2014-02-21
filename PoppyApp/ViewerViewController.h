@@ -17,10 +17,6 @@
 
 @interface ViewerViewController : UIViewController <UIWebViewDelegate>
 
-{
-    RBVolumeButtons *buttonStealer;
-}
-
 @property (nonatomic, retain) MPMoviePlayerController *mainMoviePlayer;
 @property (nonatomic, retain) UIImageView *imgView;
 @property (nonatomic, retain) UIView *viewViewerControls;
