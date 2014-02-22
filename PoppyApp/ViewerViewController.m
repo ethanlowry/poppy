@@ -73,9 +73,11 @@ int curIndex = -1;
     
     __weak __typeof__(self) weakSelf = self;
     self.buttonStealer.upBlock = ^{
+        NSLog(@"^^^^^^^^^^^^^^^^ VOLUME UP ^^^^^^^^^^^^^^^");
         [weakSelf plusVolumeButtonPressedAction];
     };
     self.buttonStealer.downBlock = ^{
+        NSLog(@"vvvvvvvvvvvvvvvv VOLUME DOWN vvvvvvvvvvvvvvv");
         [weakSelf minusVolumeButtonPressedAction];
     };
 }

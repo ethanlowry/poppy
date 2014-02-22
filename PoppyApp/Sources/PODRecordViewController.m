@@ -194,9 +194,11 @@
 	
 	__weak __typeof__(self) weakSelf = self;
 	self.buttonStealer.upBlock = ^{
+        NSLog(@"^^^^^^^^^^^^^^^^ VOLUME UP ^^^^^^^^^^^^^^^^");
 		[weakSelf plusVolumeButtonPressedAction];
 	};
 	self.buttonStealer.downBlock = ^{
+        NSLog(@"vvvvvvvvvvvvvvvv VOLUME DOWN vvvvvvvvvvvvvvv");
 		[weakSelf minusVolumeButtonPressedAction];
 	};
 
@@ -292,7 +294,6 @@
 }
 
 - (void)setShowsSavingIcon:(BOOL)aShouldShow {
-    NSLog(@"SHOULD SHOW? %@", aShouldShow ? @"YES" : @"NO");
 	[UIView animateWithDuration:0.15 delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
 		self.savingIconImageView.alpha = aShouldShow ? 1.0 : 0.0;
 	} completion:^(BOOL finished) {
@@ -382,6 +383,9 @@
 - (void)updateSavingIconStateForHiding {
 	if (!self.isSaving) {
 		[self setShowsSavingIcon:NO];
+        if (self.forCalibration) {
+            [self dismissAction:YES];
+        }
 	}
 }
 
@@ -437,13 +441,7 @@
                 // TODO: use image IO directly
                 NSData *imageData = UIImageJPEGRepresentation(image, JPEGQuality);
                 CFRelease(cgImage);
-                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-                NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
-                NSString *filePath = [documentsPath stringByAppendingPathComponent:@"calibrationimage.jpg"]; //Add the file name
-                [imageData writeToFile:filePath atomically:YES]; //Write the file
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-                [defaults setObject:filePath forKey:@"calibrationImagePath"];
-                [defaults synchronize];
+                [self writeCalibrationImage:imageData];
             }
         }
 
@@ -503,7 +501,10 @@
 	CGFloat JPEGQuality = 0.90;
 	if (aJPEGData) {
 		[self increaseSavingImagesReferenceCount];
-
+        
+        if(self.forCalibration) {
+            [self writeCalibrationImage:aJPEGData];
+        }
 
 #ifdef SAVE_FULLSIZE_IMAGE
 
@@ -570,6 +571,17 @@
 #endif
 	}
 
+}
+
+- (void)writeCalibrationImage:(NSData *)imageData
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+    NSString *filePath = [documentsPath stringByAppendingPathComponent:@"calibrationimage.jpg"]; //Add the file name
+    [imageData writeToFile:filePath atomically:YES]; //Write the file
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:filePath forKey:@"calibrationImagePath"];
+    [defaults synchronize];
 }
 
 - (void)updateRecordingSecondsDisplay {
@@ -906,9 +918,6 @@
 - (void)shutterPressedAction {
 	if (self.controlsView.currentControlMode == kPODCaptureControlModePhoto) {
 		[self grabImage];
-        if(self.forCalibration){
-            [self dismissAction:YES];
-        }
 	} else {
 		// toggle video on or off depeding on the state
 		if (!self.isRecordingVideo) {

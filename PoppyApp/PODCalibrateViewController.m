@@ -125,7 +125,6 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 	CGRect targetRect = self.GLKView.bounds;
 	CGFloat scaleFactor = [self.GLKView contentScaleFactor];
 	targetRect = CGRectApplyAffineTransform(targetRect, CGAffineTransformMakeScale(scaleFactor, scaleFactor));
-	CGFloat desiredWidth = CGRectGetHeight(targetRect) / CGRectGetHeight(sourceRect) * CGRectGetWidth(sourceRect);
     CGFloat desiredHeight = CGRectGetWidth(targetRect) / CGRectGetWidth(sourceRect) * CGRectGetHeight(sourceRect);
     
 	//targetRect = CGRectInset(targetRect,(desiredWidth - CGRectGetWidth(targetRect)) / -2.0,0);

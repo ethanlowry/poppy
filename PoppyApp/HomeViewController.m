@@ -81,9 +81,11 @@ BOOL showPopular;
     
     __weak __typeof__(self) weakSelf = self;
     self.buttonStealer.upBlock = ^{
+        NSLog(@"^^^^^^^^^^^^^^^^ VOLUME UP ^^^^^^^^^^^^^^");
         [weakSelf plusVolumeButtonPressedAction];
     };
     self.buttonStealer.downBlock = ^{
+        NSLog(@"vvvvvvvvvvvvvvvv VOLUME DOWN vvvvvvvvvvvvvvv");
         [weakSelf minusVolumeButtonPressedAction];
     };
 }
@@ -139,7 +141,7 @@ BOOL showPopular;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if (!poppyAppDelegate.versionCheck || [poppyAppDelegate.versionCheck isEqualToString:@"ok"]) {
-        if (![defaults boolForKey:@"isCalibrated"]) {
+        if (![defaults objectForKey:@"calibrationImagePath"]) {
             [self runCalibration];
         } else if (poppyAppDelegate.switchToCamera) {
             [self launchCamera];
@@ -398,7 +400,6 @@ BOOL showPopular;
 {
     ViewerViewController *vvc = [[ViewerViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     vvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
-    //[buttonStealer stopStealingVolumeButtonEvents];
     
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if(poppyAppDelegate.switchToViewer) {
@@ -413,7 +414,6 @@ BOOL showPopular;
 {
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if (poppyAppDelegate.isConnected) {
-        //[buttonStealer stopStealingVolumeButtonEvents];
         GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
         gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
         gvc.showPopular = NO;
@@ -430,7 +430,6 @@ BOOL showPopular;
 {
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if (poppyAppDelegate.isConnected) {
-        //[buttonStealer stopStealingVolumeButtonEvents];
         GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
         gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
         gvc.showPopular = YES;
