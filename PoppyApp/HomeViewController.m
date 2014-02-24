@@ -91,6 +91,7 @@ BOOL showPopular;
 }
 
 - (void)minusVolumeButtonPressedAction {
+    NSLog(@"--- minus vol button pressed ---");
     [self launchViewer];
 }
 
@@ -146,6 +147,7 @@ BOOL showPopular;
         } else if (poppyAppDelegate.switchToCamera) {
             [self launchCamera];
         } else if (poppyAppDelegate.switchToViewer) {
+            NSLog(@"--- switch to viewer set ---");
             [self launchViewer];
         } else {
             int64_t delayInSeconds = 0.01;
@@ -398,6 +400,7 @@ BOOL showPopular;
 
 - (void)launchViewer
 {
+    NSLog(@"!!!!!!!!!! LAUNCHING VIEWER !!!!!!!!!!!!");
     ViewerViewController *vvc = [[ViewerViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     vvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
     

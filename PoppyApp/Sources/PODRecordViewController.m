@@ -501,10 +501,6 @@
 	CGFloat JPEGQuality = 0.90;
 	if (aJPEGData) {
 		[self increaseSavingImagesReferenceCount];
-        
-        if(self.forCalibration) {
-            [self writeCalibrationImage:aJPEGData];
-        }
 
 #ifdef SAVE_FULLSIZE_IMAGE
 
@@ -521,6 +517,10 @@
 				CIImage *ciImage = nil;
 				{
 					CGSize maxSize = [PODFilterFactory maxOpenGLTextureSize];
+                    if (self.forCalibration) {
+                        maxSize.width = maxSize.width/2;
+                        maxSize.height = maxSize.height/2;
+                    }
 					UIImage *image = [UIImage imageWithData:aJPEGData];
                     
 					CGSize imageSize = image.size;
@@ -548,21 +548,33 @@
 						}
 					}
 				}
-				// TODO: put on a separate serial queue - so the EAGL context doesn't get used simultaniously for different images
-				NSArray *filterChain = [PODFilterFactory filterChainWithSettings:self.currentDeviceSettings.filterChainSettings inputImage:ciImage];
-				CIImage *transformedImage = [filterChain.lastObject outputImage];
-				CGImageRef cgImage = [self.CIContextForSaving createCGImage:transformedImage fromRect:transformedImage.extent];
-				UIImage *otherImage = [UIImage imageWithCGImage:cgImage];
-				NSData *otherImageData = UIImageJPEGRepresentation(otherImage, JPEGQuality);
-				[library writeImageDataToSavedPhotosAlbum:otherImageData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
-					NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
-					CFRelease(cgImage);
-					ALAssetsGroup *poppyGroup = self.poppyGroup;
-					if (poppyGroup && assetURL) {
-						[[PODAssetsManager assetsManager] addAssetURL:assetURL toGroup:poppyGroup completion:NULL];
-					}
-					[self decreaseSavingImagesReferenceCount];
-				}];
+                if(self.forCalibration) {
+                    CGImageRef cgImage = [self.CIContextForSaving createCGImage:ciImage fromRect:[ciImage extent]];
+                    if (cgImage) {
+                        
+                        UIImage *image = [UIImage imageWithCGImage:cgImage];
+                        // TODO: use image IO directly
+                        NSData *imageData = UIImageJPEGRepresentation(image, JPEGQuality);
+                        CFRelease(cgImage);
+                        [self writeCalibrationImage:imageData];
+                    }
+                } else {
+                    // TODO: put on a separate serial queue - so the EAGL context doesn't get used simultaniously for different images
+                    NSArray *filterChain = [PODFilterFactory filterChainWithSettings:self.currentDeviceSettings.filterChainSettings inputImage:ciImage];
+                    CIImage *transformedImage = [filterChain.lastObject outputImage];
+                    CGImageRef cgImage = [self.CIContextForSaving createCGImage:transformedImage fromRect:transformedImage.extent];
+                    UIImage *otherImage = [UIImage imageWithCGImage:cgImage];
+                    NSData *otherImageData = UIImageJPEGRepresentation(otherImage, JPEGQuality);
+                    [library writeImageDataToSavedPhotosAlbum:otherImageData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
+                        NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
+                        CFRelease(cgImage);
+                        ALAssetsGroup *poppyGroup = self.poppyGroup;
+                        if (poppyGroup && assetURL) {
+                            [[PODAssetsManager assetsManager] addAssetURL:assetURL toGroup:poppyGroup completion:NULL];
+                        }
+                        [self decreaseSavingImagesReferenceCount];
+                    }];
+                }
 			}
 #ifdef SAVE_FULLSIZE_IMAGE
 
@@ -575,20 +587,23 @@
 
 - (void)writeCalibrationImage:(NSData *)imageData
 {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
-    NSString *filePath = [documentsPath stringByAppendingPathComponent:@"calibrationimage.jpg"]; //Add the file name
-    [imageData writeToFile:filePath atomically:YES]; //Write the file
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:filePath forKey:@"calibrationImagePath"];
-    [defaults synchronize];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+        NSString *filePath = [documentsPath stringByAppendingPathComponent:@"calibrationimage.jpg"]; //Add the file name
+        [imageData writeToFile:filePath atomically:YES]; //Write the file
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:filePath forKey:@"calibrationImagePath"];
+        [defaults synchronize];
+        [self decreaseSavingImagesReferenceCount];
+    });
 }
 
 - (void)updateRecordingSecondsDisplay {
 	NSString *string = @"";
 	NSInteger seconds = self.currentRecordingSeconds;
 	if (seconds > 0) {
-		string = [NSString stringWithFormat:@"🔴 %02ld:%02d", (long)(seconds / 60), (int)seconds % 60];
+        string = [NSString stringWithFormat:@"🔴 %02ld:%02d", (long)(seconds / 60), (int)seconds % 60];
 	}
 	self.recordingTimeLabel.text = string;
 }
@@ -974,7 +989,9 @@
 #ifdef ENABLE_DEBUG_VIEW_RAW
 		[self presentViewController:[[PODTestFilterChainViewController alloc] initWithNibName:nil bundle:nil] animated:NO completion:NULL];
 #else
-        [self switchToViewer];
+        if(!self.forCalibration) {
+            [self switchToViewer];
+        }
 #endif
 	}
 }

@@ -168,8 +168,15 @@
 			session;
 		});
 		self.captureSession = captureSession;
-		self.audioCaptureSession = [[AVCaptureSession alloc] init];
-		[self.audioCaptureSession beginConfiguration];
+        
+        // if cameraSettings.directVideoCapture don't initialize audioCaptureSession
+        PODDeviceSettings *deviceSettings = self.desiredDeviceSettings;
+		PODCameraSettings *cameraSettings = deviceSettings.cameraSettings;
+        if(!cameraSettings.directVideoCapture) {
+            self.audioCaptureSession = [[AVCaptureSession alloc] init];
+            [self.audioCaptureSession beginConfiguration];
+        }
+        
 		[captureSession beginConfiguration];
 		
 		NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
