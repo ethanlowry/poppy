@@ -48,8 +48,6 @@
 @property (nonatomic) BOOL shouldSaveNextImage;
 
 @property (nonatomic) BOOL isRecordingVideo;
-@property (nonatomic) BOOL ignoreNextPlusButtonPress;
-@property (nonatomic) BOOL ignoreNextMinusButtonPress;
 
 @property (nonatomic, strong) ALAssetsGroup *poppyGroup;
 @property (nonatomic, strong) ALAssetsGroup *poppyRawGroup;
@@ -78,6 +76,8 @@
 @end
 
 @implementation PODRecordViewController
+
+@synthesize forCalibration;
 
 
 - (UIImageView *)reusableFocusView {
@@ -171,7 +171,7 @@
 	
 	self.savingIconImageView.alpha = 0.0;
 	self.currentRecordingSeconds = -1;
-
+	
 	[PODDeviceSettingsManager deviceSettingsManager];
     // Do any additional setup after loading the view from its nib.
 	self.EAGLContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -235,7 +235,7 @@
 	// setup the regular UI
 	self.controlsView = ({
         PODCaptureControlsView *controlsView;
-        if(self.forCalibration){
+        if(forCalibration){
             controlsView = [PODCaptureControlsView captureControlsForCalibrationView:self.view];
         } else {
             controlsView = [PODCaptureControlsView captureControlsForView:self.view];
@@ -738,12 +738,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-    int64_t delayInSeconds = 0.01;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        [self.buttonStealer stopStealingVolumeButtonEvents];
-    });
-    
+	[self.buttonStealer stopStealingVolumeButtonEvents];
 	
 	[[TCMCaptureManager captureManager] enqueueBlockToSessionQueue:^{
 		[[TCMCaptureManager captureManager].captureSession removeOutput:self.videoOutput];
@@ -812,6 +807,8 @@
 
 - (void)startRecordingToVideoFile {
 	if (!self.isRecordingVideo) {
+		self.isRecordingVideo = YES;
+		self.controlsView.isRecording = YES;
 		if (self.currentDeviceSettings.cameraSettings.directVideoCapture) {
 			AVCaptureMovieFileOutput *movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
 			self.movieFileOutput = movieFileOutput;
@@ -833,12 +830,8 @@
 				} afterDelay:1.0];
 			}];
 		} else {
-			self.ignoreNextPlusButtonPress = YES;
-			self.ignoreNextMinusButtonPress = YES;
 			[[TCMCaptureManager captureManager] prepareVideoAssetWriter];
 		}
-		self.isRecordingVideo = YES;
-		self.controlsView.isRecording = YES;
 	}
 }
 
@@ -979,13 +972,7 @@
 #pragma mark -
 
 - (void)minusVolumeButtonPressedAction {
-	if (self.ignoreNextMinusButtonPress) {
-		// starting the recording session triggers the plus button action due to volume changes so it seems
-		self.ignoreNextMinusButtonPress = NO;
-		return;
-	}
 	if (!self.isSaving) {
-        
 #ifdef ENABLE_DEBUG_VIEW_RAW
 		[self presentViewController:[[PODTestFilterChainViewController alloc] initWithNibName:nil bundle:nil] animated:NO completion:NULL];
 #else
@@ -997,11 +984,6 @@
 }
 
 - (void)plusVolumeButtonPressedAction {
-	if (self.ignoreNextPlusButtonPress) {
-		// starting the recording session triggers the plus button action due to volume changes so it seems
-		self.ignoreNextPlusButtonPress = NO;
-		return;
-	}
 	[self shutterPressedAction];
 }
 
@@ -1011,7 +993,6 @@
     poppyAppDelegate.switchToViewer = YES;
     [self dismissAction:NO];
 }
-
 
 #pragma mark -
 
