@@ -600,7 +600,7 @@
 - (void)updateRecordingSecondsDisplay {
 	NSString *string = @"";
 	NSInteger seconds = self.currentRecordingSeconds;
-	if (seconds > 0) {
+	if (seconds >= 0) {
         string = [NSString stringWithFormat:@"🔴 %02ld:%02d", (long)(seconds / 60), (int)seconds % 60];
 	}
 	self.recordingTimeLabel.text = string;
