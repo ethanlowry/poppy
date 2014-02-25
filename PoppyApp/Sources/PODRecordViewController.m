@@ -77,8 +77,6 @@
 
 @implementation PODRecordViewController
 
-@synthesize forCalibration;
-
 
 - (UIImageView *)reusableFocusView {
     if(!self.reusableFocusViews){
@@ -235,7 +233,7 @@
 	// setup the regular UI
 	self.controlsView = ({
         PODCaptureControlsView *controlsView;
-        if(forCalibration){
+        if(self.forCalibration){
             controlsView = [PODCaptureControlsView captureControlsForCalibrationView:self.view];
         } else {
             controlsView = [PODCaptureControlsView captureControlsForView:self.view];
@@ -780,11 +778,9 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
     
-    int64_t delayInSeconds = 0.01;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+	[NSOperationQueue TCM_performBlockOnMainQueue:^{
         [self.buttonStealer startStealingVolumeButtonEvents];
-    });
+	} afterDelay:0.01];
 }
 
 - (void)panAction:(UIPanGestureRecognizer *)panRecognizer {
