@@ -1,6 +1,6 @@
 //
 //  PODRecordViewController.m
-//  Poppy Dome
+//  Poppy
 //
 //  Created by Dominik Wagner on 16.12.13.
 //  Copyright (c) 2013 Dominik Wagner. All rights reserved.
@@ -28,6 +28,8 @@
 #define SAVE_FULLSIZE_IMAGE
 
 @interface PODRecordViewController () <AVCaptureVideoDataOutputSampleBufferDelegate, PODCaptureControlsViewDelegate, AVCaptureFileOutputRecordingDelegate, UIGestureRecognizerDelegate>
+
+@property (strong, nonatomic) UIView *viewWelcome;
 
 @property (strong, nonatomic) IBOutlet UIImageView *savingIconImageView;
 @property (strong, nonatomic) IBOutlet UILabel *recordingTimeLabel;
@@ -780,7 +782,89 @@
 	[NSOperationQueue TCM_performBlockOnMainQueue:^{
         [self.buttonStealer startStealingVolumeButtonEvents];
 	} afterDelay:0.01];
+    
+    if(self.forCalibration) {
+        [self.controlsView setHidden:YES];
+        [self showCalibrationAlert];
+    }
 }
+
+/*
+- (void)showCalibrationAlert {
+    self.viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(30,100,self.view.bounds.size.width - 60, self.view.bounds.size.height - 200)];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:self.viewWelcome.bounds];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.6];
+    [self.viewWelcome addSubview:viewShadow];
+    
+    UILabel *labelInstructions = [[UILabel alloc] initWithFrame:self.viewWelcome.bounds];
+    [labelInstructions setTextColor:[UIColor whiteColor]];
+    [labelInstructions setTextAlignment:NSTextAlignmentCenter];
+    [labelInstructions setFont:[UIFont systemFontOfSize:18.0]];
+    labelInstructions.lineBreakMode = NSLineBreakByWordWrapping;
+    labelInstructions.numberOfLines = 0;
+    [labelInstructions setText:@"Put your iPhone in Poppy and\ntake a picture to use for calibration"];
+    [self.viewWelcome addSubview:labelInstructions];
+    
+    [self.view addSubview:self.viewWelcome];
+    
+    [UIView animateWithDuration:0.5 delay:6.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         self.viewWelcome.alpha = 0.0;
+                     }
+                     completion:^(BOOL complete){
+                         [self.controlsView setHidden:NO];
+                     }];
+}
+*/
+
+-(void) showCalibrationAlert {
+    self.viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 75)/2, self.view.bounds.size.width, 75)];
+    [self.viewWelcome setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.frame.size.width, self.viewWelcome.frame.size.height)];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.6];
+    
+    NSString *labelText = @"Put me in Poppy and take\na picture to use for calibration";
+    
+    UILabel *labelWelcomeL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.frame.size.width/2, self.viewWelcome.frame.size.height)];
+    [labelWelcomeL setTextColor:[UIColor whiteColor]];
+    [labelWelcomeL setBackgroundColor:[UIColor clearColor]];
+    [labelWelcomeL setTextAlignment:NSTextAlignmentCenter];
+    [labelWelcomeL setFont:[UIFont systemFontOfSize:14.0]];
+    labelWelcomeL.lineBreakMode = NSLineBreakByWordWrapping;
+    labelWelcomeL.numberOfLines = 0;
+    [labelWelcomeL setText:labelText];
+    
+    UILabel *labelWelcomeR = [[UILabel alloc] initWithFrame:CGRectMake(self.viewWelcome.frame.size.width/2,0,self.viewWelcome.frame.size.width/2, self.viewWelcome.frame.size.height)];
+    [labelWelcomeR setTextColor:[UIColor whiteColor]];
+    [labelWelcomeR setBackgroundColor:[UIColor clearColor]];
+    [labelWelcomeR setTextAlignment:NSTextAlignmentCenter];
+    [labelWelcomeR setFont:[UIFont systemFontOfSize:14.0]];
+    labelWelcomeR.lineBreakMode = NSLineBreakByWordWrapping;
+    labelWelcomeR.numberOfLines = 0;
+    [labelWelcomeR setText:labelText];
+    
+    [self.viewWelcome addSubview:viewShadow];
+    [self.viewWelcome addSubview:labelWelcomeL];
+    [self.viewWelcome addSubview:labelWelcomeR];
+    
+    [self.view addSubview:self.viewWelcome];
+    
+    [UIView animateWithDuration:0.5 delay:5.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         self.viewWelcome.alpha = 0.0;
+                     }
+                     completion:^(BOOL complete){
+                         [self.controlsView setHidden:NO];
+                     }];
+    
+}
+
 
 - (void)panAction:(UIPanGestureRecognizer *)panRecognizer {
     /*

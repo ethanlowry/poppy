@@ -3,7 +3,7 @@
 //  Poppy
 //
 //  Created by Ethan Lowry on 12/7/13.
-//  Copyright (c) 2013 Ethan Lowry. All rights reserved.
+//  Copyright (c) 2014 Hack Things LLC. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

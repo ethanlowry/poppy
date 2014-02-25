@@ -3,11 +3,11 @@
 //  Poppy
 //
 //  Created by Ethan Lowry on 12/7/13.
-//  Copyright (c) 2013 Ethan Lowry. All rights reserved.
+//  Copyright (c) 2014 Hack Things LLC. All rights reserved.
 //
 
 #import "WelcomeViewController.h"
-#import "CalibrationViewController.h"
+#import "PODCalibrateViewController.h"
 
 @interface WelcomeViewController ()
 
@@ -151,7 +151,7 @@ UIView *touchView;
     // Calibration
     UIView *calibrateView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
     [calibrateView setBackgroundColor:[UIColor whiteColor]];
-    [calibrateView addSubview:[self makeLabel:@"Now use Poppy to take a look around. If the image doesn't look 3D, calibrate your camera by moving the image left or right until it does." withFrame:CGRectMake(40,0,calibrateView.frame.size.width - 80, calibrateView.frame.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
+    [calibrateView addSubview:[self makeLabel:@"Now you need to do a one-time calibration for your camera. Put your iPhone in Poppy and take a picture. Then take your iPhone out and adjust the image until it looks right." withFrame:CGRectMake(60,0,calibrateView.frame.size.width - 80, calibrateView.frame.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
     [frameArray addObject:calibrateView];
 }
 
@@ -205,8 +205,8 @@ UIView *touchView;
         currentFrame = currentFrame + 1;
         [self showFrame:currentFrame];
     } else {
-        CalibrationViewController *cvc = (id) self.presentingViewController;
-        cvc.showOOBE = NO;
+        PODCalibrateViewController *vc = (id) self.presentingViewController;
+        vc.showOOBE = NO;
         [self dismissViewControllerAnimated:NO completion:^{}];
     }
 }

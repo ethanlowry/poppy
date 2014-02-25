@@ -3,7 +3,7 @@
 //  Poppy
 //
 //  Created by Ethan Lowry on 1/21/14.
-//  Copyright (c) 2014 Ethan Lowry. All rights reserved.
+//  Copyright (c) 2014 Hack Things LLC. All rights reserved.
 //
 
 #import "UpgradeViewController.h"

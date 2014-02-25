@@ -1,9 +1,9 @@
 //
 //  PODCaptureControlsView.m
-//  Poppy Dome
+//  Poppy
 //
 //  Created by Dominik Wagner on 07.02.14.
-//  Copyright (c) 2014 Dominik Wagner. All rights reserved.
+//  Copyright (c) 2014 Hack Things LLC. All rights reserved.
 //
 
 #import "PODCaptureControlsView.h"

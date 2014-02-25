@@ -3,7 +3,7 @@
 //  Poppy
 //
 //  Created by Ethan Lowry on 1/13/14.
-//  Copyright (c) 2014 Ethan Lowry. All rights reserved.
+//  Copyright (c) 2014 Hack Things LLC. All rights reserved.
 //
 
 #import "HomeViewController.h"
@@ -170,7 +170,7 @@ BOOL showPopular;
 
 -(void) showUpgradeMessage
 {
-    UpgradeViewController *uvc = [[UpgradeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    UpgradeViewController *uvc = [[UpgradeViewController alloc] initWithNibName:nil bundle:nil];
     [self presentViewController:uvc animated:NO completion:nil];
 }
 
@@ -364,17 +364,15 @@ BOOL showPopular;
 - (void)runCalibration
 {
     [self dismissCalibrationAlert];
-    //NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    //CalibrationViewController *cvc = [[CalibrationViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    //cvc.showOOBE = ![defaults boolForKey:@"isCalibrated"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *filePath = [defaults objectForKey:@"calibrationImagePath"];
+    BOOL oldCalibration = [defaults boolForKey:@"isCalibrated"];
+    
     PODCalibrateViewController *vc = [[PODCalibrateViewController alloc] initWithNibName:nil bundle:nil];
-	[self presentViewController:vc animated:NO completion:NULL];
-    /*
-    [defaults setFloat:0.0 forKey:@"xOffset"];
-    [defaults setBool:NO forKey:@"isCalibrated"];
-    [defaults synchronize];
-    [self presentViewController:vc animated:NO completion:nil];
-     */
+    if (!oldCalibration && !filePath) {
+        vc.showOOBE = YES;
+    }
+    [self presentViewController:vc animated:NO completion:NULL];
 }
 
 - (void)launchCamera
@@ -393,7 +391,6 @@ BOOL showPopular;
 
 - (void)launchViewer
 {
-    NSLog(@"!!!!!!!!!! LAUNCHING VIEWER !!!!!!!!!!!!");
     ViewerViewController *vvc = [[ViewerViewController alloc] initWithNibName:@"LiveView" bundle:nil];
     vvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
     

@@ -3,17 +3,15 @@
 //  Poppy
 //
 //  Created by Ethan Lowry on 2/18/14.
-//  Copyright (c) 2014 Ethan Lowry. All rights reserved.
+//  Copyright (c) 2014 Hack Things LLC. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
-#import "GPUImage.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "RBVolumeButtons.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <MediaPlayer/MediaPlayer.h>
-#import "CalibrationViewController.h"
 
 @interface ViewerViewController : UIViewController <UIWebViewDelegate>
 

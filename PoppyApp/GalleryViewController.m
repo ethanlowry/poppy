@@ -3,14 +3,14 @@
 //  Poppy
 //
 //  Created by Ethan Lowry on 1/3/14.
-//  Copyright (c) 2014 Ethan Lowry. All rights reserved.
+//  Copyright (c) 2014 Hack Things LLC. All rights reserved.
 //
 
 #import "GalleryViewController.h"
 #import "AppDelegate.h"
 
 @interface GalleryViewController ()
-
+@property (nonatomic, strong) UIView *separatorBar;
 @end
 
 @implementation GalleryViewController
@@ -161,6 +161,13 @@ NSMutableArray *recentRequests;
     UIView *touchView = [[UIView alloc] initWithFrame:self.view.bounds];
     [self addGestures:touchView];
     [displayView addSubview:touchView];
+    
+    if (!self.separatorBar) {
+        self.separatorBar = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2 - 2,0,4,self.view.bounds.size.height)];
+        [self.separatorBar setBackgroundColor:[UIColor blackColor]];
+        [self.view addSubview:self.separatorBar];
+        self.separatorBar.layer.zPosition = MAXFLOAT;
+    }
     
     [self showMedia:YES];
 }

@@ -1,9 +1,9 @@
 //
 //  AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.h
-//  Poppy Dome
+//  Poppy
 //
 //  Created by Dominik Wagner on 03.02.14.
-//  Copyright (c) 2014 Dominik Wagner. All rights reserved.
+//  Copyright (c) 2014 Hack Things LLC. All rights reserved.
 //
 
 #import <AVFoundation/AVFoundation.h>

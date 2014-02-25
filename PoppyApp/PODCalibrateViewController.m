@@ -1,9 +1,9 @@
 //
 //  PODCalibrateViewController.m
-//  Poppy Dome
+//  Poppy
 //
 //  Created by Dominik Wagner on 13.02.14.
-//  Copyright (c) 2014 Dominik Wagner. All rights reserved.
+//  Copyright (c) 2014 Hack Things LLC. All rights reserved.
 //
 
 #import "PODCalibrateViewController.h"
@@ -14,6 +14,7 @@
 #import "PODDeviceSettingsManager.h"
 #import "PODAssetsManager.h"
 #import "PODRecordViewController.h"
+#import "WelcomeViewController.h"
 
 typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 	kPODCalibrateDisplayModeRaw,
@@ -21,6 +22,7 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 };
 
 @interface PODCalibrateViewController ()
+@property (weak, nonatomic) IBOutlet UIButton *homeButton;
 @property (nonatomic, strong) GLKView *GLKView;
 @property (nonatomic, strong) CIContext *CIContext;
 @property (nonatomic, strong) EAGLContext *EAGLContext;
@@ -29,6 +31,7 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 @property (nonatomic) CGPoint centerOffsetStartValue;
 @property (nonatomic) CGFloat rotationOffsetStartValue;
 @property (nonatomic, strong) NSTimer *regularUpdateTimer;
+@property (nonatomic, strong) UIView *viewWelcome;
 @end
 
 @implementation PODCalibrateViewController
@@ -51,13 +54,17 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if (self.needsImage) {
+    if (self.showOOBE) {
+        WelcomeViewController *wvc = [[WelcomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+        [self presentViewController:wvc animated:NO completion:nil];
+    } else if (self.needsImage) {
         // Launch the image capture phase of calibration
         self.needsImage = NO;
         PODRecordViewController *vc = [[PODRecordViewController alloc] initWithNibName:nil bundle:nil];
         vc.forCalibration = YES;
         [self presentViewController:vc animated:NO completion:NULL];
     } else {
+        [self showCalibrationAlert];
         self.EAGLContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
         GLKView *glkitView = [[GLKView alloc] initWithFrame:self.view.bounds context:self.EAGLContext];
         UIView *view = self.view;
@@ -69,23 +76,98 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
         
         [self loadSourceImage];
         [self updateFilterDisplay];
-        
-        UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
-        
-        [self.view addGestureRecognizer:panGestureRecognizer];
     }
 }
 
+-(void) showCalibrationAlert {
+    self.viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 75)/2, self.view.bounds.size.width, 75)];
+    [self.viewWelcome setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.frame.size.width, self.viewWelcome.frame.size.height)];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.6];
+    
+    NSString *labelText = @"Remove the iPhone from Poppy\nto calibrate the image correctly";
+    
+    UILabel *labelWelcomeL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.frame.size.width/2, self.viewWelcome.frame.size.height)];
+    [labelWelcomeL setTextColor:[UIColor whiteColor]];
+    [labelWelcomeL setBackgroundColor:[UIColor clearColor]];
+    [labelWelcomeL setTextAlignment:NSTextAlignmentCenter];
+    [labelWelcomeL setFont:[UIFont systemFontOfSize:14.0]];
+    labelWelcomeL.lineBreakMode = NSLineBreakByWordWrapping;
+    labelWelcomeL.numberOfLines = 0;
+    [labelWelcomeL setText:labelText];
+    
+    UILabel *labelWelcomeR = [[UILabel alloc] initWithFrame:CGRectMake(self.viewWelcome.frame.size.width/2,0,self.viewWelcome.frame.size.width/2, self.viewWelcome.frame.size.height)];
+    [labelWelcomeR setTextColor:[UIColor whiteColor]];
+    [labelWelcomeR setBackgroundColor:[UIColor clearColor]];
+    [labelWelcomeR setTextAlignment:NSTextAlignmentCenter];
+    [labelWelcomeR setFont:[UIFont systemFontOfSize:14.0]];
+    labelWelcomeR.lineBreakMode = NSLineBreakByWordWrapping;
+    labelWelcomeR.numberOfLines = 0;
+    [labelWelcomeR setText:labelText];
+    
+    [self.viewWelcome addSubview:viewShadow];
+    [self.viewWelcome addSubview:labelWelcomeL];
+    [self.viewWelcome addSubview:labelWelcomeR];
+    
+    [self.view addSubview:self.viewWelcome];
+    
+    [UIView animateWithDuration:0.5 delay:4.0
+                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         self.viewWelcome.alpha = 0.0;
+                     }
+                     completion:^(BOOL complete){
+                         [self showInstructions];
+                     }];
+    
+}
 
+- (void)showInstructions {
+    UIView *instructionsView = [[UIView alloc] initWithFrame:CGRectMake(30,30,self.view.bounds.size.width - 60, self.view.bounds.size.height - 60)];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:instructionsView.bounds];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.6];
+    [instructionsView addSubview:viewShadow];
+    
+    UILabel *labelInstructions = [[UILabel alloc] initWithFrame:CGRectMake(40,40,instructionsView.bounds.size.width - 80, instructionsView.bounds.size.height - 80)];
+    [labelInstructions setTextColor:[UIColor whiteColor]];
+    [labelInstructions setTextAlignment:NSTextAlignmentCenter];
+    [labelInstructions setFont:[UIFont systemFontOfSize:18.0]];
+    labelInstructions.lineBreakMode = NSLineBreakByWordWrapping;
+    labelInstructions.numberOfLines = 0;
+    [labelInstructions setText:@"Now you can calibrate your Poppy.\nDrag the image left and right to center. Drag up and down until the two images are vertically aligned."];
+    [instructionsView addSubview:labelInstructions];
+    
+    UIButton *buttonInstructions = [[UIButton alloc] initWithFrame:CGRectMake(instructionsView.bounds.size.width/2 - 50,instructionsView.bounds.size.height - 50,100,50)];
+    [buttonInstructions setTitle:@"OK" forState:UIControlStateNormal];
+    [buttonInstructions addTarget:self action:@selector(hideInstructions:) forControlEvents:UIControlEventTouchUpInside];
+    [instructionsView addSubview:buttonInstructions];
+    
+    [self.view addSubview:instructionsView];
+}
+
+- (void) hideInstructions:(id)sender
+{
+    UIButton *button = sender;
+    [button.superview removeFromSuperview];
+    [self.homeButton setHidden:NO];
+    
+    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
+    
+    [self.view addGestureRecognizer:panGestureRecognizer];
+}
 
 - (void)loadSourceImage {
-	CIImage *sourceImage = [CIImage imageWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"TestImagesRaw5s/IMG_5462" withExtension:@"JPG"]];
-	self.sourceImage = sourceImage;
+	//CIImage *sourceImage = [CIImage imageWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"TestImagesRaw5s/IMG_5462" withExtension:@"JPG"]];
+	//self.sourceImage = sourceImage;
     
     // use image from file
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *filePath = [defaults objectForKey:@"calibrationImagePath"];
-    sourceImage = [CIImage imageWithContentsOfURL:[NSURL fileURLWithPath:filePath]];
+    CIImage *sourceImage = [CIImage imageWithContentsOfURL:[NSURL fileURLWithPath:filePath]];
     self.sourceImage = sourceImage;
     [NSOperationQueue TCM_performBlockOnMainQueue:^{
         [self updateFilterDisplay]; // show the raw image with the debug overlay

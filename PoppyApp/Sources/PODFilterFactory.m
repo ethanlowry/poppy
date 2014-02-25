@@ -1,6 +1,6 @@
 //
 //  PODFilterFactory.m
-//  Poppy Dome
+//  Poppy
 //
 //  Created by Dominik Wagner on 19.12.13.
 //  Copyright (c) 2013 Dominik Wagner. All rights reserved.
