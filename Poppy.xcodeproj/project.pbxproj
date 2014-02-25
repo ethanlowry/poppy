@@ -941,7 +941,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					"../**",
+					"./framework/Source/**",
 					"$(inherited)/**",
 				);
 				INFOPLIST_FILE = "PoppyApp/Poppy-Info.plist";
@@ -966,7 +966,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					"../**",
+					"./framework/Source/**",
 					"$(inherited)/**",
 				);
 				INFOPLIST_FILE = "PoppyApp/Poppy-Info.plist";

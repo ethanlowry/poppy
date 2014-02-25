@@ -13,7 +13,7 @@
 #import "RBVolumeButtons.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <MediaPlayer/MediaPlayer.h>
-#import <CalibrationViewController.h>
+#import "CalibrationViewController.h"
 
 @interface ViewerViewController : UIViewController <UIWebViewDelegate>
 
