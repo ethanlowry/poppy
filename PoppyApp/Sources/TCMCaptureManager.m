@@ -13,6 +13,9 @@
 #import "AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.h"
 #import "PODDeviceSettings.h"
 
+#define CALIBRATIONLOG(args...)
+//#define CALIBRATIONLOG(args...) NSLog(args)
+
 @interface TCMCaptureManager () <AVCaptureAudioDataOutputSampleBufferDelegate>
 
 @property (nonatomic, strong) AVCaptureAudioDataOutput *captureAudioDataOutput;
@@ -185,7 +188,7 @@
 		AVCaptureDevice *chosenDevice = nil;
 		CMVideoDimensions maxDimensions = {0,0};
 		for (AVCaptureDevice *device in devices) {
-			NSLog(@"%s %@\n formats:%@",__FUNCTION__,device,device.formats);
+			CALIBRATIONLOG(@"%s %@\n formats:%@",__FUNCTION__,device,device.formats);
 			for (AVCaptureDeviceFormat *format in device.formats) {
 				CMFormatDescriptionRef descriptionRef = format.formatDescription;
 				CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(descriptionRef);
@@ -242,8 +245,8 @@
 			}
 		}
 		
-		//		captureSession.automaticallyConfiguresApplicationAudioSession = YES;
-		//      captureSession.usesApplicationAudioSession = YES;
+		captureSession.usesApplicationAudioSession = NO;
+		self.audioCaptureSession.usesApplicationAudioSession = NO;
 		[captureSession commitConfiguration];
 		[self.audioCaptureSession commitConfiguration];
 
@@ -258,7 +261,7 @@
 }
 
 - (void)logNotification:(NSNotification *)aNotification {
-	NSLog(@"%s %@",__FUNCTION__,aNotification);
+	DEBUGLOG(@"%s %@",__FUNCTION__,aNotification);
 }
 
 - (void)configureForDesiredDeviceSettings {
@@ -449,11 +452,11 @@
 	self.assetWriterInput = writerInput;
 	self.assetWriterAudioInput = assetWriterAudioInput;
 	
-	NSLog(@"%s %@ %@",__FUNCTION__, self.assetWriter, self.assetWriterInput);
+	DEBUGLOG(@"%s %@ %@",__FUNCTION__, self.assetWriter, self.assetWriterInput);
 }
 
 - (void)finishWriterWithCompletionHandler:(void (^)(AVAssetWriter *aWriter))aCompletionHandler {
-	NSLog(@"%s %@ %@",__FUNCTION__, self.assetWriter, self.assetWriterInput);
+	DEBUGLOG(@"%s %@ %@",__FUNCTION__, self.assetWriter, self.assetWriterInput);
 	self.currentAssetWriterStartTime = kCMTimeInvalid;
 	AVAssetWriter *writer = self.assetWriter;
 	[self enqueueBlockToWriterQueue:^{
@@ -510,7 +513,7 @@
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-	//	NSLog(@"%s %@ %@ %@",__FUNCTION__,keyPath,object,change);
+	DEBUGLOG(@"%s %@ %@ %@",__FUNCTION__,keyPath,object,change);
 }
 
 
