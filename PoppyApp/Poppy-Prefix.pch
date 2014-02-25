@@ -22,3 +22,8 @@
 #endif
 
 
+#define ETHANLOG(args...)
+//#define ETHANLOG(args...) NSLog(args)
+
+//#define DEBUGLOG(args...)
+#define DEBUGLOG(args...) NSLog(args)

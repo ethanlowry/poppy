@@ -16,6 +16,8 @@ typedef void (^ButtonBlock)();
 @property (nonatomic, copy) ButtonBlock upBlock;
 @property (nonatomic, copy) ButtonBlock downBlock;
 @property (nonatomic, readonly) float launchVolume;
+/*! ignores the next volume change if set to YES */
+@property BOOL ignoreNextVolumeChange;
 
 -(void)startStealingVolumeButtonEvents;
 -(void)stopStealingVolumeButtonEvents;

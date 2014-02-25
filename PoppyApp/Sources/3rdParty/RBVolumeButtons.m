@@ -11,11 +11,6 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 @interface RBVolumeButtons()
--(void)initializeVolumeButtonStealer;
--(void)volumeDown;
--(void)volumeUp;
--(void)startStealingVolumeButtonEvents;
--(void)stopStealingVolumeButtonEvents;
 
 @property BOOL isStealingVolumeButtons;
 @property BOOL suspended;
@@ -45,19 +40,26 @@ void volumeListenerCallback (
                              UInt32                    inDataSize,
                              const void                *inData
                              ){
-   const float *volumePointer = inData;
-   float volume = *volumePointer;
+	RBVolumeButtons *volumeButtons = (__bridge RBVolumeButtons*)inClientData;
+	const float *volumePointer = inData;
+	float volume = *volumePointer;
+	float launchVolume = [volumeButtons launchVolume];
+	DEBUGLOG(@"%s volume: %0.3f vs. launch: %0.3f",__FUNCTION__,volume,launchVolume);
 
-   
-   if( volume > [(__bridge RBVolumeButtons*)inClientData launchVolume] )
-   {
-      [(__bridge RBVolumeButtons*)inClientData volumeUp];
-   }
-   else if( volume < [(__bridge RBVolumeButtons*)inClientData launchVolume] )
-   {
-      [(__bridge RBVolumeButtons*)inClientData volumeDown];
-   }
-
+	// ignore big steps in volume as they are not representing button presses
+	float volumeDifference = ABS(volume - launchVolume);
+	if (volumeDifference < 0.2) {
+		if( volume > launchVolume)
+		{
+			[volumeButtons volumeChangeWasUp:YES];
+		}
+		else if( volume < launchVolume )
+		{
+			[volumeButtons volumeChangeWasUp:NO];
+		}
+	} else {
+		DEBUGLOG(@"%s ignored volume change due to too big of a difference: %0.3f",__FUNCTION__,volumeDifference);
+	}
 }
 
 - (void)addMyListener {
@@ -73,34 +75,22 @@ void volumeListenerCallback (
 	self.listenerRegistrationCount--;
 }
 
--(void)volumeDown
-{
+- (void)volumeChangeWasUp:(BOOL)isUp {
 	[self removeMyListener];
-   [[MPMusicPlayerController applicationMusicPlayer] setVolume:self.launchVolume];
-   
-   [self performSelector:@selector(initializeVolumeButtonStealer) withObject:self afterDelay:0.1];
-   
-   
-   if( self.downBlock )
-   {
-      dispatch_async(dispatch_get_main_queue(),self.downBlock);
-   }
-}
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:self.launchVolume];
+	
+	[self performSelector:@selector(initializeVolumeButtonStealer) withObject:self afterDelay:0.1];
+	
+	// early exit
+	if (self.ignoreNextVolumeChange) {
+		self.ignoreNextVolumeChange = NO;
+		return;
+	}
 
--(void)volumeUp
-{
-	[self removeMyListener];
-   
-   [[MPMusicPlayerController applicationMusicPlayer] setVolume:self.launchVolume];
-   
-   [self performSelector:@selector(initializeVolumeButtonStealer) withObject:self afterDelay:0.1];
-   
-
-      if( self.upBlock )
-      {
-		  dispatch_async(dispatch_get_main_queue(),self.upBlock);
-      }
-
+	dispatch_block_t volumeBlock = isUp ? self.upBlock : self.downBlock;
+	if (volumeBlock) {
+		dispatch_async(dispatch_get_main_queue(), volumeBlock);
+	}
 }
 
 -(id)init
