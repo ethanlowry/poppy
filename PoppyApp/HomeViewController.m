@@ -379,13 +379,6 @@ BOOL showPopular;
 
 - (void)launchCamera
 {
-    
-    /*
-    LiveViewController *lvc = [[LiveViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    lvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
-    lvc.isWatching = NO;
-    */
-    //[buttonStealer stopStealingVolumeButtonEvents];
     PODRecordViewController *recordViewController = [[PODRecordViewController alloc] initWithNibName:nil bundle:nil];
     
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];

@@ -27,7 +27,7 @@
 // comment this in to save the raw image as well
 #define SAVE_FULLSIZE_IMAGE
 
-@interface PODRecordViewController () <AVCaptureVideoDataOutputSampleBufferDelegate, PODCaptureControlsViewDelegate, AVCaptureFileOutputRecordingDelegate>
+@interface PODRecordViewController () <AVCaptureVideoDataOutputSampleBufferDelegate, PODCaptureControlsViewDelegate, AVCaptureFileOutputRecordingDelegate, UIGestureRecognizerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIImageView *savingIconImageView;
 @property (strong, nonatomic) IBOutlet UILabel *recordingTimeLabel;
@@ -192,11 +192,9 @@
 	
 	__weak __typeof__(self) weakSelf = self;
 	self.buttonStealer.upBlock = ^{
-        NSLog(@"^^^^^^^^^^^^^^^^ VOLUME UP ^^^^^^^^^^^^^^^^");
 		[weakSelf plusVolumeButtonPressedAction];
 	};
 	self.buttonStealer.downBlock = ^{
-        NSLog(@"vvvvvvvvvvvvvvvv VOLUME DOWN vvvvvvvvvvvvvvv");
 		[weakSelf minusVolumeButtonPressedAction];
 	};
 
@@ -227,6 +225,7 @@
 		[self.view addGestureRecognizer:doubleTapRecognizer];
 
 		UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
+        panRecognizer.delegate = self;
 		[self.view addGestureRecognizer:panRecognizer];
 	}
 	
@@ -784,6 +783,20 @@
 }
 
 - (void)panAction:(UIPanGestureRecognizer *)panRecognizer {
+    /*
+    CGPoint startLocation;
+    CGFloat distance;
+    if (panRecognizer.state == UIGestureRecognizerStateBegan) {
+        startLocation = [panRecognizer locationInView:self.view];
+    }
+    else if (panRecognizer.state == UIGestureRecognizerStateEnded) {
+        CGPoint stopLocation = [panRecognizer locationInView:self.view];
+        CGFloat dx = stopLocation.x - startLocation.x;
+        CGFloat dy = stopLocation.y - startLocation.y;
+        distance = sqrt(dx*dx + dy*dy );
+        NSLog(@"Distance: %f", distance);
+    }
+     */
     [self switchToViewer];
 }
 
@@ -792,6 +805,14 @@
 }
 
 - (void)doubleTapAction:(UITapGestureRecognizer *)tapRecognizer {
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    // Disallow recognition of tap gestures in the control area.
+    if ((touch.view == self.controlsView) || ([touch.view isKindOfClass:[UIButton class]])) {
+        return NO;
+    }
+    return YES;
 }
 
 - (void)dealloc {

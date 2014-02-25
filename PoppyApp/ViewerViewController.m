@@ -9,7 +9,6 @@
 #import "ViewerViewController.h"
 
 #import "GalleryViewController.h"
-#import "LiveViewController.h"
 #import "AppDelegate.h"
 #import <sys/utsname.h>
 #import "PODAssetsManager.h"
@@ -73,11 +72,9 @@ int curIndex = -1;
     
     __weak __typeof__(self) weakSelf = self;
     self.buttonStealer.upBlock = ^{
-        NSLog(@"^^^^^^^^^^^^^^^^ VOLUME UP ^^^^^^^^^^^^^^^");
         [weakSelf plusVolumeButtonPressedAction];
     };
     self.buttonStealer.downBlock = ^{
-        NSLog(@"vvvvvvvvvvvvvvvv VOLUME DOWN vvvvvvvvvvvvvvv");
         [weakSelf minusVolumeButtonPressedAction];
     };
 }
@@ -274,7 +271,7 @@ int curIndex = -1;
         }
         
     } else {
-        NSLog(@"NO IMAGES IN THE ALBUM");
+        //NSLog(@"NO IMAGES IN THE ALBUM");
         [self showNoMediaAlert];
         imgView.image = [self imageWithColor:[UIColor darkGrayColor]];
         [imgView setHidden:NO];

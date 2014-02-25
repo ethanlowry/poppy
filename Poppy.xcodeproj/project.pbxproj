@@ -63,7 +63,6 @@
 		9D5EDE7D17FB4471008EB372 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7C17FB4471008EB372 /* CoreVideo.framework */; };
 		9D5EDE7F17FB4479008EB372 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE7E17FB4479008EB372 /* AVFoundation.framework */; };
 		9D5EE03617FB4FDB008EB372 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EE03117FB4FB6008EB372 /* libGPUImage.a */; };
-		9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D5EE03917FB521C008EB372 /* LiveViewController.m */; };
 		9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EE03D17FB6572008EB372 /* LiveView.xib */; };
 		9D62B8AA1893223500203FE9 /* backgroundP@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D62B8A91893223500203FE9 /* backgroundP@2x.png */; };
 		9D761EE118242A94005412AC /* record@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D761EE018242A94005412AC /* record@2x.png */; };
@@ -236,8 +235,6 @@
 		9D5EDE7C17FB4471008EB372 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		9D5EDE7E17FB4479008EB372 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		9D5EE02A17FB4FB6008EB372 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
-		9D5EE03817FB521C008EB372 /* LiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveViewController.h; sourceTree = "<group>"; };
-		9D5EE03917FB521C008EB372 /* LiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LiveViewController.m; sourceTree = "<group>"; };
 		9D5EE03D17FB6572008EB372 /* LiveView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LiveView.xib; sourceTree = "<group>"; };
 		9D62B8A91893223500203FE9 /* backgroundP@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "backgroundP@2x.png"; sourceTree = "<group>"; };
 		9D761EE018242A94005412AC /* record@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "record@2x.png"; sourceTree = "<group>"; };
@@ -497,8 +494,6 @@
 				9DE576E91850039C0048A6D6 /* CalibrationViewController.m */,
 				9D99EF20187744BC002D9B14 /* GalleryViewController.h */,
 				9D99EF21187744BC002D9B14 /* GalleryViewController.m */,
-				9D5EE03817FB521C008EB372 /* LiveViewController.h */,
-				9D5EE03917FB521C008EB372 /* LiveViewController.m */,
 				9D48363918B427F600796217 /* ViewerViewController.h */,
 				9D48363A18B427F600796217 /* ViewerViewController.m */,
 				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
@@ -792,7 +787,6 @@
 			files = (
 				9D48365D18B5781700796217 /* PODCalibrateViewController.m in Sources */,
 				9D48366318B5781700796217 /* PODFilterChainSettings.m in Sources */,
-				9D5EE03A17FB521C008EB372 /* LiveViewController.m in Sources */,
 				9D48368818B578A800796217 /* AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.m in Sources */,
 				9D48368718B578A800796217 /* RBVolumeButtons.m in Sources */,
 				9D48366218B5781700796217 /* PODDeviceSettings.m in Sources */,

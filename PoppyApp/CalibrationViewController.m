@@ -227,21 +227,10 @@ UIView *viewWelcome;
     [defaults setFloat:cropPosition forKey:@"xOffset"];
     [defaults synchronize];
     
-    
-    //[buttonStealer stopStealingVolumeButtonEvents];
-    //buttonStealer = nil;
-    
-    
     [stillCamera removeAllTargets];
     [stillCamera stopCameraCapture];
     stillCamera = nil;
-    
-    /*
-    LiveViewController *lvc = (id) self.presentingViewController;
-    lvc.xOffset = cropPosition;
-    lvc.isViewActive = YES;
-     */
-    
+
     [self dismissViewControllerAnimated:NO completion:^{}];
 }
 
