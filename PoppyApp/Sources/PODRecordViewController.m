@@ -20,12 +20,9 @@
 #import "PODAssetsManager.h"
 #import "AppDelegate.h"
 
-#ifdef ENABLE_DEBUG_VIEW_RAW
-#import "PODTestFilterChainViewController.h"
-#endif
 
 // comment this in to save the raw image as well
-#define SAVE_FULLSIZE_IMAGE
+//#define SAVE_FULLSIZE_IMAGE
 
 @interface PODRecordViewController () <AVCaptureVideoDataOutputSampleBufferDelegate, PODCaptureControlsViewDelegate, AVCaptureFileOutputRecordingDelegate, UIGestureRecognizerDelegate>
 
@@ -1074,13 +1071,9 @@
 
 - (void)minusVolumeButtonPressedAction {
 	if (!self.isSaving) {
-#ifdef ENABLE_DEBUG_VIEW_RAW
-		[self presentViewController:[[PODTestFilterChainViewController alloc] initWithNibName:nil bundle:nil] animated:NO completion:NULL];
-#else
         if(!self.forCalibration) {
             [self switchToViewer];
         }
-#endif
 	}
 }
 

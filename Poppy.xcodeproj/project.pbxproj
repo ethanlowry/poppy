@@ -67,6 +67,10 @@
 		9DAB3CE118B673DA00EDFB98 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DAB3CE018B673DA00EDFB98 /* CoreLocation.framework */; };
 		9DAB3CE318B673E900EDFB98 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DAB3CE218B673E900EDFB98 /* CoreMotion.framework */; };
 		9DAB3CF918BD5B2900EDFB98 /* UpgradeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9DAB3CF818BD5B2900EDFB98 /* UpgradeViewController.xib */; };
+		9DAB3CFD18BD702E00EDFB98 /* PortraitViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DAB3CFB18BD702E00EDFB98 /* PortraitViewerViewController.m */; };
+		9DAB3CFE18BD702E00EDFB98 /* PortraitViewerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9DAB3CFC18BD702E00EDFB98 /* PortraitViewerViewController.xib */; };
+		9DAB3D0218BD7E7600EDFB98 /* WiggleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DAB3D0018BD7E7600EDFB98 /* WiggleViewController.m */; };
+		9DAB3D0318BD7E7600EDFB98 /* WiggleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9DAB3D0118BD7E7600EDFB98 /* WiggleViewController.xib */; };
 		9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576E6184FE5930048A6D6 /* focus@2x.png */; };
 		9DE576EF18510EF20048A6D6 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576EE18510EF20048A6D6 /* Settings.bundle */; };
 		9DE576F81853DCEB0048A6D6 /* arrow-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576F61853DCEB0048A6D6 /* arrow-left@2x.png */; };
@@ -206,6 +210,12 @@
 		9DAB3CE018B673DA00EDFB98 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		9DAB3CE218B673E900EDFB98 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		9DAB3CF818BD5B2900EDFB98 /* UpgradeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UpgradeViewController.xib; sourceTree = "<group>"; };
+		9DAB3CFA18BD702E00EDFB98 /* PortraitViewerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PortraitViewerViewController.h; sourceTree = "<group>"; };
+		9DAB3CFB18BD702E00EDFB98 /* PortraitViewerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PortraitViewerViewController.m; sourceTree = "<group>"; };
+		9DAB3CFC18BD702E00EDFB98 /* PortraitViewerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PortraitViewerViewController.xib; sourceTree = "<group>"; };
+		9DAB3CFF18BD7E7600EDFB98 /* WiggleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WiggleViewController.h; sourceTree = "<group>"; };
+		9DAB3D0018BD7E7600EDFB98 /* WiggleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WiggleViewController.m; sourceTree = "<group>"; };
+		9DAB3D0118BD7E7600EDFB98 /* WiggleViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WiggleViewController.xib; sourceTree = "<group>"; };
 		9DE576E6184FE5930048A6D6 /* focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "focus@2x.png"; sourceTree = "<group>"; };
 		9DE576EE18510EF20048A6D6 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		9DE576F61853DCEB0048A6D6 /* arrow-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow-left@2x.png"; sourceTree = "<group>"; };
@@ -439,6 +449,12 @@
 				9D48363A18B427F600796217 /* ViewerViewController.m */,
 				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
 				9DAB3CF818BD5B2900EDFB98 /* UpgradeViewController.xib */,
+				9DAB3CFA18BD702E00EDFB98 /* PortraitViewerViewController.h */,
+				9DAB3CFB18BD702E00EDFB98 /* PortraitViewerViewController.m */,
+				9DAB3CFC18BD702E00EDFB98 /* PortraitViewerViewController.xib */,
+				9DAB3CFF18BD7E7600EDFB98 /* WiggleViewController.h */,
+				9DAB3D0018BD7E7600EDFB98 /* WiggleViewController.m */,
+				9DAB3D0118BD7E7600EDFB98 /* WiggleViewController.xib */,
 			);
 			name = "Core app";
 			sourceTree = "<group>";
@@ -613,6 +629,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9DFCB15B18297DB000332D7C /* beep.wav in Resources */,
+				9DAB3D0318BD7E7600EDFB98 /* WiggleViewController.xib in Resources */,
 				9DE57704185672AB0048A6D6 /* twist@2x.png in Resources */,
 				9DFCB163182ACA4300332D7C /* Default-568h@2x.png in Resources */,
 				9D5EE03E17FB6572008EB372 /* LiveView.xib in Resources */,
@@ -621,6 +638,7 @@
 				9D8FC07B184D53C8007D0D53 /* AppIcon57x57.png in Resources */,
 				9DFA6303182AECB400F1B262 /* Icon.png in Resources */,
 				9D5EDE5017FB4386008EB372 /* InfoPlist.strings in Resources */,
+				9DAB3CFE18BD702E00EDFB98 /* PortraitViewerViewController.xib in Resources */,
 				9D62B8AA1893223500203FE9 /* backgroundP@2x.png in Resources */,
 				9D48369C18B5807A00796217 /* DeviceSettings in Resources */,
 				9DFA62FA182AE68400F1B262 /* Default@2x.png in Resources */,
@@ -709,9 +727,11 @@
 				9D48363818B426E400796217 /* HomeViewController.m in Sources */,
 				9D48368B18B578A800796217 /* TCMCGGeometryAdditions.m in Sources */,
 				9D99EF22187744BC002D9B14 /* GalleryViewController.m in Sources */,
+				9DAB3CFD18BD702E00EDFB98 /* PortraitViewerViewController.m in Sources */,
 				9D48368E18B578A800796217 /* PODDeviceSettingsManager.m in Sources */,
 				9D48368F18B578A800796217 /* PODFilterFactory.m in Sources */,
 				9DE576FC1853F13A0048A6D6 /* WelcomeViewController.m in Sources */,
+				9DAB3D0218BD7E7600EDFB98 /* WiggleViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

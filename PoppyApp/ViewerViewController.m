@@ -7,8 +7,6 @@
 //
 
 #import "ViewerViewController.h"
-
-#import "GalleryViewController.h"
 #import "AppDelegate.h"
 #import <sys/utsname.h>
 #import "PODAssetsManager.h"
@@ -45,7 +43,7 @@ int curIndex = -1;
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    // get poppy group for saving
+    // get poppy album
 	[[PODAssetsManager assetsManager] ensuredAssetsAlbumNamed:@"Poppy" completion:^(ALAssetsGroup *group, NSError *anError) {
 		if (group) {
 			assetsGroup = group;

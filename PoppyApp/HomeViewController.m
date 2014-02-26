@@ -11,6 +11,9 @@
 #import "UpgradeViewController.h"
 #import "PODRecordViewController.h"
 #import "PODCalibrateViewController.h"
+#import "ViewerViewController.h"
+#import "PortraitViewerViewController.h"
+#import "GalleryViewController.h"
 
 @interface HomeViewController ()
 @property (nonatomic, strong) RBVolumeButtons *buttonStealer;
@@ -391,15 +394,21 @@ BOOL showPopular;
 
 - (void)launchViewer
 {
-    ViewerViewController *vvc = [[ViewerViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    vvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
-    
-    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if(poppyAppDelegate.switchToViewer) {
-        poppyAppDelegate.switchToViewer = NO;
-        [self presentViewController:vvc animated:NO completion:nil];
+    if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
+        ViewerViewController *vvc = [[ViewerViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+        vvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
+        
+        AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        if(poppyAppDelegate.switchToViewer) {
+            poppyAppDelegate.switchToViewer = NO;
+            [self presentViewController:vvc animated:NO completion:nil];
+        } else {
+            [self presentViewController:vvc animated:YES completion:nil];
+         }
     } else {
-        [self presentViewController:vvc animated:YES completion:nil];
+        PortraitViewerViewController *pvc = [[PortraitViewerViewController alloc] init];
+        pvc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+        [self presentViewController:pvc animated:YES completion:nil];
     }
 }
 

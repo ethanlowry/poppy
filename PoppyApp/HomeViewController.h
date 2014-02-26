@@ -10,8 +10,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "RBVolumeButtons.h"
 #import <AudioToolbox/AudioToolbox.h>
-#import "ViewerViewController.h"
-#import "GalleryViewController.h"
+
 
 @interface HomeViewController : UIViewController
 
