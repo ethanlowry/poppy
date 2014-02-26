@@ -14,6 +14,7 @@
 @property (nonatomic, strong) ALAssetsGroup *assetsGroup;
 @property (nonatomic, strong) UIImageView *imgView;
 @property (nonatomic, strong) UIButton *btnWiggle;
+@property (nonatomic, strong) UIButton *btnHome;
 @end
 
 @implementation PortraitViewerViewController
@@ -44,22 +45,35 @@ int curIndex;
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]]];
+    if (!self.btnHome) {
+        self.btnHome = [[UIButton alloc] initWithFrame:CGRectMake((self.view.bounds.size.width -200)/2,20,200,40)];
+        [self.btnHome setBackgroundImage:[UIImage imageNamed:@"logo_white"] forState:UIControlStateNormal];
+        [self.btnHome addTarget:self action:@selector(dismissAction) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:self.btnHome];
+    }
     if (!self.imgView) {
-        self.imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,320,240)];
+        self.imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0,90,320,240)];
         [self.imgView setContentMode: UIViewContentModeScaleAspectFill];
         [self.view addSubview:self.imgView];
         [self addGestures:self.imgView];
         self.imgView.userInteractionEnabled = YES;
     }
     if (!self.btnWiggle) {
-        self.btnWiggle = [[UIButton alloc] initWithFrame:CGRectMake(0,240, 320, 80)];
+        self.btnWiggle = [[UIButton alloc] initWithFrame:CGRectMake(0,360, 320, 80)];
         [self.btnWiggle addTarget:self action:@selector(makeWiggle) forControlEvents:UIControlEventTouchUpInside];
+        //[self.btnWiggle setBackgroundColor:[UIColor blackColor]];
         [self.btnWiggle setTitle:@"Wiggle" forState:UIControlStateNormal];
         [self.view addSubview:self.btnWiggle];
     }
     if (curIndex == -1) {
         [self showMedia:YES];
     }
+}
+
+-(void)dismissAction
+{
+    [self dismissViewControllerAnimated:YES completion:^{}];
 }
 
 - (void)makeWiggle

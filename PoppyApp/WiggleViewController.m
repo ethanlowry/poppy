@@ -15,6 +15,7 @@
 @property (nonatomic, strong) UIImageView *rightImgView;
 @property (nonatomic, strong) UIImageView *animatedView;
 @property (nonatomic, strong) UIView *maskView;
+@property (nonatomic) CGPoint offsetStartValue;
 @end
 
 @implementation WiggleViewController
@@ -113,6 +114,10 @@ UIView *gifView;
         slider.continuous = YES;
         slider.value = 0.0;
         [self.view addSubview:slider];
+        
+        // add the pan gesture
+        UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
+        [self.view addGestureRecognizer:panGestureRecognizer];
         
         // add the save button
         CGRect saveButtonFrame = CGRectMake(40, self.view.frame.size.height - 70, 100, 50);
@@ -222,8 +227,9 @@ UIView *gifView;
 
 -(void)postGif
 {
-    UIImage *image = [UIImage imageNamed:@"image.jpg"];
-    NSData *imageData = UIImageJPEGRepresentation(image, 0);
+    //UIImage *image = [UIImage imageNamed:@"image.jpg"];
+    NSData *imageData = UIImageJPEGRepresentation(self.stereoImage, 0.5);
+    NSLog(@"DATA: %d", imageData.length);
     
     NSURL *url = [NSURL URLWithString:@"http://poppy3d.com/app/upload_wiggle"];
     //NSURL *url = [NSURL URLWithString:@"http://localhost:9292/app/upload_wiggle"];
@@ -233,57 +239,66 @@ UIView *gifView;
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                                                        timeoutInterval:30.0];
-    /*
-     [request setHTTPMethod:@"POST"];
-     
-     NSString *boundary = @"---XXX---";
-     NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
-     [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
-     
-     [NSURLConnection sendAsynchronousRequest:request
-     queue:[NSOperationQueue mainQueue]
-     completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-     // TO DO: Look at the response. Currently this is fire and forget
-     if(error){
-     NSLog(@"ERROR: %@", error);
-     }
-     }];
-     
-     */
+    
     [request setHTTPMethod:@"POST"];
     
-    NSString *boundary = @"XXX";
-    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=--%@", boundary];
-    [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
+    NSString *boundary = @"IaTjHpHp";
+    NSString *kNewLine = @"\r\n";
+    
+    // Note that setValue is used so as to override any existing Content-Type header.
+    // addValue appends to the Content-Type header
+    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
+    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
     
     NSMutableData *body = [NSMutableData data];
     
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[@"Content-Disposition: form-data; name=\"content[file]\"; filename=\"stereo.jpg\"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-    //[body appendData:[@"Content-Type: application/octet-stream\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[NSData dataWithData:imageData]];
+    // UUID
+    [body appendData:[[NSString stringWithFormat:@"--%@%@", boundary, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", @"uuid"] dataUsingEncoding:NSUTF8StringEncoding]];
+    // For simple data types, such as text or numbers, there's no need to set the content type
+    [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
+    NSString *UUID = [UIDevice currentDevice].identifierForVendor.UUIDString;
+    [body appendData:[UUID dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
     
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"UUID\"\r\n\r\n%@", [[[UIDevice currentDevice] identifierForVendor] UUIDString]] dataUsingEncoding:NSUTF8StringEncoding]];
+    // Wiggle offset
+    [body appendData:[[NSString stringWithFormat:@"--%@%@", boundary, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", @"wiggle_offset"] dataUsingEncoding:NSUTF8StringEncoding]];
+    // For simple data types, such as text or numbers, there's no need to set the content type
+    [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
+    NSString *wiggleOffset = [NSString stringWithFormat:@"%.3f", offset/3.2];
+    NSLog(@"OFFSET: %.3f", offset/3.2);
+    [body appendData:[wiggleOffset dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
     
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"wiggle_offset\"\r\n\r\n%f", offset/320] dataUsingEncoding:NSUTF8StringEncoding]];
+    // Wiggle-Y offset
+    [body appendData:[[NSString stringWithFormat:@"--%@%@", boundary, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", @"wiggle_offset_y"] dataUsingEncoding:NSUTF8StringEncoding]];
+    // For simple data types, such as text or numbers, there's no need to set the content type
+    [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
+    NSString *wiggleYOffset = [NSString stringWithFormat:@"%.3f", 0.0];
+    [body appendData:[wiggleYOffset dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
+
     
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    // Add the image to the request body
+    [body appendData:[[NSString stringWithFormat:@"--%@%@", boundary, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"image.jpg\"%@", @"content[file]", kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Type: image/jpeg"] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:imageData];
+    [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    // Add the terminating boundary marker to signal that we're at the end of the request body
+    [body appendData:[[NSString stringWithFormat:@"--%@--", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     
     [request setHTTPBody:body];
     
-    NSLog(@"DATA: %@", [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding]);
-    NSURLResponse *response;
-    NSError *error;
     
-    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    NSLog(@"%@", [request allHTTPHeaderFields]);
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+    NSString *returnString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     
-    NSLog(@"RESPONSE: %@", response);
-    
-    
+    NSLog(@"%@", returnString);
 }
 
 -(void)splitImage:(UIImage *)image
@@ -315,6 +330,53 @@ UIView *gifView;
     }
     [self.maskView setFrame:maskFrame];
 }
+
+- (void)panAction:(UIPanGestureRecognizer *)aPanGestureRecognizer {
+	//	NSLog(@"%s %@",__FUNCTION__,aPanGestureRecognizer);
+	CGPoint translationOffset = [aPanGestureRecognizer translationInView:self.view];
+    
+	if (aPanGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		self.offsetStartValue = translationOffset;
+	} else if (aPanGestureRecognizer.state == UIGestureRecognizerStateChanged) {
+        float xOffset = [aPanGestureRecognizer translationInView:self.view].x - self.offsetStartValue.x;
+        
+        
+        CGRect newFrame = self.leftImgView.frame;
+        newFrame.origin.x = offset;
+        [self.leftImgView setFrame:newFrame];
+        
+        CGRect maskFrame = self.maskView.frame;
+        if (offset > 0 ) {
+            maskFrame.origin.x = offset - self.view.frame.size.width;
+        } else {
+            maskFrame.origin.x = self.view.frame.size.width + offset;
+        }
+        [self.maskView setFrame:maskFrame];
+        
+        /*
+		CGFloat xMinDistance = 30.;
+		CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x) - xMinDistance), translationOffset.x);
+		[PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset = CGPointMake(self.offsetStartValue.x - xChangeValue / 1024., 0);
+		
+		CGFloat yMinDistance = 30.;
+		CGFloat yChangeValue = copysign(MAX(0.0,ABS(translationOffset.y) - yMinDistance), translationOffset.y);
+        
+        CGPoint location = [aPanGestureRecognizer locationInView:self.view];
+        if (location.x < self.view.frame.size.width / 2) {
+            [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = self.rotationOffsetStartValue + yChangeValue / 50.;
+        } else {
+            [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = self.rotationOffsetStartValue - yChangeValue / 50.;
+        }
+         */
+        
+	}
+	if (aPanGestureRecognizer.state == UIGestureRecognizerStateEnded ||
+		aPanGestureRecognizer.state == UIGestureRecognizerStateFailed) {
+		[self stopRegularUpdates];
+		[self updateFilterDisplay];
+	}
+}
+
 
 -(void)fadeInLeft
 {

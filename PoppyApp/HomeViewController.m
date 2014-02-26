@@ -230,8 +230,15 @@ BOOL showPopular;
 
 - (void)addControlsToContainer:(UIView *)viewContainer
 {
+    float yOffset = 0.0;
+    if ([viewContainer isEqual:self.portraitView]) {
+        yOffset = 20.0;
+    } else {
+        yOffset = 50.0;
+    }
+    
     UIImageView *imgLogo = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_white"]];
-    [imgLogo setFrame:CGRectMake((viewContainer.bounds.size.width -200)/2,50,200,40)];
+    [imgLogo setFrame:CGRectMake((viewContainer.bounds.size.width -200)/2,yOffset,200,40)];
     [viewContainer addSubview:imgLogo];
     
     UIButton *buttonCamera = [self makeButton:@"Take Pictures" withPosition:1 withView:viewContainer withImageName:@"camera"];
@@ -259,7 +266,7 @@ BOOL showPopular;
     [button setBackgroundImage:[self imageWithColor:[UIColor grayColor]] forState:UIControlStateHighlighted];
     
     if ([containerView isEqual:self.portraitView]) {
-        [button setFrame:CGRectMake(0.0,position*60 + 50,containerView.bounds.size.width,60)];
+        [button setFrame:CGRectMake(0.0,position*60 + 10,containerView.bounds.size.width,60)];
         [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
         button.titleEdgeInsets = UIEdgeInsetsMake(0.0, 50.0, 0.0, 0.0);
         button.imageEdgeInsets = UIEdgeInsetsMake(0.0, 40.0, 0.0, 0.0);
