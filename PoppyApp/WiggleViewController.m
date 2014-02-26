@@ -116,8 +116,8 @@ UIView *gifView;
         [self.view addSubview:slider];
         
         // add the pan gesture
-        UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
-        [self.view addGestureRecognizer:panGestureRecognizer];
+        //UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
+        //[self.view addGestureRecognizer:panGestureRecognizer];
         
         // add the save button
         CGRect saveButtonFrame = CGRectMake(40, self.view.frame.size.height - 70, 100, 50);
@@ -369,11 +369,6 @@ UIView *gifView;
         }
          */
         
-	}
-	if (aPanGestureRecognizer.state == UIGestureRecognizerStateEnded ||
-		aPanGestureRecognizer.state == UIGestureRecognizerStateFailed) {
-		[self stopRegularUpdates];
-		[self updateFilterDisplay];
 	}
 }
 
