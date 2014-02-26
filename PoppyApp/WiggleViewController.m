@@ -16,6 +16,10 @@
 @property (nonatomic, strong) UIImageView *animatedView;
 @property (nonatomic, strong) UIView *maskView;
 @property (nonatomic) CGPoint offsetStartValue;
+@property (nonatomic) float xOffset;
+@property (nonatomic) float yOffset;
+@property (nonatomic) CGPoint tempOffset;
+
 @end
 
 @implementation WiggleViewController
@@ -105,6 +109,7 @@ UIView *gifView;
         [self fadeInLeft];
         
         // add the slider
+        /*
         CGRect frame = CGRectMake(60.0, 50.0, 200.0, 10.0);
         UISlider *slider = [[UISlider alloc] initWithFrame:frame];
         [slider addTarget:self action:@selector(sliderAction:) forControlEvents:UIControlEventValueChanged];
@@ -114,10 +119,23 @@ UIView *gifView;
         slider.continuous = YES;
         slider.value = 0.0;
         [self.view addSubview:slider];
+         */
         
         // add the pan gesture
-        //UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
-        //[self.view addGestureRecognizer:panGestureRecognizer];
+        UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
+        [self.view addGestureRecognizer:panGestureRecognizer];
+        
+        //add instruction label
+        CGRect labelFrame = CGRectMake(0, 0, self.view.bounds.size.width, 80);
+        UIView *labelShadowView = [[UIView alloc] initWithFrame:labelFrame];
+        [labelShadowView setBackgroundColor:[UIColor blackColor]];
+        [labelShadowView setAlpha:0.3];
+        UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
+        [label setTextColor:[UIColor whiteColor]];
+        [label setTextAlignment:NSTextAlignmentCenter];
+        [label setText:@"Drag the image until you are happy"];
+        [self.view addSubview:labelShadowView];
+        [self.view addSubview:label];
         
         // add the save button
         CGRect saveButtonFrame = CGRectMake(40, self.view.frame.size.height - 70, 100, 50);
@@ -266,8 +284,8 @@ UIView *gifView;
     [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", @"wiggle_offset"] dataUsingEncoding:NSUTF8StringEncoding]];
     // For simple data types, such as text or numbers, there's no need to set the content type
     [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
-    NSString *wiggleOffset = [NSString stringWithFormat:@"%.3f", offset/3.2];
-    NSLog(@"OFFSET: %.3f", offset/3.2);
+    NSString *wiggleOffset = [NSString stringWithFormat:@"%.3f", self.xOffset/3.2];
+    NSLog(@"X OFFSET: %.3f", self.xOffset/3.2);
     [body appendData:[wiggleOffset dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
     
@@ -276,7 +294,9 @@ UIView *gifView;
     [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", @"wiggle_offset_y"] dataUsingEncoding:NSUTF8StringEncoding]];
     // For simple data types, such as text or numbers, there's no need to set the content type
     [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
-    NSString *wiggleYOffset = [NSString stringWithFormat:@"%.3f", 0.0];
+    NSString *wiggleYOffset = [NSString stringWithFormat:@"%.3f", self.yOffset/(self.view.bounds.size.height/100)];
+    NSLog(@"Y OFFSET: %.3f", self.yOffset/(self.view.bounds.size.height/100));
+    NSLog(@"HEIGHT: %f", (self.view.bounds.size.height/100));
     [body appendData:[wiggleYOffset dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
 
@@ -336,22 +356,24 @@ UIView *gifView;
 	CGPoint translationOffset = [aPanGestureRecognizer translationInView:self.view];
     
 	if (aPanGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		self.offsetStartValue = translationOffset;
+        self.offsetStartValue = translationOffset;
 	} else if (aPanGestureRecognizer.state == UIGestureRecognizerStateChanged) {
-        float xOffset = [aPanGestureRecognizer translationInView:self.view].x - self.offsetStartValue.x;
-        
+        self.xOffset = self.tempOffset.x + ([aPanGestureRecognizer translationInView:self.view].x - self.offsetStartValue.x)/10;
+        self.yOffset = self.tempOffset.y + ([aPanGestureRecognizer translationInView:self.view].y - self.offsetStartValue.y)/10;
         
         CGRect newFrame = self.leftImgView.frame;
-        newFrame.origin.x = offset;
+        newFrame.origin.x = self.xOffset;
+        newFrame.origin.y = self.yOffset;
         [self.leftImgView setFrame:newFrame];
-        
+        /*
         CGRect maskFrame = self.maskView.frame;
-        if (offset > 0 ) {
-            maskFrame.origin.x = offset - self.view.frame.size.width;
+        if (xOffset > 0 ) {
+            maskFrame.origin.x = xOffset - self.view.frame.size.width;
         } else {
-            maskFrame.origin.x = self.view.frame.size.width + offset;
+            maskFrame.origin.x = self.view.frame.size.width + xOffset;
         }
         [self.maskView setFrame:maskFrame];
+         */
         
         /*
 		CGFloat xMinDistance = 30.;
@@ -369,6 +391,9 @@ UIView *gifView;
         }
          */
         
+	}
+    if (aPanGestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        self.tempOffset = CGPointMake(self.xOffset, self.yOffset);
 	}
 }
 
