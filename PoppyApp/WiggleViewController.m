@@ -9,16 +9,19 @@
 #import "WiggleViewController.h"
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "UIImage+Resize.h"
 
 @interface WiggleViewController ()
 @property (nonatomic, strong) UIImageView *leftImgView;
 @property (nonatomic, strong) UIImageView *rightImgView;
 @property (nonatomic, strong) UIImageView *animatedView;
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *maskViewX;
+@property (nonatomic, strong) UIView *maskViewY;
 @property (nonatomic) CGPoint offsetStartValue;
 @property (nonatomic) float xOffset;
 @property (nonatomic) float yOffset;
 @property (nonatomic) CGPoint tempOffset;
+@property (nonatomic) BOOL stopFade;
 
 @end
 
@@ -87,23 +90,30 @@ UIView *gifView;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if(self.stereoImage) {
+    if(self.stereoImage && !self.leftImgView) {
+        self.stereoImage = [self.stereoImage resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(1704, 1278) interpolationQuality:1.0];
+        
         [self splitImage:self.stereoImage];
         
         // set up the left and right images
-        self.leftImgView = [[UIImageView alloc] initWithImage:leftImg];
-        [self.leftImgView setFrame:self.view.frame];
-        [self.leftImgView setContentMode:UIViewContentModeScaleAspectFill];
         self.rightImgView = [[UIImageView alloc] initWithImage:rightImg];
         [self.rightImgView setFrame:self.view.frame];
         [self.rightImgView setContentMode:UIViewContentModeScaleAspectFill];
-        [self.view addSubview:self.leftImgView];
+        self.leftImgView = [[UIImageView alloc] initWithImage:leftImg];
+        [self.leftImgView setFrame:self.view.frame];
+        [self.leftImgView setContentMode:UIViewContentModeScaleAspectFill];
         [self.view addSubview:self.rightImgView];
+        [self.view addSubview:self.leftImgView];
+        
         
         // mask out the parts of the background image that are cropped out of the foreground image
-        self.maskView = [[UIView alloc] initWithFrame:CGRectMake(-self.view.frame.size.width, 0, self.view.frame.size.width, self.view.frame.size.height)];
-        [self.maskView setBackgroundColor:[UIColor blackColor]];
-        [self.view addSubview:self.maskView];
+        self.maskViewX = [[UIView alloc] initWithFrame:CGRectMake(-self.view.frame.size.width, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        [self.maskViewX setBackgroundColor:[UIColor blackColor]];
+        [self.view addSubview:self.maskViewX];
+        
+        self.maskViewY = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+        [self.maskViewY setBackgroundColor:[UIColor blackColor]];
+        [self.view addSubview:self.maskViewY];
         
         // fake the appearance of an animated gif
         [self fadeInLeft];
@@ -245,21 +255,29 @@ UIView *gifView;
 
 -(void)postGif
 {
+    // Show the loading indicator and perform the POST
+    CGRect labelFrame = CGRectMake(0, (self.view.bounds.size.height-80)/2, self.view.bounds.size.width, 80);
+    UIView *labelShadowView = [[UIView alloc] initWithFrame:labelFrame];
+    [labelShadowView setBackgroundColor:[UIColor blackColor]];
+    [labelShadowView setAlpha:0.3];
+    UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setText:@"Loading..."];
+    [self.view addSubview:labelShadowView];
+    [self.view addSubview:label];
+    
     //UIImage *image = [UIImage imageNamed:@"image.jpg"];
-    NSData *imageData = UIImageJPEGRepresentation(self.stereoImage, 0.5);
-    NSLog(@"DATA: %d", imageData.length);
+    NSData *imageData = UIImageJPEGRepresentation(self.stereoImage, 0.8);
+    //NSLog(@"DATA: %d", imageData.length);
     
     NSURL *url = [NSURL URLWithString:@"http://poppy3d.com/app/upload_wiggle"];
-    //NSURL *url = [NSURL URLWithString:@"http://localhost:9292/app/upload_wiggle"];
-    //NSURL *url = [NSURL URLWithString:@"http://localhost:4000"];
-    //NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                                       timeoutInterval:30.0];
+                                                       timeoutInterval:10.0];
     
     [request setHTTPMethod:@"POST"];
-    
     NSString *boundary = @"IaTjHpHp";
     NSString *kNewLine = @"\r\n";
     
@@ -285,7 +303,6 @@ UIView *gifView;
     // For simple data types, such as text or numbers, there's no need to set the content type
     [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
     NSString *wiggleOffset = [NSString stringWithFormat:@"%.3f", self.xOffset/3.2];
-    NSLog(@"X OFFSET: %.3f", self.xOffset/3.2);
     [body appendData:[wiggleOffset dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
     
@@ -295,11 +312,9 @@ UIView *gifView;
     // For simple data types, such as text or numbers, there's no need to set the content type
     [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
     NSString *wiggleYOffset = [NSString stringWithFormat:@"%.3f", self.yOffset/(self.view.bounds.size.height/100)];
-    NSLog(@"Y OFFSET: %.3f", self.yOffset/(self.view.bounds.size.height/100));
-    NSLog(@"HEIGHT: %f", (self.view.bounds.size.height/100));
     [body appendData:[wiggleYOffset dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
-
+    
     
     // Add the image to the request body
     [body appendData:[[NSString stringWithFormat:@"--%@%@", boundary, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -313,13 +328,42 @@ UIView *gifView;
     [body appendData:[[NSString stringWithFormat:@"--%@--", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     
     [request setHTTPBody:body];
+
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+                               [self showSharingLink:[dict objectForKey:@"page_url"]];
+                               // Hide the loading indicator
+                               [label removeFromSuperview];
+                               [labelShadowView removeFromSuperview];
+                           }
+     ];
+
+    //NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+    //NSError *error;
+    //NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingMutableContainers error:&error];
+    //NSLog(@"%@", dict[@"page_url"]);
     
-    
-    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-    NSString *returnString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-    
-    NSLog(@"%@", returnString);
+    //[self showSharingLink:[dict objectForKey:@"page_url"]];
+    // Hide the loading indicator
+    //[label removeFromSuperview];
+    //[labelShadowView removeFromSuperview];
 }
+
+-(void)showSharingLink:(NSString *)returnString
+{
+    NSMutableArray *sharingItems = [NSMutableArray new];
+    
+    if (returnString) {
+        [sharingItems addObject:returnString];
+    }
+    
+    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
+    [self presentViewController:activityController animated:YES completion:nil];
+}
+
+
 
 -(void)splitImage:(UIImage *)image
 {
@@ -333,6 +377,7 @@ UIView *gifView;
     CGImageRelease(rightImageRef);
 }
 
+/*
 -(void)sliderAction:(id)sender
 {
     
@@ -350,12 +395,15 @@ UIView *gifView;
     }
     [self.maskView setFrame:maskFrame];
 }
+ */
 
 - (void)panAction:(UIPanGestureRecognizer *)aPanGestureRecognizer {
 	//	NSLog(@"%s %@",__FUNCTION__,aPanGestureRecognizer);
 	CGPoint translationOffset = [aPanGestureRecognizer translationInView:self.view];
     
 	if (aPanGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        self.stopFade = YES;
+        NSLog(@"start gesture");
         self.offsetStartValue = translationOffset;
 	} else if (aPanGestureRecognizer.state == UIGestureRecognizerStateChanged) {
         self.xOffset = self.tempOffset.x + ([aPanGestureRecognizer translationInView:self.view].x - self.offsetStartValue.x)/10;
@@ -365,15 +413,22 @@ UIView *gifView;
         newFrame.origin.x = self.xOffset;
         newFrame.origin.y = self.yOffset;
         [self.leftImgView setFrame:newFrame];
-        /*
-        CGRect maskFrame = self.maskView.frame;
-        if (xOffset > 0 ) {
-            maskFrame.origin.x = xOffset - self.view.frame.size.width;
+        
+        CGRect maskFrameX = self.maskViewX.frame;
+        if (self.xOffset > 0 ) {
+            maskFrameX.origin.x = self.xOffset - self.view.frame.size.width;
         } else {
-            maskFrame.origin.x = self.view.frame.size.width + xOffset;
+            maskFrameX.origin.x = self.view.frame.size.width + self.xOffset;
         }
-        [self.maskView setFrame:maskFrame];
-         */
+        [self.maskViewX setFrame:maskFrameX];
+        
+        CGRect maskFrameY = self.maskViewY.frame;
+        if (self.yOffset > 0 ) {
+            maskFrameY.origin.y = self.yOffset - self.view.frame.size.height;
+        } else {
+            maskFrameY.origin.y = self.view.frame.size.height + self.yOffset;
+        }
+        [self.maskViewY setFrame:maskFrameY];
         
         /*
 		CGFloat xMinDistance = 30.;
@@ -393,6 +448,9 @@ UIView *gifView;
         
 	}
     if (aPanGestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        self.stopFade = NO;
+        NSLog(@"stop gesture");
+        [self fadeInLeft];
         self.tempOffset = CGPointMake(self.xOffset, self.yOffset);
 	}
 }
@@ -400,16 +458,24 @@ UIView *gifView;
 
 -(void)fadeInLeft
 {
-    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ [self.rightImgView setAlpha:0.0];} completion:^(BOOL finished){
-        [self fadeInRight];
-    }];
+    if (!self.stopFade){
+        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ [self.leftImgView setAlpha:1.0];} completion:^(BOOL finished){
+            [self fadeInRight];
+        }];
+    } else {
+        [self.leftImgView setAlpha:0.5];
+    }
 }
 
 -(void)fadeInRight
 {
-    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ [self.rightImgView setAlpha:1.0]; } completion:^(BOOL finished){
-        [self fadeInLeft];
-    }];
+    if (!self.stopFade){
+        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ [self.leftImgView setAlpha:0.0]; } completion:^(BOOL finished){
+            [self fadeInLeft];
+        }];
+    } else {
+        [self.leftImgView setAlpha:0.5];
+    }
 }
 
 -(void)displayComposerSheet

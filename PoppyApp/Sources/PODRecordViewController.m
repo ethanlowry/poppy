@@ -27,6 +27,7 @@
 @interface PODRecordViewController () <AVCaptureVideoDataOutputSampleBufferDelegate, PODCaptureControlsViewDelegate, AVCaptureFileOutputRecordingDelegate, UIGestureRecognizerDelegate>
 
 @property (strong, nonatomic) UIView *viewWelcome;
+@property (nonatomic) CGPoint startLocation;
 
 @property (strong, nonatomic) IBOutlet UIImageView *savingIconImageView;
 @property (strong, nonatomic) IBOutlet UILabel *recordingTimeLabel;
@@ -864,21 +865,22 @@
 
 
 - (void)panAction:(UIPanGestureRecognizer *)panRecognizer {
-    /*
-    CGPoint startLocation;
+    
     CGFloat distance;
+    float minDistance = 30;
     if (panRecognizer.state == UIGestureRecognizerStateBegan) {
-        startLocation = [panRecognizer locationInView:self.view];
+        self.startLocation = [panRecognizer locationInView:self.view];
     }
     else if (panRecognizer.state == UIGestureRecognizerStateEnded) {
         CGPoint stopLocation = [panRecognizer locationInView:self.view];
-        CGFloat dx = stopLocation.x - startLocation.x;
-        CGFloat dy = stopLocation.y - startLocation.y;
+        CGFloat dx = stopLocation.x - self.startLocation.x;
+        CGFloat dy = stopLocation.y - self.startLocation.y;
         distance = sqrt(dx*dx + dy*dy );
         NSLog(@"Distance: %f", distance);
+        if (distance > minDistance) {
+            [self switchToViewer];
+        }
     }
-     */
-    [self switchToViewer];
 }
 
 - (void)singleTapAction:(UITapGestureRecognizer *)tapRecognizer {

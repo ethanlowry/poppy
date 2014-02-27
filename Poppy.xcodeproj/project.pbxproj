@@ -71,6 +71,9 @@
 		9DAB3CFE18BD702E00EDFB98 /* PortraitViewerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9DAB3CFC18BD702E00EDFB98 /* PortraitViewerViewController.xib */; };
 		9DAB3D0218BD7E7600EDFB98 /* WiggleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DAB3D0018BD7E7600EDFB98 /* WiggleViewController.m */; };
 		9DAB3D0318BD7E7600EDFB98 /* WiggleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9DAB3D0118BD7E7600EDFB98 /* WiggleViewController.xib */; };
+		9DAB3D0B18BEA46800EDFB98 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DAB3D0A18BEA46800EDFB98 /* UIImage+Resize.m */; };
+		9DD59E3A18BFC1230097E23B /* camera-toggle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DD59E3818BFC1230097E23B /* camera-toggle@2x.png */; };
+		9DD59E3B18BFC1230097E23B /* video-toggle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DD59E3918BFC1230097E23B /* video-toggle@2x.png */; };
 		9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576E6184FE5930048A6D6 /* focus@2x.png */; };
 		9DE576EF18510EF20048A6D6 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576EE18510EF20048A6D6 /* Settings.bundle */; };
 		9DE576F81853DCEB0048A6D6 /* arrow-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DE576F61853DCEB0048A6D6 /* arrow-left@2x.png */; };
@@ -216,6 +219,10 @@
 		9DAB3CFF18BD7E7600EDFB98 /* WiggleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WiggleViewController.h; sourceTree = "<group>"; };
 		9DAB3D0018BD7E7600EDFB98 /* WiggleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WiggleViewController.m; sourceTree = "<group>"; };
 		9DAB3D0118BD7E7600EDFB98 /* WiggleViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WiggleViewController.xib; sourceTree = "<group>"; };
+		9DAB3D0918BEA46800EDFB98 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
+		9DAB3D0A18BEA46800EDFB98 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
+		9DD59E3818BFC1230097E23B /* camera-toggle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera-toggle@2x.png"; sourceTree = "<group>"; };
+		9DD59E3918BFC1230097E23B /* video-toggle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "video-toggle@2x.png"; sourceTree = "<group>"; };
 		9DE576E6184FE5930048A6D6 /* focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "focus@2x.png"; sourceTree = "<group>"; };
 		9DE576EE18510EF20048A6D6 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		9DE576F61853DCEB0048A6D6 /* arrow-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow-left@2x.png"; sourceTree = "<group>"; };
@@ -308,6 +315,8 @@
 			children = (
 				9D48366618B578A800796217 /* RBVolumeButtons.h */,
 				9D48366718B578A800796217 /* RBVolumeButtons.m */,
+				9DAB3D0918BEA46800EDFB98 /* UIImage+Resize.h */,
+				9DAB3D0A18BEA46800EDFB98 /* UIImage+Resize.m */,
 			);
 			name = 3rdParty;
 			path = Sources/3rdParty;
@@ -382,6 +391,8 @@
 				9DF96D741889EDA400EB6B7B /* trash@2x.png */,
 				9DF96D5F1888A66000EB6B7B /* cog@2x.png */,
 				9DF96D6E1888BA6600EB6B7B /* video@2x.png */,
+				9DD59E3818BFC1230097E23B /* camera-toggle@2x.png */,
+				9DD59E3918BFC1230097E23B /* video-toggle@2x.png */,
 				9DF96D611888A87600EB6B7B /* question@2x.png */,
 				9DF96D631888A8B000EB6B7B /* twitter@2x.png */,
 				9DF96D87188F130F00EB6B7B /* flickr@2x.png */,
@@ -682,8 +693,10 @@
 				9DFA6304182AECB400F1B262 /* Icon@2x.png in Resources */,
 				9DFCB1531828764400332D7C /* camera@2x.png in Resources */,
 				9DF96D7C188A0FFD00EB6B7B /* shutter_recording@2x.png in Resources */,
+				9DD59E3B18BFC1230097E23B /* video-toggle@2x.png in Resources */,
 				9DE576EF18510EF20048A6D6 /* Settings.bundle in Resources */,
 				9DF96D86188F127700EB6B7B /* background@2x.png in Resources */,
+				9DD59E3A18BFC1230097E23B /* camera-toggle@2x.png in Resources */,
 				9D10BC68182B0313008C8D1C /* AppIcon40x40.png in Resources */,
 				9DE57706185679140048A6D6 /* thumbs@2x.png in Resources */,
 				9DF96D88188F130F00EB6B7B /* flickr@2x.png in Resources */,
@@ -732,6 +745,7 @@
 				9D48368F18B578A800796217 /* PODFilterFactory.m in Sources */,
 				9DE576FC1853F13A0048A6D6 /* WelcomeViewController.m in Sources */,
 				9DAB3D0218BD7E7600EDFB98 /* WiggleViewController.m in Sources */,
+				9DAB3D0B18BEA46800EDFB98 /* UIImage+Resize.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

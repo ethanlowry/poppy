@@ -9,11 +9,13 @@
 #import "PortraitViewerViewController.h"
 #import "PODAssetsManager.h"
 #import "WiggleViewController.h"
+#import "UIImage+Resize.h"
 
 @interface PortraitViewerViewController ()
 @property (nonatomic, strong) ALAssetsGroup *assetsGroup;
 @property (nonatomic, strong) UIImageView *imgView;
 @property (nonatomic, strong) UIButton *btnWiggle;
+@property (nonatomic, strong) UIButton *btnShare;
 @property (nonatomic, strong) UIButton *btnHome;
 @end
 
@@ -66,9 +68,38 @@ int curIndex;
         [self.btnWiggle setTitle:@"Wiggle" forState:UIControlStateNormal];
         [self.view addSubview:self.btnWiggle];
     }
+    if(!self.btnShare) {
+        self.btnShare = [[UIButton alloc] initWithFrame:CGRectMake(0,440, 320, 80)];
+        [self.btnShare addTarget:self action:@selector(showSharingLink) forControlEvents:UIControlEventTouchUpInside];
+        [self.btnShare setTitle:@"Share" forState:UIControlStateNormal];
+        [self.view addSubview:self.btnShare];
+    }
+    
     if (curIndex == -1) {
         [self showMedia:YES];
     }
+}
+
+-(void)showSharingLink
+{
+    [self.assetsGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:curIndex] options:0 usingBlock: ^(ALAsset *asset, NSUInteger index, BOOL *stop)
+     {
+         if (asset) {
+             //NSLog(@"got the asset: %d", index);
+             ALAssetRepresentation *assetRepresentation = [asset defaultRepresentation];
+             UIImageOrientation orientation = UIImageOrientationUp;
+             NSNumber* orientationValue = [asset valueForProperty:@"ALAssetPropertyOrientation"];
+             if (orientationValue != nil) {
+                 orientation = [orientationValue intValue];
+             }
+             UIImage *stereoImage = [UIImage imageWithCGImage:[assetRepresentation fullResolutionImage] scale:[assetRepresentation scale] orientation:orientation];
+             
+             NSMutableArray *sharingItems = [NSMutableArray new];
+             [sharingItems addObject:stereoImage];
+             UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
+             [self presentViewController:activityController animated:YES completion:nil];
+         }
+     }];
 }
 
 -(void)dismissAction
@@ -99,7 +130,7 @@ int curIndex;
 
 - (void)showMedia:(BOOL)next
 {
-    // show images only (no video
+    // show images only (no video)
     
     __block int countPhoto;
     
@@ -111,10 +142,10 @@ int curIndex;
          }
      }];
     
-    
     if (countPhoto > 0) {
+        int assetCount = [self.assetsGroup numberOfAssets];
         if(curIndex == -1) {
-            curIndex = countPhoto;
+            curIndex = assetCount;
         }
         
         if (next) {
@@ -123,7 +154,7 @@ int curIndex;
             curIndex = curIndex + 1;
         }
         
-        if(curIndex >= 0 && curIndex < countPhoto) {
+        if(curIndex >= 0 && curIndex < assetCount) {
             
             UIImage *tempImage = self.imgView.image;
             [self.imgView setImage:nil];
@@ -168,9 +199,12 @@ int curIndex;
             if (curIndex < 0) {
                 curIndex = 0;
             } else {
-                curIndex = countPhoto - 1;
+                curIndex = assetCount - 1;
             }
         }
+    }
+    else {
+        self.imgView.image = nil;
     }
     
 }

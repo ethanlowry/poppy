@@ -68,8 +68,8 @@
 
             self.recordingTypeButton = ({
                 UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-                [button setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
-                [button setImage:[UIImage imageNamed:@"video"] forState:UIControlStateSelected];
+                [button setImage:[UIImage imageNamed:@"camera-toggle"] forState:UIControlStateNormal];
+                [button setImage:[UIImage imageNamed:@"video-toggle"] forState:UIControlStateSelected];
                 [button addTarget:self action:@selector(toggleRecordingTypePressed) forControlEvents:UIControlEventTouchUpInside];
                 button.frame = ({
                     CGRect frame = bounds;
