@@ -150,7 +150,6 @@ BOOL showPopular;
         } else if (poppyAppDelegate.switchToCamera) {
             [self launchCamera];
         } else if (poppyAppDelegate.switchToViewer) {
-            NSLog(@"--- switch to viewer set ---");
             [self launchViewer];
         } else {
             int64_t delayInSeconds = 0.01;
@@ -401,21 +400,18 @@ BOOL showPopular;
 
 - (void)launchViewer
 {
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    BOOL animated = !poppyAppDelegate.switchToViewer;
+    poppyAppDelegate.switchToViewer = NO;
+    
     if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
         ViewerViewController *vvc = [[ViewerViewController alloc] initWithNibName:@"LiveView" bundle:nil];
         vvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
-        
-        AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        if(poppyAppDelegate.switchToViewer) {
-            poppyAppDelegate.switchToViewer = NO;
-            [self presentViewController:vvc animated:NO completion:nil];
-        } else {
-            [self presentViewController:vvc animated:YES completion:nil];
-         }
+        [self presentViewController:vvc animated:animated completion:nil];
     } else {
         PortraitViewerViewController *pvc = [[PortraitViewerViewController alloc] init];
         pvc.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        [self presentViewController:pvc animated:YES completion:nil];
+        [self presentViewController:pvc animated:animated completion:nil];
     }
 }
 

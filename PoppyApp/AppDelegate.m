@@ -59,6 +59,7 @@ int retry;
 			self.assetsGroup = group;
 		}
 	}];
+    self.currentAssetIndex = -1;
     
     return YES;
 }

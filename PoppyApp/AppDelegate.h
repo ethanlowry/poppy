@@ -22,6 +22,7 @@
 @property (nonatomic) BOOL switchToCamera;
 @property (nonatomic) BOOL switchToViewer;
 @property (strong, nonatomic) ALAssetsGroup *assetsGroup;
+@property (nonatomic) int currentAssetIndex;
 
 
 -(void)loadImageArrays;

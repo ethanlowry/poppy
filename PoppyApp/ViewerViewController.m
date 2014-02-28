@@ -38,6 +38,27 @@ int curIndex = -1;
     return self;
 }
 
+- (void)orientationChanged:(NSNotification *)notification
+{
+    // A delay must be added here, otherwise the new view will be swapped in
+    // too quickly resulting in an animation glitch
+    if (curIndex >= 0) {
+        [self performSelector:@selector(updatePortraitView) withObject:nil afterDelay:0];
+    }
+}
+
+- (void)updatePortraitView
+{
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    
+    if(deviceOrientation == UIDeviceOrientationPortrait){
+        AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        poppyAppDelegate.switchToViewer = YES;
+        poppyAppDelegate.currentAssetIndex = curIndex;
+        [self dismissViewControllerAnimated:NO completion:^{}];
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -76,6 +97,12 @@ int curIndex = -1;
     self.buttonStealer.downBlock = ^{
         [weakSelf minusVolumeButtonPressedAction];
     };
+    
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationChanged:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
 }
 
 
@@ -218,6 +245,12 @@ int curIndex = -1;
             curIndex = curIndex + 1;
         }
         //NSLog(@"CURRENT INDEX: %d", currentIndex);
+        
+        AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        if (poppyAppDelegate.currentAssetIndex >= 0) {
+            curIndex = poppyAppDelegate.currentAssetIndex;
+            poppyAppDelegate.currentAssetIndex = -1;
+        }
         
         if(curIndex >= 0 && curIndex < assetCount) {
             [mainMoviePlayer stop];

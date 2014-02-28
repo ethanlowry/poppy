@@ -10,6 +10,7 @@
 #import "PODAssetsManager.h"
 #import "WiggleViewController.h"
 #import "UIImage+Resize.h"
+#import "AppDelegate.h"
 
 @interface PortraitViewerViewController ()
 @property (nonatomic, strong) ALAssetsGroup *assetsGroup;
@@ -35,6 +36,27 @@ int curIndex;
     return self;
 }
 
+- (void)orientationChanged:(NSNotification *)notification
+{
+    // A delay must be added here, otherwise the new view will be swapped in
+    // too quickly resulting in an animation glitch
+    if (curIndex >= 0) {
+        [self performSelector:@selector(updateLandscapeView) withObject:nil afterDelay:0];
+    }
+}
+
+- (void)updateLandscapeView
+{
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    
+    if(deviceOrientation == UIDeviceOrientationLandscapeRight){
+        AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        poppyAppDelegate.switchToViewer = YES;
+        poppyAppDelegate.currentAssetIndex = curIndex;
+        [self dismissViewControllerAnimated:NO completion:^{}];
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -46,6 +68,11 @@ int curIndex;
 		}
 	}];
     curIndex = -1;
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationChanged:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
     
 }
 
@@ -277,6 +304,14 @@ int curIndex;
                 curIndex = self.maxGoodAsset;
             }
         }
+        
+        // if we got here through device rotation, overwrite the current index
+        AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        if (poppyAppDelegate.currentAssetIndex >= 0) {
+            curIndex = poppyAppDelegate.currentAssetIndex;
+            poppyAppDelegate.currentAssetIndex = -1;
+        }
+        
         if(curIndex >= 0 && curIndex < assetCount) {
             UIImage *tempImage = self.imgView.image;
             [self.imgView setImage:nil];

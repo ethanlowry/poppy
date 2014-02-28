@@ -22,6 +22,7 @@
 @property (nonatomic) float yOffset;
 @property (nonatomic) CGPoint tempOffset;
 @property (nonatomic) BOOL stopFade;
+@property (nonatomic) BOOL isAnimating;
 
 @end
 
@@ -333,6 +334,7 @@ UIView *gifView;
                                        queue:[NSOperationQueue mainQueue]
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                                NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+                               NSLog(@"RESPONSE: %@", response);
                                [self showSharingLink:[dict objectForKey:@"page_url"]];
                                // Hide the loading indicator
                                [label removeFromSuperview];
@@ -450,7 +452,9 @@ UIView *gifView;
     if (aPanGestureRecognizer.state == UIGestureRecognizerStateEnded) {
         self.stopFade = NO;
         NSLog(@"stop gesture");
-        [self fadeInLeft];
+        if (!self.isAnimating) {
+            [self fadeInLeft];
+        }
         self.tempOffset = CGPointMake(self.xOffset, self.yOffset);
 	}
 }
@@ -459,8 +463,11 @@ UIView *gifView;
 -(void)fadeInLeft
 {
     if (!self.stopFade){
-        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ [self.leftImgView setAlpha:1.0];} completion:^(BOOL finished){
-            [self fadeInRight];
+        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            self.isAnimating = YES;
+            [self.leftImgView setAlpha:1.0];} completion:^(BOOL finished){
+                self.isAnimating = NO;
+                [self fadeInRight];
         }];
     } else {
         [self.leftImgView setAlpha:0.5];
@@ -470,7 +477,10 @@ UIView *gifView;
 -(void)fadeInRight
 {
     if (!self.stopFade){
-        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{ [self.leftImgView setAlpha:0.0]; } completion:^(BOOL finished){
+        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            self.isAnimating = YES;
+            [self.leftImgView setAlpha:0.0]; } completion:^(BOOL finished){
+            self.isAnimating = NO;
             [self fadeInLeft];
         }];
     } else {
