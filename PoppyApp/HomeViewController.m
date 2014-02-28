@@ -414,7 +414,7 @@ BOOL showPopular;
          }
     } else {
         PortraitViewerViewController *pvc = [[PortraitViewerViewController alloc] init];
-        pvc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+        pvc.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         [self presentViewController:pvc animated:YES completion:nil];
     }
 }
