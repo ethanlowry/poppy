@@ -32,6 +32,9 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 @property (nonatomic) CGFloat rotationOffsetStartValue;
 @property (nonatomic, strong) NSTimer *regularUpdateTimer;
 @property (nonatomic, strong) UIView *viewWelcome;
+@property (nonatomic, strong) UILabel *xOffsetLabel;
+@property (nonatomic, strong) UIImageView *horizontalImageView;
+@property (nonatomic) BOOL showVertical;
 @end
 
 @implementation PODCalibrateViewController
@@ -64,6 +67,7 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
         vc.forCalibration = YES;
         [self presentViewController:vc animated:NO completion:NULL];
     } else {
+        self.showVertical = NO;
         [self showCalibrationAlert];
         self.EAGLContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
         GLKView *glkitView = [[GLKView alloc] initWithFrame:self.view.bounds context:self.EAGLContext];
@@ -74,8 +78,29 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
         self.CIContext = [CIContext contextWithEAGLContext:self.EAGLContext];
         self.GLKView = glkitView;
         
-        [self loadSourceImage];
-        [self updateFilterDisplay];
+        self.horizontalImageView = [[UIImageView alloc] initWithFrame:CGRectMake([PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset.x*1024, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+        [self.horizontalImageView setContentMode:UIViewContentModeScaleAspectFill];
+        [self.horizontalImageView setClipsToBounds:YES];
+        [self.horizontalImageView setBackgroundColor:[UIColor redColor]];
+
+        [self.view insertSubview:self.horizontalImageView atIndex:1];
+        
+        UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 4)/2, 0, 4, self.view.bounds.size.height)];
+        [separatorView setBackgroundColor:[UIColor redColor]];
+        [self.view insertSubview:separatorView atIndex:1000];
+        
+        self.xOffsetLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 100, 20, 80, 20)];
+        [self.xOffsetLabel setTextColor:[UIColor whiteColor]];
+        [self.xOffsetLabel setBackgroundColor:[UIColor blackColor]];
+        [self.view insertSubview:self.xOffsetLabel atIndex:1001];
+        
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSString *filePath = [defaults objectForKey:@"calibrationImagePath"];
+        self.horizontalImageView.contentMode = UIViewContentModeScaleAspectFill;
+        [self.horizontalImageView setImage:[UIImage imageWithContentsOfFile:filePath]];
+        
+        //[self loadSourceImage];
+        //[self updateFilterDisplay];
     }
 }
 
@@ -167,12 +192,13 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
     // use image from file
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *filePath = [defaults objectForKey:@"calibrationImagePath"];
+    //self.horizontalImageView.contentMode = UIViewContentModeScaleAspectFill;
+    //[self.horizontalImageView setImage:[UIImage imageWithContentsOfFile:filePath]];
     CIImage *sourceImage = [CIImage imageWithContentsOfURL:[NSURL fileURLWithPath:filePath]];
     self.sourceImage = sourceImage;
     [NSOperationQueue TCM_performBlockOnMainQueue:^{
         [self updateFilterDisplay]; // show the raw image with the debug overlay
     } afterDelay:0.5]; // delay a little so it actually happens
-    
     // use image from raw
     /*
 	[[PODAssetsManager assetsManager] assetForLatestRawImageCompletion:^(ALAsset *foundAsset) {
@@ -208,9 +234,9 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 	CGFloat scaleFactor = [self.GLKView contentScaleFactor];
 	targetRect = CGRectApplyAffineTransform(targetRect, CGAffineTransformMakeScale(scaleFactor, scaleFactor));
     CGFloat desiredHeight = CGRectGetWidth(targetRect) / CGRectGetWidth(sourceRect) * CGRectGetHeight(sourceRect);
-    
-	//targetRect = CGRectInset(targetRect,(desiredWidth - CGRectGetWidth(targetRect)) / -2.0,0);
     targetRect = CGRectInset(targetRect,0,(desiredHeight - CGRectGetHeight(targetRect)) / -2.0);
+    //CGFloat desiredWidth = CGRectGetHeight(targetRect) / CGRectGetHeight(sourceRect) * CGRectGetWidth(sourceRect);
+	//targetRect = CGRectInset(targetRect,(desiredWidth - CGRectGetWidth(targetRect)) / -2.0,0);
 	[self.CIContext drawImage:aCIImage inRect:targetRect fromRect:sourceRect];
 	[self.GLKView setNeedsDisplay];
 }
@@ -224,6 +250,8 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 	
 	CIImage *outputImage = self.sourceImage;
 	
+    NSMutableArray *stereoImages = [self splitImage:[filterChain.lastObject outputImage]];
+    
     outputImage = [self drawGridOverlaysForImage:[filterChain.lastObject outputImage]];
 
 	/*
@@ -234,6 +262,27 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 	}
     */
 	[self displayCIImage:outputImage];
+    //[self.view bringSubviewToFront:self.xOffsetLabel];
+}
+
+-(NSMutableArray *)splitImage:(CIImage *)ciImage
+{
+    NSMutableArray *array;
+    UIImage *image = [[UIImage alloc] initWithCIImage:ciImage];
+    
+    CGRect leftCrop = CGRectMake(0, 0, image.size.width/2, image.size.height);
+    CGImageRef leftImageRef = CGImageCreateWithImageInRect([image CGImage], leftCrop);
+    UIImage *leftImg = [UIImage imageWithCGImage:leftImageRef];
+    CGImageRelease(leftImageRef);
+    CGRect rightCrop = CGRectMake(image.size.width/2, 0, image.size.width/2, image.size.height);
+    CGImageRef rightImageRef = CGImageCreateWithImageInRect([image CGImage], rightCrop);
+    UIImage *rightImg = [UIImage imageWithCGImage:rightImageRef];
+    CGImageRelease(rightImageRef);
+    
+    [array addObject:leftImg];
+    [array addObject:rightImg];
+    
+    return array;
 }
 
 + (void)strokePath:(UIBezierPath *)aPath width:(CGFloat)aLineWidth color:(UIColor *)aColor {
@@ -340,30 +389,38 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 	//	NSLog(@"%s %@",__FUNCTION__,aPanGestureRecognizer);
 	CGPoint translationOffset = [aPanGestureRecognizer translationInView:self.view];
 	if (aPanGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		self.centerOffsetStartValue = [[PODDeviceSettingsManager deviceSettingsManager] calibrationCenterOffset];
-		self.rotationOffsetStartValue = [[PODDeviceSettingsManager deviceSettingsManager] rotationOffsetInDegrees];
-		[self startRegularUpdates];
-	} else if (aPanGestureRecognizer.state == UIGestureRecognizerStateChanged) {
-		CGFloat xMinDistance = 30.;
-		CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x) - xMinDistance), translationOffset.x);
-		[PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset = CGPointMake(self.centerOffsetStartValue.x - xChangeValue / 1024., 0);
-		
-		CGFloat yMinDistance = 30.;
-		CGFloat yChangeValue = copysign(MAX(0.0,ABS(translationOffset.y) - yMinDistance), translationOffset.y);
-        
-        CGPoint location = [aPanGestureRecognizer locationInView:self.view];
-        if (location.x < self.view.frame.size.width / 2) {
-            [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = self.rotationOffsetStartValue + yChangeValue / 50.;
+		if (self.showVertical) {
+            self.rotationOffsetStartValue = [[PODDeviceSettingsManager deviceSettingsManager] rotationOffsetInDegrees];
+            [self startRegularUpdates];
         } else {
-            [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = self.rotationOffsetStartValue - yChangeValue / 50.;
+            self.centerOffsetStartValue = [[PODDeviceSettingsManager deviceSettingsManager] calibrationCenterOffset];
         }
-        
-
+	} else if (aPanGestureRecognizer.state == UIGestureRecognizerStateChanged) {
+        if (self.showVertical) {
+            CGPoint location = [aPanGestureRecognizer locationInView:self.view];
+            CGFloat yMinDistance = 0.;
+            CGFloat yChangeValue = copysign(MAX(0.0,ABS(translationOffset.y) - yMinDistance), translationOffset.y);
+            if (location.x < self.view.frame.size.width / 2) {
+                [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = self.rotationOffsetStartValue + yChangeValue / 50.;
+            } else {
+                [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = self.rotationOffsetStartValue - yChangeValue / 50.;
+            }
+        } else {
+            CGFloat xMinDistance = 0.;
+            CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x) - xMinDistance), translationOffset.x);
+            [PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset = CGPointMake(self.centerOffsetStartValue.x - xChangeValue / 1024., 0);
+            NSLog(@"%f", self.centerOffsetStartValue.x - xChangeValue / 1024.);
+            CGRect newFrame = CGRectMake(-(self.centerOffsetStartValue.x - xChangeValue / 1024.)*1024, 0, self.horizontalImageView.bounds.size.width, self.horizontalImageView.bounds.size.height);
+            [self.horizontalImageView setFrame:newFrame];
+            [self.xOffsetLabel setText:[NSString stringWithFormat:@"%.2f", self.centerOffsetStartValue.x - xChangeValue / 1024.]];
+        }
 	}
 	if (aPanGestureRecognizer.state == UIGestureRecognizerStateEnded ||
 		aPanGestureRecognizer.state == UIGestureRecognizerStateFailed) {
-		[self stopRegularUpdates];
-		[self updateFilterDisplay];
+        if (self.showVertical) {
+            [self stopRegularUpdates];
+            [self updateFilterDisplay];
+        }
 	}
 }
 
@@ -383,8 +440,15 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 
 
 - (IBAction)homeButtonAction:(id)sender {
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	[self dismissViewControllerAnimated:NO completion:NULL];
+    if (self.showVertical) {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        [self dismissViewControllerAnimated:NO completion:NULL];
+    } else {
+        [self.homeButton setTitle:@"Done" forState:UIControlStateNormal];
+        self.showVertical = YES;
+        self.horizontalImageView.hidden = YES;
+        [self loadSourceImage];
+    }
 }
 
 - (IBAction)toggleModeAction:(id)sender {

@@ -440,56 +440,55 @@
                 CFRelease(cgImage);
                 [self writeCalibrationImage:imageData];
             }
+        } else {
+
+#ifdef SAVE_FULLSIZE_IMAGE
+
+            CGImageRef cgImage = [self.CIContextForSaving createCGImage:aCIImage fromRect:[aCIImage extent]];
+            if (cgImage) {
+                
+                UIImage *image = [UIImage imageWithCGImage:cgImage];
+                // TODO: use image IO directly
+                NSData *imageData = UIImageJPEGRepresentation(image, JPEGQuality);
+                CFRelease(cgImage);
+                
+                [library writeImageDataToSavedPhotosAlbum:imageData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
+                    NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
+                    if (self.poppyRawGroup && assetURL) {
+                        [[PODAssetsManager assetsManager] addAssetURL:assetURL toGroup:self.poppyRawGroup completion:NULL];
+                    }
+
+                    
+    #endif
+
+                    //{
+                        // TODO: put on a separate serial queue - so the EAGL context doesn't get used simultaniously for different images
+                        NSArray *filterChain = [PODFilterFactory filterChainWithSettings:self.currentDeviceSettings.filterChainSettings inputImage:aCIImage];
+                        CIImage *transformedImage = [filterChain.lastObject outputImage];
+                        
+                        CGImageRef cgImage = [self.CIContextForSaving createCGImage:transformedImage fromRect:transformedImage.extent];
+                        UIImage *otherImage = [UIImage imageWithCGImage:cgImage];
+                        NSData *otherImageData = UIImageJPEGRepresentation(otherImage, JPEGQuality);
+                        [library writeImageDataToSavedPhotosAlbum:otherImageData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
+                            NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
+                            CFRelease(cgImage);
+                            ALAssetsGroup *poppyGroup = self.poppyGroup;
+                            if (poppyGroup && assetURL) {
+                                [[PODAssetsManager assetsManager] addAssetURL:assetURL toGroup:poppyGroup completion:NULL];
+                            }
+                            [self decreaseSavingImagesReferenceCount];
+                        }];
+                    //}
+
+    #ifdef SAVE_FULLSIZE_IMAGE
+
+                }];
+                
+            } else {
+                [self decreaseSavingImagesReferenceCount];
+            }
+#endif
         }
-
-#ifdef SAVE_FULLSIZE_IMAGE
-
-		CGImageRef cgImage = [self.CIContextForSaving createCGImage:aCIImage fromRect:[aCIImage extent]];
-		if (cgImage) {
-			
-			UIImage *image = [UIImage imageWithCGImage:cgImage];
-			// TODO: use image IO directly
-			NSData *imageData = UIImageJPEGRepresentation(image, JPEGQuality);
-			CFRelease(cgImage);
-			
-			[library writeImageDataToSavedPhotosAlbum:imageData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
-				NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
-				if (self.poppyRawGroup && assetURL) {
-					[[PODAssetsManager assetsManager] addAssetURL:assetURL toGroup:self.poppyRawGroup completion:NULL];
-				}
-
-				
-#endif
-
-				//{
-					// TODO: put on a separate serial queue - so the EAGL context doesn't get used simultaniously for different images
-					NSArray *filterChain = [PODFilterFactory filterChainWithSettings:self.currentDeviceSettings.filterChainSettings inputImage:aCIImage];
-					CIImage *transformedImage = [filterChain.lastObject outputImage];
-					
-					CGImageRef cgImage = [self.CIContextForSaving createCGImage:transformedImage fromRect:transformedImage.extent];
-					UIImage *otherImage = [UIImage imageWithCGImage:cgImage];
-					NSData *otherImageData = UIImageJPEGRepresentation(otherImage, JPEGQuality);
-					[library writeImageDataToSavedPhotosAlbum:otherImageData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
-						NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
-						CFRelease(cgImage);
-						ALAssetsGroup *poppyGroup = self.poppyGroup;
-						if (poppyGroup && assetURL) {
-							[[PODAssetsManager assetsManager] addAssetURL:assetURL toGroup:poppyGroup completion:NULL];
-						}
-						[self decreaseSavingImagesReferenceCount];
-					}];
-				//}
-
-#ifdef SAVE_FULLSIZE_IMAGE
-
-			}];
-			
-		} else {
-			[self decreaseSavingImagesReferenceCount];
-		}
-
-#endif
-
 	}
 }
 
