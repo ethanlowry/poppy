@@ -10,6 +10,7 @@
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "UIImage+Resize.h"
+#import "AppDelegate.h"
 
 @interface WiggleViewController ()
 @property (nonatomic, strong) UIImageView *leftImgView;
@@ -91,6 +92,9 @@ UIView *gifView;
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [poppyAppDelegate makeScreenBrightnessNormal];
+    
     if(self.stereoImage && !self.leftImgView) {
         self.stereoImage = [self.stereoImage resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(1704, 1278) interpolationQuality:1.0];
         

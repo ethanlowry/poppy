@@ -28,8 +28,11 @@
 @property (nonatomic) int currentGalleryImageIndex;
 @property (nonatomic) BOOL showBestGallery;
 @property (nonatomic, strong) HomeViewController *hvc;
+@property (nonatomic) BOOL screenBright;
 
 -(void)loadImageArrays;
 -(void)loadJSON:(NSString *)sort;
+-(void)makeScreenBrightnessMax;
+-(void)makeScreenBrightnessNormal;
 
 @end

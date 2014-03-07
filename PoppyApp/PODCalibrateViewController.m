@@ -15,6 +15,7 @@
 #import "PODAssetsManager.h"
 #import "PODRecordViewController.h"
 #import "WelcomeViewController.h"
+#import "AppDelegate.h"
 
 typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 	kPODCalibrateDisplayModeRaw,
@@ -62,6 +63,8 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [poppyAppDelegate makeScreenBrightnessNormal];
     if (self.showOOBE) {
         WelcomeViewController *wvc = [[WelcomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
         [self presentViewController:wvc animated:NO completion:nil];
@@ -438,7 +441,7 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
     [label setTextAlignment:NSTextAlignmentCenter];
     label.lineBreakMode = NSLineBreakByWordWrapping;
     label.numberOfLines = 0;
-    [label setText:@"Congratulations, you are done calibrating. Put your iPhone back in Poppy and enjoy."];
+    [label setText:@"Congratulations, you are done calibrating.\nPut your iPhone back in Poppy and enjoy."];
     
     UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0,self.viewWelcome.bounds.size.height - 70,self.viewWelcome.bounds.size.width,50)];
     [button setTitle:@"OK" forState:UIControlStateNormal];

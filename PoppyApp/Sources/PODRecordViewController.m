@@ -72,6 +72,8 @@
 // only for direct recording path
 @property (nonatomic) NSTimer *updateRecordingSecondsTimer;
 @property (nonatomic) NSDate *recordingStartDate;
+    
+@property (nonatomic) BOOL disableShutter;
 
 @end
 
@@ -776,46 +778,19 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
     
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [poppyAppDelegate makeScreenBrightnessMax];
+    
 	[NSOperationQueue TCM_performBlockOnMainQueue:^{
         [self.buttonStealer startStealingVolumeButtonEvents];
 	} afterDelay:0.01];
     
     if(self.forCalibration) {
         [self.controlsView setHidden:YES];
+        self.disableShutter = YES;
         [self showCalibrationAlert];
     }
 }
-
-/*
-- (void)showCalibrationAlert {
-    self.viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(30,100,self.view.bounds.size.width - 60, self.view.bounds.size.height - 200)];
-    
-    UIView *viewShadow = [[UIView alloc] initWithFrame:self.viewWelcome.bounds];
-    [viewShadow setBackgroundColor:[UIColor blackColor]];
-    [viewShadow setAlpha:0.6];
-    [self.viewWelcome addSubview:viewShadow];
-    
-    UILabel *labelInstructions = [[UILabel alloc] initWithFrame:self.viewWelcome.bounds];
-    [labelInstructions setTextColor:[UIColor whiteColor]];
-    [labelInstructions setTextAlignment:NSTextAlignmentCenter];
-    [labelInstructions setFont:[UIFont systemFontOfSize:18.0]];
-    labelInstructions.lineBreakMode = NSLineBreakByWordWrapping;
-    labelInstructions.numberOfLines = 0;
-    [labelInstructions setText:@"Put your iPhone in Poppy and\ntake a picture to use for calibration"];
-    [self.viewWelcome addSubview:labelInstructions];
-    
-    [self.view addSubview:self.viewWelcome];
-    
-    [UIView animateWithDuration:0.5 delay:6.0
-                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
-                     animations:^{
-                         self.viewWelcome.alpha = 0.0;
-                     }
-                     completion:^(BOOL complete){
-                         [self.controlsView setHidden:NO];
-                     }];
-}
-*/
 
 -(void) showCalibrationAlert {
     self.viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
@@ -887,6 +862,8 @@
     [self.view addSubview:viewShadow];
     [self.view addSubview:labelL];
     [self.view addSubview:labelR];
+    
+    self.disableShutter = NO;
     
 }
 
@@ -1051,7 +1028,9 @@
 
 - (void)shutterPressedAction {
 	if (self.controlsView.currentControlMode == kPODCaptureControlModePhoto) {
-		[self grabImage];
+        if (!self.disableShutter) {
+            [self grabImage];
+        }
 	} else {
 		// toggle video on or off depeding on the state
 		if (!self.isRecordingVideo) {

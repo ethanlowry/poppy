@@ -145,6 +145,7 @@ BOOL showPopular;
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [poppyAppDelegate makeScreenBrightnessNormal];
     if (!poppyAppDelegate.versionCheck || [poppyAppDelegate.versionCheck isEqualToString:@"ok"]) {
         if (![defaults objectForKey:@"calibrationImagePath"]) {
             [self runCalibration];

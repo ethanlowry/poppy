@@ -116,6 +116,9 @@ int curIndex = -1;
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [poppyAppDelegate makeScreenBrightnessMax];
+    
     int64_t delayInSeconds = 0.01;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){

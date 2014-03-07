@@ -121,8 +121,10 @@ NSMutableArray *recentRequests;
     //NSLog(@"viewDidAppear");
     
     [self activateButtonStealer];
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [poppyAppDelegate makeScreenBrightnessMax];
     
-    if(!imgView){    
+    if(!imgView){
         frameWidth = self.view.frame.size.height/2;
         frameHeight = self.view.frame.size.width;
         

@@ -26,6 +26,7 @@
 @synthesize switchToGallery;
 
 float previousBrightness;
+
 int retry;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -218,6 +219,18 @@ int retry;
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     
     //it appears apple has a known bug where the brightness doesn't automatically reset, and you are unable to change brightness on exit. So this doesn't work. But if they fix the bug or enable reset on exit this code will work!
+    [self makeScreenBrightnessNormal];
+}
+    
+- (void)makeScreenBrightnessMax
+{
+    self.screenBright = YES;
+    [[UIScreen mainScreen] setBrightness:1.0];
+}
+
+- (void)makeScreenBrightnessNormal
+{
+    self.screenBright = NO;
     [[UIScreen mainScreen] setBrightness:previousBrightness];
 }
 
@@ -243,7 +256,11 @@ int retry;
     }
     screenTimer = [NSTimer scheduledTimerWithTimeInterval:600.0 target:self selector:@selector(screenTimerFired) userInfo:nil repeats:NO];
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-    [[UIScreen mainScreen] setBrightness: 1.0];
+    if (self.screenBright) {
+        [self makeScreenBrightnessMax];
+    } else {
+        [self makeScreenBrightnessNormal];
+    }
 }
 
 - (void)screenTimerFired

@@ -110,6 +110,8 @@
     
 - (void)viewDidAppear:(BOOL)animated
     {
+        AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        [poppyAppDelegate makeScreenBrightnessNormal];
         [self activateButtonStealer];
         if (!imgView) {
             frameWidth = self.view.bounds.size.width;

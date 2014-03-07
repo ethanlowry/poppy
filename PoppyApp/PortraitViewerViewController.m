@@ -78,6 +78,9 @@ int curIndex;
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [poppyAppDelegate makeScreenBrightnessNormal];
+    
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]]];
     UIImageView *imgLogo = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_white"]];
     [imgLogo setFrame:CGRectMake((self.view.bounds.size.width -200)/2,20,200,40)];
