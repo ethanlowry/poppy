@@ -36,6 +36,8 @@
 		9D48369318B578A800796217 /* PODRecordViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D48367E18B578A800796217 /* PODRecordViewController.xib */; };
 		9D48369818B578A800796217 /* TCMCaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D48368618B578A800796217 /* TCMCaptureManager.m */; };
 		9D48369C18B5807A00796217 /* DeviceSettings in Resources */ = {isa = PBXBuildFile; fileRef = 9D48369B18B5807A00796217 /* DeviceSettings */; };
+		9D55929E18CA4B3A003CE539 /* PortraitGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D55929C18CA4B3A003CE539 /* PortraitGalleryViewController.m */; };
+		9D55929F18CA4B3A003CE539 /* PortraitGalleryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D55929D18CA4B3A003CE539 /* PortraitGalleryViewController.xib */; };
 		9D5EDE4617FB4386008EB372 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4517FB4386008EB372 /* Foundation.framework */; };
 		9D5EDE4817FB4386008EB372 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */; };
 		9D5EDE4A17FB4386008EB372 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4917FB4386008EB372 /* UIKit.framework */; };
@@ -178,6 +180,9 @@
 		9D48368518B578A800796217 /* TCMCaptureManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCMCaptureManager.h; path = Sources/TCMCaptureManager.h; sourceTree = "<group>"; };
 		9D48368618B578A800796217 /* TCMCaptureManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCMCaptureManager.m; path = Sources/TCMCaptureManager.m; sourceTree = "<group>"; };
 		9D48369B18B5807A00796217 /* DeviceSettings */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DeviceSettings; sourceTree = "<group>"; };
+		9D55929B18CA4B3A003CE539 /* PortraitGalleryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PortraitGalleryViewController.h; sourceTree = "<group>"; };
+		9D55929C18CA4B3A003CE539 /* PortraitGalleryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PortraitGalleryViewController.m; sourceTree = "<group>"; };
+		9D55929D18CA4B3A003CE539 /* PortraitGalleryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PortraitGalleryViewController.xib; sourceTree = "<group>"; };
 		9D5EDE4217FB4386008EB372 /* Poppy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Poppy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D5EDE4517FB4386008EB372 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -459,6 +464,9 @@
 				9DE576FB1853F13A0048A6D6 /* WelcomeViewController.m */,
 				9D99EF20187744BC002D9B14 /* GalleryViewController.h */,
 				9D99EF21187744BC002D9B14 /* GalleryViewController.m */,
+				9D55929B18CA4B3A003CE539 /* PortraitGalleryViewController.h */,
+				9D55929C18CA4B3A003CE539 /* PortraitGalleryViewController.m */,
+				9D55929D18CA4B3A003CE539 /* PortraitGalleryViewController.xib */,
 				9D48363918B427F600796217 /* ViewerViewController.h */,
 				9D48363A18B427F600796217 /* ViewerViewController.m */,
 				9D5EE03D17FB6572008EB372 /* LiveView.xib */,
@@ -668,6 +676,7 @@
 				9D10BC69182B0313008C8D1C /* AppIcon40x40@2x.png in Resources */,
 				9DF96D4B1884F2E500EB6B7B /* flicktweet@2x.png in Resources */,
 				9D48364218B577D700796217 /* saving-icon@2x.png in Resources */,
+				9D55929F18CA4B3A003CE539 /* PortraitGalleryViewController.xib in Resources */,
 				9DE576E7184FE5930048A6D6 /* focus@2x.png in Resources */,
 				9D8FC077184D5107007D0D53 /* AppIcon57x57@2x.png in Resources */,
 				9DF96D7F188A10DA00EB6B7B /* shutter_video@2x.png in Resources */,
@@ -725,6 +734,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D55929E18CA4B3A003CE539 /* PortraitGalleryViewController.m in Sources */,
 				9D48365D18B5781700796217 /* PODCalibrateViewController.m in Sources */,
 				9D48366318B5781700796217 /* PODFilterChainSettings.m in Sources */,
 				9D48368818B578A800796217 /* AVCaptureDeviceFormat+TCMAVCaptureDeviceFormatAdditions.m in Sources */,

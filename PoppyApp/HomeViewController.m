@@ -14,6 +14,7 @@
 #import "ViewerViewController.h"
 #import "PortraitViewerViewController.h"
 #import "GalleryViewController.h"
+#import "PortraitGalleryViewController.h"
 
 @interface HomeViewController ()
 @property (nonatomic, strong) RBVolumeButtons *buttonStealer;
@@ -119,7 +120,7 @@ BOOL showPopular;
     
     // The user has explicitly granted permission for media capture, or explicit user permission is not necessary for the media type in question.
     else if(authStatus == AVAuthorizationStatusAuthorized){
-        NSLog(@"Authorized");
+        //NSLog(@"Authorized");
     }
     
     // Explicit user permission is required for media capture, but the user has not yet granted or denied such permission.
@@ -151,6 +152,8 @@ BOOL showPopular;
             [self launchCamera];
         } else if (poppyAppDelegate.switchToViewer) {
             [self launchViewer];
+        } else if (poppyAppDelegate.switchToGallery) {
+            poppyAppDelegate.showBestGallery ? [self launchBest] : [self launchStream];
         } else {
             int64_t delayInSeconds = 0.01;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
@@ -417,32 +420,36 @@ BOOL showPopular;
 
 - (void)launchStream
 {
-    AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if (poppyAppDelegate.isConnected) {
-        GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-        gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
-        gvc.showPopular = NO;
-        [self presentViewController:gvc animated:YES completion:nil];
-    } else {
-        // show the No Connection popup
-        [poppyAppDelegate loadImageArrays];
-        showPopular = NO;
-        [self showConnectionAlert];
-    }
+    [self launchGallery:NO];
 }
 
 - (void)launchBest
 {
+    [self launchGallery:YES];
+}
+
+-(void)launchGallery:(BOOL)best
+{
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    BOOL animated = !poppyAppDelegate.switchToGallery;
+    poppyAppDelegate.switchToGallery = NO;
+    
     if (poppyAppDelegate.isConnected) {
-        GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-        gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
-        gvc.showPopular = YES;
-        [self presentViewController:gvc animated:YES completion:nil];
+        if(UIDeviceOrientationIsLandscape(self.interfaceOrientation)) {
+            GalleryViewController *gvc = [[GalleryViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+            gvc.modalTransitionStyle=UIModalTransitionStyleFlipHorizontal;
+            gvc.showPopular = best;
+            [self presentViewController:gvc animated:animated completion:nil];
+        } else {
+            PortraitGalleryViewController *pgvc = [[PortraitGalleryViewController alloc] initWithNibName:nil bundle:nil];
+            pgvc.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+            pgvc.showPopular = best;
+            [self presentViewController:pgvc animated:animated completion:nil];
+        }
     } else {
         // show the No Connection popup
         [poppyAppDelegate loadImageArrays];
-        showPopular = YES;
+        showPopular = best;
         [self showConnectionAlert];
     }
 }

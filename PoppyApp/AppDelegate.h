@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "PODAssetsManager.h"
+#import "HomeViewController.h"
 
 @interface AppDelegate : UIApplication <UIApplicationDelegate>
 
@@ -21,9 +22,12 @@
 @property (strong, nonatomic) NSString *versionCheck;
 @property (nonatomic) BOOL switchToCamera;
 @property (nonatomic) BOOL switchToViewer;
+@property (nonatomic) BOOL switchToGallery;
 @property (strong, nonatomic) ALAssetsGroup *assetsGroup;
 @property (nonatomic) int currentAssetIndex;
-
+@property (nonatomic) int currentGalleryImageIndex;
+@property (nonatomic) BOOL showBestGallery;
+@property (nonatomic, strong) HomeViewController *hvc;
 
 -(void)loadImageArrays;
 -(void)loadJSON:(NSString *)sort;

@@ -58,11 +58,34 @@ NSMutableArray *recentRequests;
     
     return self;
 }
+    
+- (void)orientationChanged:(NSNotification *)notification
+{
+    // A delay must be added here, otherwise the new view will be swapped in
+    // too quickly resulting in an animation glitch
+    if (imageIndex >= 0) {
+        [self performSelector:@selector(updatePortraitView) withObject:nil afterDelay:0];
+    }
+}
+    
+- (void)updatePortraitView
+{
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    
+    if(deviceOrientation == UIDeviceOrientationPortrait){
+        AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        poppyAppDelegate.switchToGallery = YES;
+        poppyAppDelegate.currentGalleryImageIndex = imageIndex;
+        poppyAppDelegate.showBestGallery = showPopular;
+        [self dismissViewControllerAnimated:NO completion:^{}];
+    }
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     [self.view setBackgroundColor:[UIColor darkGrayColor]];
+    imageIndex = -1;
     
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     //NSLog(@"top count: %d", poppyAppDelegate.topImageArray.count);
@@ -70,6 +93,11 @@ NSMutableArray *recentRequests;
     imageArray = showPopular ? poppyAppDelegate.topImageArray : poppyAppDelegate.recentImageArray;
     queue = [NSOperationQueue new];
     recentRequests = [[NSMutableArray alloc] init];
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationChanged:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
 }
 
 - (void)activateButtonStealer
@@ -91,85 +119,89 @@ NSMutableArray *recentRequests;
 - (void)viewDidAppear:(BOOL)animated
 {
     //NSLog(@"viewDidAppear");
-    imageIndex = -1;
     
-    frameWidth = self.view.frame.size.height/2;
-    frameHeight = self.view.frame.size.width;
     [self activateButtonStealer];
     
-    displayView = [[UIView alloc] initWithFrame:self.view.bounds];
-    [self.view addSubview:displayView];
-    
-    imgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-    [imgView setContentMode:UIViewContentModeScaleAspectFill];
-    [displayView addSubview:imgView];
-    
-    viewAttribution = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth * 2, 30)];
-    UIView *viewAttrShadow = [[UIView alloc] initWithFrame:viewAttribution.frame];
-    [viewAttrShadow setAlpha:0.3];
-    [viewAttrShadow setBackgroundColor:[UIColor blackColor]];
-    [viewAttribution addSubview:viewAttrShadow];
-    
-    imgSourceL = [[UIImageView alloc] initWithFrame:CGRectMake(10, 5, 20, 20)];
-    imgSourceR = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth + 10, 5, 20, 20)];
-    labelAttributionL = [[UILabel alloc] initWithFrame:CGRectMake(40, 5, frameWidth - 60, 20)];
-    labelAttributionR = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth + 40, 5, frameWidth - 60, 20)];
-    [labelAttributionL setFont:[UIFont systemFontOfSize:12]];
-    [labelAttributionL setTextColor:[UIColor whiteColor]];
-    [labelAttributionR setFont:[UIFont systemFontOfSize:12]];
-    [labelAttributionR setTextColor:[UIColor whiteColor]];
-    labelLikeCountL = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth - 43, 5, 20, 20)];
-    labelLikeCountR = [[UILabel alloc] initWithFrame:CGRectMake(2*frameWidth - 43, 5, 20, 20)];
-    [labelLikeCountL setFont:[UIFont systemFontOfSize:12]];
-    [labelLikeCountL setTextColor:[UIColor whiteColor]];
-    [labelLikeCountL setTextAlignment:NSTextAlignmentRight];
-    [labelLikeCountR setFont:[UIFont systemFontOfSize:12]];
-    [labelLikeCountR setTextColor:[UIColor whiteColor]];
-    [labelLikeCountR setTextAlignment:NSTextAlignmentRight];
-    likeImageL = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth - 22, 11, 12, 9)];
-    likeImageR = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth*2 - 22, 11, 12, 9)];
-    
-    [viewAttribution addSubview:imgSourceL];
-    [viewAttribution addSubview:imgSourceR];
-    [viewAttribution addSubview:labelAttributionL];
-    [viewAttribution addSubview:labelAttributionR];
-    [viewAttribution addSubview:labelLikeCountL];
-    [viewAttribution addSubview:labelLikeCountR];
-    [viewAttribution addSubview:likeImageL];
-    [viewAttribution addSubview:likeImageR];
-    [displayView addSubview:viewAttribution];
-    
-    viewLoadingLabel = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 130)/2, self.view.bounds.size.width, 75)];
-    [viewLoadingLabel setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
-    UIView *viewShadow = [[UIView alloc] initWithFrame:viewLoadingLabel.bounds];
-    [viewShadow setBackgroundColor:[UIColor blackColor]];
-    [viewShadow setAlpha:0.3];
-    UILabel *loadingLabelL = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, viewLoadingLabel.frame.size.width/2, viewLoadingLabel.frame.size.height)];
-    [loadingLabelL setText:@"Loading..."];
-    [loadingLabelL setTextColor:[UIColor whiteColor]];
-    [loadingLabelL setTextAlignment:NSTextAlignmentCenter];
-    UILabel *loadingLabelR = [[UILabel alloc] initWithFrame:CGRectMake(viewLoadingLabel.frame.size.width/2, 0, viewLoadingLabel.frame.size.width/2, viewLoadingLabel.frame.size.height)];
-    [loadingLabelR setText:@"Loading..."];
-    [loadingLabelR setTextColor:[UIColor whiteColor]];
-    [loadingLabelR setTextAlignment:NSTextAlignmentCenter];
-    [viewLoadingLabel addSubview:viewShadow];
-    [viewLoadingLabel addSubview:loadingLabelL];
-    [viewLoadingLabel addSubview:loadingLabelR];
-    [viewLoadingLabel setHidden:YES];
-    [self.view addSubview:viewLoadingLabel];
-    
-    UIView *touchView = [[UIView alloc] initWithFrame:self.view.bounds];
-    [self addGestures:touchView];
-    [displayView addSubview:touchView];
-    
-    if (!self.separatorBar) {
-        self.separatorBar = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2 - 2,0,4,self.view.bounds.size.height)];
-        [self.separatorBar setBackgroundColor:[UIColor blackColor]];
-        [self.view addSubview:self.separatorBar];
-        self.separatorBar.layer.zPosition = MAXFLOAT;
+    if(!imgView){    
+        frameWidth = self.view.frame.size.height/2;
+        frameHeight = self.view.frame.size.width;
+        
+        displayView = [[UIView alloc] initWithFrame:self.view.bounds];
+        [self.view addSubview:displayView];
+        
+        imgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+        [imgView setContentMode:UIViewContentModeScaleAspectFill];
+        [displayView addSubview:imgView];
+        
+        viewAttribution = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth * 2, 30)];
+        UIView *viewAttrShadow = [[UIView alloc] initWithFrame:viewAttribution.frame];
+        [viewAttrShadow setAlpha:0.3];
+        [viewAttrShadow setBackgroundColor:[UIColor blackColor]];
+        [viewAttribution addSubview:viewAttrShadow];
+        
+        imgSourceL = [[UIImageView alloc] initWithFrame:CGRectMake(10, 5, 20, 20)];
+        imgSourceR = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth + 10, 5, 20, 20)];
+        labelAttributionL = [[UILabel alloc] initWithFrame:CGRectMake(40, 5, frameWidth - 60, 20)];
+        labelAttributionR = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth + 40, 5, frameWidth - 60, 20)];
+        [labelAttributionL setFont:[UIFont systemFontOfSize:12]];
+        [labelAttributionL setTextColor:[UIColor whiteColor]];
+        [labelAttributionR setFont:[UIFont systemFontOfSize:12]];
+        [labelAttributionR setTextColor:[UIColor whiteColor]];
+        labelLikeCountL = [[UILabel alloc] initWithFrame:CGRectMake(frameWidth - 43, 5, 20, 20)];
+        labelLikeCountR = [[UILabel alloc] initWithFrame:CGRectMake(2*frameWidth - 43, 5, 20, 20)];
+        [labelLikeCountL setFont:[UIFont systemFontOfSize:12]];
+        [labelLikeCountL setTextColor:[UIColor whiteColor]];
+        [labelLikeCountL setTextAlignment:NSTextAlignmentRight];
+        [labelLikeCountR setFont:[UIFont systemFontOfSize:12]];
+        [labelLikeCountR setTextColor:[UIColor whiteColor]];
+        [labelLikeCountR setTextAlignment:NSTextAlignmentRight];
+        likeImageL = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth - 22, 11, 12, 9)];
+        likeImageR = [[UIImageView alloc] initWithFrame:CGRectMake(frameWidth*2 - 22, 11, 12, 9)];
+        
+        [viewAttribution addSubview:imgSourceL];
+        [viewAttribution addSubview:imgSourceR];
+        [viewAttribution addSubview:labelAttributionL];
+        [viewAttribution addSubview:labelAttributionR];
+        [viewAttribution addSubview:labelLikeCountL];
+        [viewAttribution addSubview:labelLikeCountR];
+        [viewAttribution addSubview:likeImageL];
+        [viewAttribution addSubview:likeImageR];
+        [displayView addSubview:viewAttribution];
+        
+        viewLoadingLabel = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 130)/2, self.view.bounds.size.width, 75)];
+        [viewLoadingLabel setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
+        UIView *viewShadow = [[UIView alloc] initWithFrame:viewLoadingLabel.bounds];
+        [viewShadow setBackgroundColor:[UIColor blackColor]];
+        [viewShadow setAlpha:0.3];
+        UILabel *loadingLabelL = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, viewLoadingLabel.frame.size.width/2, viewLoadingLabel.frame.size.height)];
+        [loadingLabelL setText:@"Loading..."];
+        [loadingLabelL setTextColor:[UIColor whiteColor]];
+        [loadingLabelL setTextAlignment:NSTextAlignmentCenter];
+        UILabel *loadingLabelR = [[UILabel alloc] initWithFrame:CGRectMake(viewLoadingLabel.frame.size.width/2, 0, viewLoadingLabel.frame.size.width/2, viewLoadingLabel.frame.size.height)];
+        [loadingLabelR setText:@"Loading..."];
+        [loadingLabelR setTextColor:[UIColor whiteColor]];
+        [loadingLabelR setTextAlignment:NSTextAlignmentCenter];
+        [viewLoadingLabel addSubview:viewShadow];
+        [viewLoadingLabel addSubview:loadingLabelL];
+        [viewLoadingLabel addSubview:loadingLabelR];
+        [viewLoadingLabel setHidden:YES];
+        [self.view addSubview:viewLoadingLabel];
+        
+        UIView *touchView = [[UIView alloc] initWithFrame:self.view.bounds];
+        [self addGestures:touchView];
+        [displayView addSubview:touchView];
+        
+        if (!self.separatorBar) {
+            self.separatorBar = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2 - 2,0,4,self.view.bounds.size.height)];
+            [self.separatorBar setBackgroundColor:[UIColor blackColor]];
+            [self.view addSubview:self.separatorBar];
+            self.separatorBar.layer.zPosition = MAXFLOAT;
+        }
     }
-    
-    [self showMedia:YES];
+    [self showViewerControls];
+    if(imageIndex == -1) {
+        [self showMedia:YES];
+    }
 }
 
 - (void)showViewerControls
@@ -428,6 +460,14 @@ NSMutableArray *recentRequests;
             } else {
                 directionNext = NO;
                 imageIndex = imageIndex - 1;
+            }
+            
+            // if we got here through device rotation, overwrite the current index
+            AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            if (poppyAppDelegate.currentGalleryImageIndex >= 0) {
+                imageIndex = poppyAppDelegate.currentGalleryImageIndex;
+                poppyAppDelegate.currentGalleryImageIndex = -1;
+                poppyAppDelegate.switchToGallery = NO;
             }
             
             if(imageIndex >= 0 && imageIndex < imageArray.count) {

@@ -151,7 +151,7 @@ UIView *touchView;
     // Calibration
     UIView *calibrateView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
     [calibrateView setBackgroundColor:[UIColor whiteColor]];
-    [calibrateView addSubview:[self makeLabel:@"To get the best quality images with Poppy you will need to do a one-time calibration for your camera. To get started, twist Poppy open and place your iPhone in the slot." withFrame:CGRectMake(60,0,calibrateView.frame.size.width - 80, calibrateView.frame.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
+    [calibrateView addSubview:[self makeLabel:@"To get the best quality images with Poppy you will need to do a one-time calibration for your camera. Twist Poppy open and place your iPhone in the slot." withFrame:CGRectMake(60,0,calibrateView.frame.size.width - 120, calibrateView.frame.size.height - 75) withAlignment:NSTextAlignmentLeft withSize:20]];
     [frameArray addObject:calibrateView];
 }
 

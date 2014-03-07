@@ -8,7 +8,6 @@
 
 #import "AppDelegate.h"
 #import "WelcomeViewController.h"
-#import "HomeViewController.h"
 #import "Flurry.h"
 
 #define kVersion @"1"
@@ -24,6 +23,7 @@
 @synthesize versionCheck;
 @synthesize switchToCamera;
 @synthesize switchToViewer;
+@synthesize switchToGallery;
 
 float previousBrightness;
 int retry;
@@ -45,8 +45,8 @@ int retry;
     switchToViewer = NO;
     switchToCamera = NO;
     
-    HomeViewController *hvc = [[HomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
-    [self.window setRootViewController:hvc];
+    self.hvc = [[HomeViewController alloc] initWithNibName:@"LiveView" bundle:nil];
+    [self.window setRootViewController:self.hvc];
     [self.window makeKeyAndVisible];
     
     recentPage = 0;
@@ -60,6 +60,11 @@ int retry;
 		}
 	}];
     self.currentAssetIndex = -1;
+    
+    if ( [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey] != nil ) {
+        NSURL *url = (NSURL *)[launchOptions valueForKey:UIApplicationLaunchOptionsURLKey];
+        [self application:application handleOpenURL:url];
+    }
     
     return YES;
 }
@@ -174,6 +179,16 @@ int retry;
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     
     return request;
+}
+    
+    
+-(BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    return [self application:application handleOpenURL:url];
+}
+    
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

@@ -438,7 +438,7 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
     [label setTextAlignment:NSTextAlignmentCenter];
     label.lineBreakMode = NSLineBreakByWordWrapping;
     label.numberOfLines = 0;
-    [label setText:@"Congratulations!\nYour iPhone is ready to use with Poppy"];
+    [label setText:@"Congratulations, you are done calibrating. Put your iPhone back in Poppy and enjoy."];
     
     UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0,self.viewWelcome.bounds.size.height - 70,self.viewWelcome.bounds.size.width,50)];
     [button setTitle:@"OK" forState:UIControlStateNormal];
