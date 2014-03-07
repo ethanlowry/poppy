@@ -6,7 +6,7 @@
 			"rotation" : 0.4,
 			"leftDistance" : 0.21,
 			"rightDistance" : 0.22,
-			"keystoneFactor" : 0.021,
+			"keystoneFactor" : 0.035,
 			"cropHeight" : 0.80,
 			"sideCropSize" : "{0.36, 0.88}",
 		},
@@ -16,6 +16,7 @@
 			"zoom" : 1.0,
 			"simplePreview" : true,
 			"jpegStillCapture" : true,
+            "simplePreviewZoom" : 1.2,
 		}
 	},
 	"video" : {
@@ -25,7 +26,7 @@
 			"rotation" : 0.4,
 			"leftDistance" : 0.21,
 			"rightDistance" : 0.22,
-			"keystoneFactor" : 0.021,
+			"keystoneFactor" : 0.035,
 			"cropHeight" : 0.80,
 			"sideCropSize" : "{0.36, 0.88}",
 		},

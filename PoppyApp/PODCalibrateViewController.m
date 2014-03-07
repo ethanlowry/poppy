@@ -35,6 +35,11 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 @property (nonatomic, strong) UILabel *xOffsetLabel;
 @property (nonatomic, strong) UIImageView *horizontalImageView;
 @property (nonatomic) BOOL showVertical;
+@property (nonatomic, strong) UIImageView *leftImgView;
+@property (nonatomic) CGPoint offsetStartPoint;
+@property (nonatomic) float xOffset;
+@property (nonatomic) float yOffset;
+@property (nonatomic) CGPoint tempOffset;
 @end
 
 @implementation PODCalibrateViewController
@@ -85,160 +90,105 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 
         [self.view insertSubview:self.horizontalImageView atIndex:1];
         
-        UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 4)/2, 0, 4, self.view.bounds.size.height)];
-        [separatorView setBackgroundColor:[UIColor redColor]];
-        [self.view insertSubview:separatorView atIndex:1000];
-        
-        self.xOffsetLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 100, 20, 80, 20)];
-        [self.xOffsetLabel setTextColor:[UIColor whiteColor]];
-        [self.xOffsetLabel setBackgroundColor:[UIColor blackColor]];
-        [self.view insertSubview:self.xOffsetLabel atIndex:1001];
-        
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSString *filePath = [defaults objectForKey:@"calibrationImagePath"];
         self.horizontalImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self.horizontalImageView setImage:[UIImage imageWithContentsOfFile:filePath]];
-        
-        //[self loadSourceImage];
-        //[self updateFilterDisplay];
     }
 }
 
 -(void) showCalibrationAlert {
-    self.viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 75)/2, self.view.bounds.size.width, 75)];
+    self.viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
     [self.viewWelcome setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
     
     UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.frame.size.width, self.viewWelcome.frame.size.height)];
     [viewShadow setBackgroundColor:[UIColor blackColor]];
-    [viewShadow setAlpha:0.6];
+    [viewShadow setAlpha:1.0];
     
-    NSString *labelText = @"Remove the iPhone from Poppy\nto calibrate the image correctly";
+    NSString *labelText = @"Now remove your iPhone\nfrom Poppy";
     
-    UILabel *labelWelcomeL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.frame.size.width/2, self.viewWelcome.frame.size.height)];
+    UILabel *labelWelcomeL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.bounds.size.width/2, self.viewWelcome.bounds.size.height - 70)];
     [labelWelcomeL setTextColor:[UIColor whiteColor]];
     [labelWelcomeL setBackgroundColor:[UIColor clearColor]];
     [labelWelcomeL setTextAlignment:NSTextAlignmentCenter];
-    [labelWelcomeL setFont:[UIFont systemFontOfSize:14.0]];
     labelWelcomeL.lineBreakMode = NSLineBreakByWordWrapping;
     labelWelcomeL.numberOfLines = 0;
     [labelWelcomeL setText:labelText];
     
-    UILabel *labelWelcomeR = [[UILabel alloc] initWithFrame:CGRectMake(self.viewWelcome.frame.size.width/2,0,self.viewWelcome.frame.size.width/2, self.viewWelcome.frame.size.height)];
+    UILabel *labelWelcomeR = [[UILabel alloc] initWithFrame:CGRectMake(self.viewWelcome.bounds.size.width/2,0,self.viewWelcome.bounds.size.width/2, self.viewWelcome.frame.size.height - 70)];
     [labelWelcomeR setTextColor:[UIColor whiteColor]];
     [labelWelcomeR setBackgroundColor:[UIColor clearColor]];
     [labelWelcomeR setTextAlignment:NSTextAlignmentCenter];
-    [labelWelcomeR setFont:[UIFont systemFontOfSize:14.0]];
     labelWelcomeR.lineBreakMode = NSLineBreakByWordWrapping;
     labelWelcomeR.numberOfLines = 0;
     [labelWelcomeR setText:labelText];
     
+    
+    UIButton *buttonL = [[UIButton alloc] initWithFrame:CGRectMake(0,self.viewWelcome.bounds.size.height - 70,self.viewWelcome.bounds.size.width/2,50)];
+    [buttonL setTitle:@"OK" forState:UIControlStateNormal];
+    [buttonL setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [buttonL addTarget:self action:@selector(hideInstructions) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton *buttonR = [[UIButton alloc] initWithFrame:CGRectMake(self.viewWelcome.bounds.size.width/2,self.viewWelcome.bounds.size.height - 70,self.viewWelcome.bounds.size.width/2,50)];
+    [buttonR setTitle:@"OK" forState:UIControlStateNormal];
+    [buttonR setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [buttonR addTarget:self action:@selector(hideInstructions) forControlEvents:UIControlEventTouchUpInside];
+    
     [self.viewWelcome addSubview:viewShadow];
     [self.viewWelcome addSubview:labelWelcomeL];
     [self.viewWelcome addSubview:labelWelcomeR];
+    [self.viewWelcome addSubview:buttonL];
+    [self.viewWelcome addSubview:buttonR];
     
     [self.view addSubview:self.viewWelcome];
     
-    [UIView animateWithDuration:0.5 delay:4.0
-                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
-                     animations:^{
-                         self.viewWelcome.alpha = 0.0;
-                     }
-                     completion:^(BOOL complete){
-                         [self showInstructions];
-                     }];
-    
 }
 
-- (void)showInstructions {
-    UIView *instructionsView = [[UIView alloc] initWithFrame:CGRectMake(30,30,self.view.bounds.size.width - 60, self.view.bounds.size.height - 60)];
+- (void) hideInstructions
+{
+    [self.homeButton setHidden:NO];
+    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
+    [self.view addGestureRecognizer:panGestureRecognizer];
     
-    UIView *viewShadow = [[UIView alloc] initWithFrame:instructionsView.bounds];
+    [self.viewWelcome setHidden:YES];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.bounds.size.width, 60)];
     [viewShadow setBackgroundColor:[UIColor blackColor]];
     [viewShadow setAlpha:0.6];
-    [instructionsView addSubview:viewShadow];
     
-    UILabel *labelInstructions = [[UILabel alloc] initWithFrame:CGRectMake(40,40,instructionsView.bounds.size.width - 80, instructionsView.bounds.size.height - 80)];
-    [labelInstructions setTextColor:[UIColor whiteColor]];
-    [labelInstructions setTextAlignment:NSTextAlignmentCenter];
-    [labelInstructions setFont:[UIFont systemFontOfSize:18.0]];
-    labelInstructions.lineBreakMode = NSLineBreakByWordWrapping;
-    labelInstructions.numberOfLines = 0;
-    [labelInstructions setText:@"Now you can calibrate your Poppy.\nDrag the image left and right to center. Drag up and down until the two images are vertically aligned."];
-    [instructionsView addSubview:labelInstructions];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.bounds.size.width, 60)];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setText:@"Drag the image left or right until centered"];
     
-    UIButton *buttonInstructions = [[UIButton alloc] initWithFrame:CGRectMake(instructionsView.bounds.size.width/2 - 50,instructionsView.bounds.size.height - 50,100,50)];
-    [buttonInstructions setTitle:@"OK" forState:UIControlStateNormal];
-    [buttonInstructions addTarget:self action:@selector(hideInstructions:) forControlEvents:UIControlEventTouchUpInside];
-    [instructionsView addSubview:buttonInstructions];
+    UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 4)/2,0, 4, self.view.bounds.size.height)];
+    [separatorView setBackgroundColor:[UIColor redColor]];
+    [self.view insertSubview:separatorView atIndex:1000];
     
-    [self.view addSubview:instructionsView];
-}
-
-- (void) hideInstructions:(id)sender
-{
-    UIButton *button = sender;
-    [button.superview removeFromSuperview];
-    [self.homeButton setHidden:NO];
+    self.xOffsetLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, self.view.bounds.size.height - 65, 80, 45)];
+    [self.xOffsetLabel setTextColor:[UIColor whiteColor]];
+    [self.xOffsetLabel setBackgroundColor:[UIColor blackColor]];
+    [self.xOffsetLabel setAlpha:0.8];
+    [self.xOffsetLabel setTextAlignment:NSTextAlignmentCenter];
+    [self.view insertSubview:self.xOffsetLabel atIndex:1001];
+    [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f",([PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset.x)*1000]];
     
-    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
-    
-    [self.view addGestureRecognizer:panGestureRecognizer];
+    [self.view addSubview:viewShadow];
+    [self.view addSubview:label];
 }
 
 - (void)loadSourceImage {
-	//CIImage *sourceImage = [CIImage imageWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"TestImagesRaw5s/IMG_5462" withExtension:@"JPG"]];
-	//self.sourceImage = sourceImage;
     
     // use image from file
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *filePath = [defaults objectForKey:@"calibrationImagePath"];
-    //self.horizontalImageView.contentMode = UIViewContentModeScaleAspectFill;
-    //[self.horizontalImageView setImage:[UIImage imageWithContentsOfFile:filePath]];
     CIImage *sourceImage = [CIImage imageWithContentsOfURL:[NSURL fileURLWithPath:filePath]];
     self.sourceImage = sourceImage;
+    [self updateFilterDisplay];
     [NSOperationQueue TCM_performBlockOnMainQueue:^{
         [self updateFilterDisplay]; // show the raw image with the debug overlay
     } afterDelay:0.5]; // delay a little so it actually happens
-    // use image from raw
-    /*
-	[[PODAssetsManager assetsManager] assetForLatestRawImageCompletion:^(ALAsset *foundAsset) {
-		ALAssetRepresentation *rep = foundAsset.defaultRepresentation;
-		CGImageRef ref = rep.fullResolutionImage;
-		CIImage *sourceImage = [[CIImage alloc] initWithCGImage:ref];
 
-		if (rep.orientation != ALAssetOrientationUp) {
-			// rotate the image
-			CGFloat rotation = rep.orientation == ALAssetOrientationDown ?
-			TCMRadiansFromDegrees(180) :
-			rep.orientation == ALAssetOrientationLeft ?
-			TCMRadiansFromDegrees(90) : TCMRadiansFromDegrees(270);
-			CGAffineTransform transform = CGAffineTransformMakeRotation(rotation);
-			CIImage *result = [CIFilter filterWithName:@"CIAffineTransform" keysAndValues:kCIInputImageKey, sourceImage, kCIInputTransformKey, [NSValue valueWithCGAffineTransform:transform],nil].outputImage;
-			sourceImage = result;
-		}
-		
-		self.sourceImage = sourceImage;
-		[NSOperationQueue TCM_performBlockOnMainQueue:^{
-			[self updateFilterDisplay]; // show the raw image with the debug overlay
-		} afterDelay:0.5]; // delay a little so it actually happens
-	}];
-     */
-}
-
-- (void)displayCIImage:(CIImage *)aCIImage {
-	[EAGLContext setCurrentContext:self.EAGLContext];
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	CGRect sourceRect = aCIImage.extent;
-	CGRect targetRect = self.GLKView.bounds;
-	CGFloat scaleFactor = [self.GLKView contentScaleFactor];
-	targetRect = CGRectApplyAffineTransform(targetRect, CGAffineTransformMakeScale(scaleFactor, scaleFactor));
-    CGFloat desiredHeight = CGRectGetWidth(targetRect) / CGRectGetWidth(sourceRect) * CGRectGetHeight(sourceRect);
-    targetRect = CGRectInset(targetRect,0,(desiredHeight - CGRectGetHeight(targetRect)) / -2.0);
-    //CGFloat desiredWidth = CGRectGetHeight(targetRect) / CGRectGetHeight(sourceRect) * CGRectGetWidth(sourceRect);
-	//targetRect = CGRectInset(targetRect,(desiredWidth - CGRectGetWidth(targetRect)) / -2.0,0);
-	[self.CIContext drawImage:aCIImage inRect:targetRect fromRect:sourceRect];
-	[self.GLKView setNeedsDisplay];
 }
 
 - (void)updateFilterDisplay {
@@ -248,27 +198,56 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 	
 	[filterChain.firstObject setValue:self.sourceImage forKey:@"inputImage"];
 	
-	CIImage *outputImage = self.sourceImage;
+	//CIImage *outputImage = self.sourceImage;
 	
     NSMutableArray *stereoImages = [self splitImage:[filterChain.lastObject outputImage]];
     
-    outputImage = [self drawGridOverlaysForImage:[filterChain.lastObject outputImage]];
-
-	/*
-    if (self.displayMode > kPODCalibrateDisplayModeRaw) {
-		outputImage = [self drawGridOverlaysForImage:[filterChain.lastObject outputImage]];
-	} else {
-		outputImage = [self drawOverlaysForSettings:filterChainSettings image:outputImage];
-	}
-    */
-	[self displayCIImage:outputImage];
-    //[self.view bringSubviewToFront:self.xOffsetLabel];
+    // set up the left and right images
+    
+    UIImage *rightImg = (UIImage *)stereoImages[0];
+    UIImage *leftImg = (UIImage *)stereoImages[1];
+    
+    UIImageView *rightImgView = [[UIImageView alloc] initWithImage:rightImg];
+    CGRect rightFrame = self.view.bounds;
+    rightFrame.origin.x = rightFrame.origin.x + 50;
+    [rightImgView setFrame:self.view.bounds];
+    [rightImgView setContentMode:UIViewContentModeScaleAspectFill];
+    
+    self.leftImgView = [[UIImageView alloc] initWithImage:leftImg];
+    [self.leftImgView setAlpha:0.5];
+    CGRect leftFrame = self.view.bounds;
+    leftFrame.origin.x = leftFrame.origin.x - 50;
+    [self.leftImgView setFrame:leftFrame];
+    [self.leftImgView setContentMode:UIViewContentModeScaleAspectFill];
+    [self.view addSubview:rightImgView];
+    [self.view addSubview:self.leftImgView];
+    [self.view bringSubviewToFront:self.homeButton];
+    [self.view bringSubviewToFront:self.xOffsetLabel];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.bounds.size.width, 60)];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.6];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.bounds.size.width, 60)];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setText:@"Now drag the image until the main subject overlaps"];
+    
+    [self.view addSubview:viewShadow];
+    [self.view addSubview:label];
 }
 
 -(NSMutableArray *)splitImage:(CIImage *)ciImage
 {
-    NSMutableArray *array;
-    UIImage *image = [[UIImage alloc] initWithCIImage:ciImage];
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+
+    UIImage *image;
+    CIContext *context = [CIContext contextWithOptions:nil];
+    CGImageRef processedCGImage = [context createCGImage:ciImage
+                                                       fromRect:[ciImage extent]];
+    
+    image = [UIImage imageWithCGImage:processedCGImage];
+    CGImageRelease(processedCGImage);
     
     CGRect leftCrop = CGRectMake(0, 0, image.size.width/2, image.size.height);
     CGImageRef leftImageRef = CGImageCreateWithImageInRect([image CGImage], leftCrop);
@@ -279,8 +258,8 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
     UIImage *rightImg = [UIImage imageWithCGImage:rightImageRef];
     CGImageRelease(rightImageRef);
     
-    [array addObject:leftImg];
     [array addObject:rightImg];
+    [array addObject:leftImg];
     
     return array;
 }
@@ -375,51 +354,49 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 	return result;
 }
 
-- (void)startRegularUpdates {
-	[self.regularUpdateTimer invalidate];
-	self.regularUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(updateFilterDisplay) userInfo:nil repeats:YES];
-}
-
-- (void)stopRegularUpdates {
-	[self.regularUpdateTimer invalidate];
-	self.regularUpdateTimer = nil;
-}
-
 - (void)panAction:(UIPanGestureRecognizer *)aPanGestureRecognizer {
 	//	NSLog(@"%s %@",__FUNCTION__,aPanGestureRecognizer);
 	CGPoint translationOffset = [aPanGestureRecognizer translationInView:self.view];
 	if (aPanGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		if (self.showVertical) {
-            self.rotationOffsetStartValue = [[PODDeviceSettingsManager deviceSettingsManager] rotationOffsetInDegrees];
-            [self startRegularUpdates];
+            if (!self.rotationOffsetStartValue) {
+                self.rotationOffsetStartValue = [[PODDeviceSettingsManager deviceSettingsManager] rotationOffsetInDegrees];
+            }
         } else {
             self.centerOffsetStartValue = [[PODDeviceSettingsManager deviceSettingsManager] calibrationCenterOffset];
         }
 	} else if (aPanGestureRecognizer.state == UIGestureRecognizerStateChanged) {
         if (self.showVertical) {
-            CGPoint location = [aPanGestureRecognizer locationInView:self.view];
-            CGFloat yMinDistance = 0.;
-            CGFloat yChangeValue = copysign(MAX(0.0,ABS(translationOffset.y) - yMinDistance), translationOffset.y);
-            if (location.x < self.view.frame.size.width / 2) {
-                [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = self.rotationOffsetStartValue + yChangeValue / 50.;
-            } else {
-                [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = self.rotationOffsetStartValue - yChangeValue / 50.;
-            }
+            
+            // wiggle like UI
+            self.xOffset = self.tempOffset.x + ([aPanGestureRecognizer translationInView:self.view].x)/10;
+            self.yOffset = self.tempOffset.y + ([aPanGestureRecognizer translationInView:self.view].y)/10;
+            
+            CGRect newFrame = self.leftImgView.frame;
+            newFrame.origin.x = self.xOffset - 50; //this 50 is to offset for 6 foot distance
+            newFrame.origin.y = self.yOffset;
+            [self.leftImgView setFrame:newFrame];
+            
+            [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f", (self.rotationOffsetStartValue + atan(self.yOffset/self.view.bounds.size.width/2)*180/M_PI)*100]];
+            
         } else {
-            CGFloat xMinDistance = 0.;
-            CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x) - xMinDistance), translationOffset.x);
-            [PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset = CGPointMake(self.centerOffsetStartValue.x - xChangeValue / 1024., 0);
-            NSLog(@"%f", self.centerOffsetStartValue.x - xChangeValue / 1024.);
+            CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x)), translationOffset.x);
             CGRect newFrame = CGRectMake(-(self.centerOffsetStartValue.x - xChangeValue / 1024.)*1024, 0, self.horizontalImageView.bounds.size.width, self.horizontalImageView.bounds.size.height);
             [self.horizontalImageView setFrame:newFrame];
-            [self.xOffsetLabel setText:[NSString stringWithFormat:@"%.2f", self.centerOffsetStartValue.x - xChangeValue / 1024.]];
+            [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f", (self.centerOffsetStartValue.x - xChangeValue / 1024.)*1000]];
         }
 	}
 	if (aPanGestureRecognizer.state == UIGestureRecognizerStateEnded ||
 		aPanGestureRecognizer.state == UIGestureRecognizerStateFailed) {
         if (self.showVertical) {
-            [self stopRegularUpdates];
-            [self updateFilterDisplay];
+            self.tempOffset = CGPointMake(self.xOffset, self.yOffset);
+            float degreesChanged = self.rotationOffsetStartValue + atan(self.yOffset/self.view.bounds.size.width/2)*180/M_PI;
+            [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = degreesChanged;
+            [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f", degreesChanged*100]];
+        } else {
+            CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x)), translationOffset.x);
+            [PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset = CGPointMake(self.centerOffsetStartValue.x - xChangeValue / 1024., 0);
+            [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f", (self.centerOffsetStartValue.x - xChangeValue / 1024.)*1000]];
         }
 	}
 }
@@ -441,18 +418,41 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
 
 - (IBAction)homeButtonAction:(id)sender {
     if (self.showVertical) {
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        [self dismissViewControllerAnimated:NO completion:NULL];
+        [self showCalibrationComplete];
     } else {
-        [self.homeButton setTitle:@"Done" forState:UIControlStateNormal];
+        [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f", ([[PODDeviceSettingsManager deviceSettingsManager] rotationOffsetInDegrees])*100]];
+        [self.homeButton setTitle:@"Next" forState:UIControlStateNormal];
         self.showVertical = YES;
         self.horizontalImageView.hidden = YES;
         [self loadSourceImage];
     }
 }
-
-- (IBAction)toggleModeAction:(id)sender {
-	self.displayMode = 1-self.displayMode;
-	[self updateFilterDisplay];
+    
+-(void)showCalibrationComplete {
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height)];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:1.0];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width, self.view.bounds.size.height - 70)];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+    label.numberOfLines = 0;
+    [label setText:@"Congratulations!\nYour iPhone is ready to use with Poppy"];
+    
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0,self.viewWelcome.bounds.size.height - 70,self.viewWelcome.bounds.size.width,50)];
+    [button setTitle:@"OK" forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(dismissAction) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:viewShadow];
+    [self.view addSubview:label];
+    [self.view addSubview:button];
 }
+    
+-(void)dismissAction {
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self dismissViewControllerAnimated:NO completion:NULL];
+}
+
 @end

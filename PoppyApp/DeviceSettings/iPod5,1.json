@@ -6,7 +6,7 @@
 			"rotation" : 0.4,
 			"leftDistance" : 0.20,
 			"rightDistance" : 0.20,
-			"keystoneFactor" : 0.029,
+			"keystoneFactor" : 0.042,
 			"cropHeight" : 0.82,
 			"sideCropSize" : "{0.345, 0.873}",
 		},
@@ -14,6 +14,8 @@
 			"fps" : 24,
 			"resolution" : "{2592, 1936}",
 			"zoom" : 1.0,
+            "simplePreview" : true,
+            "simplePreviewZoom" : 1.2,
 		}
 	},
 	"video" : {
@@ -23,7 +25,7 @@
 			"rotation" : 0.4,
 			"leftDistance" : 0.20,
 			"rightDistance" : 0.20,
-			"keystoneFactor" : 0.029,
+			"keystoneFactor" : 0.042,
 			"cropHeight" : 0.82,
 			"sideCropSize" : "{0.345, 0.873}",
 		},

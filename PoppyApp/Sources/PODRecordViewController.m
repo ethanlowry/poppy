@@ -818,50 +818,77 @@
 */
 
 -(void) showCalibrationAlert {
-    self.viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(0, (self.view.bounds.size.height - 75)/2, self.view.bounds.size.width, 75)];
+    self.viewWelcome = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
     [self.viewWelcome setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin];
     
     UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.frame.size.width, self.viewWelcome.frame.size.height)];
     [viewShadow setBackgroundColor:[UIColor blackColor]];
-    [viewShadow setAlpha:0.6];
+    [viewShadow setAlpha:1.0];
     
-    NSString *labelText = @"Put me in Poppy and take\na picture to use for calibration";
+    NSString *labelText = @"Put your iPhone in Poppy\nand take a picture";
     
-    UILabel *labelWelcomeL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.frame.size.width/2, self.viewWelcome.frame.size.height)];
+    UILabel *labelWelcomeL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.bounds.size.width/2, self.viewWelcome.bounds.size.height - 70)];
     [labelWelcomeL setTextColor:[UIColor whiteColor]];
     [labelWelcomeL setBackgroundColor:[UIColor clearColor]];
     [labelWelcomeL setTextAlignment:NSTextAlignmentCenter];
-    [labelWelcomeL setFont:[UIFont systemFontOfSize:14.0]];
     labelWelcomeL.lineBreakMode = NSLineBreakByWordWrapping;
     labelWelcomeL.numberOfLines = 0;
     [labelWelcomeL setText:labelText];
     
-    UILabel *labelWelcomeR = [[UILabel alloc] initWithFrame:CGRectMake(self.viewWelcome.frame.size.width/2,0,self.viewWelcome.frame.size.width/2, self.viewWelcome.frame.size.height)];
+    UILabel *labelWelcomeR = [[UILabel alloc] initWithFrame:CGRectMake(self.viewWelcome.bounds.size.width/2,0,self.viewWelcome.bounds.size.width/2, self.viewWelcome.frame.size.height - 70)];
     [labelWelcomeR setTextColor:[UIColor whiteColor]];
     [labelWelcomeR setBackgroundColor:[UIColor clearColor]];
     [labelWelcomeR setTextAlignment:NSTextAlignmentCenter];
-    [labelWelcomeR setFont:[UIFont systemFontOfSize:14.0]];
     labelWelcomeR.lineBreakMode = NSLineBreakByWordWrapping;
     labelWelcomeR.numberOfLines = 0;
     [labelWelcomeR setText:labelText];
     
+    
+    UIButton *buttonL = [[UIButton alloc] initWithFrame:CGRectMake(0,self.viewWelcome.bounds.size.height - 70,self.viewWelcome.bounds.size.width/2,50)];
+    [buttonL setTitle:@"OK" forState:UIControlStateNormal];
+    [buttonL setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [buttonL addTarget:self action:@selector(hideInstructions) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton *buttonR = [[UIButton alloc] initWithFrame:CGRectMake(self.viewWelcome.bounds.size.width/2,self.viewWelcome.bounds.size.height - 70,self.viewWelcome.bounds.size.width/2,50)];
+    [buttonR setTitle:@"OK" forState:UIControlStateNormal];
+    [buttonR setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [buttonR addTarget:self action:@selector(hideInstructions) forControlEvents:UIControlEventTouchUpInside];
+    
     [self.viewWelcome addSubview:viewShadow];
     [self.viewWelcome addSubview:labelWelcomeL];
     [self.viewWelcome addSubview:labelWelcomeR];
+    [self.viewWelcome addSubview:buttonL];
+    [self.viewWelcome addSubview:buttonR];
     
     [self.view addSubview:self.viewWelcome];
+}
     
-    [UIView animateWithDuration:0.5 delay:5.0
-                        options: (UIViewAnimationOptionCurveEaseInOut & UIViewAnimationOptionBeginFromCurrentState)
-                     animations:^{
-                         self.viewWelcome.alpha = 0.0;
-                     }
-                     completion:^(BOOL complete){
-                         [self.controlsView setHidden:NO];
-                     }];
+- (void)hideInstructions {
+    [self.controlsView setHidden:NO];
+    [self.viewWelcome setHidden:YES];
+    
+    UIView *viewShadow = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.bounds.size.width, 60)];
+    [viewShadow setBackgroundColor:[UIColor blackColor]];
+    [viewShadow setAlpha:0.6];
+    
+    NSString *labelText = @"Choose a subject 6 feet away";
+    UILabel *labelL = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.bounds.size.width/2, 60)];
+    [labelL setFont:[UIFont systemFontOfSize:14.0]];
+    [labelL setTextColor:[UIColor whiteColor]];
+    [labelL setTextAlignment:NSTextAlignmentCenter];
+    [labelL setText:labelText];
+    
+    UILabel *labelR = [[UILabel alloc] initWithFrame:CGRectMake(self.viewWelcome.bounds.size.width/2,0,self.viewWelcome.bounds.size.width/2, 60)];
+    [labelR setFont:[UIFont systemFontOfSize:14.0]];
+    [labelR setTextColor:[UIColor whiteColor]];
+    [labelR setTextAlignment:NSTextAlignmentCenter];
+    [labelR setText:labelText];
+    
+    [self.view addSubview:viewShadow];
+    [self.view addSubview:labelL];
+    [self.view addSubview:labelR];
     
 }
-
 
 - (void)panAction:(UIPanGestureRecognizer *)panRecognizer {
     
