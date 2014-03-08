@@ -10,7 +10,7 @@
 #import "WelcomeViewController.h"
 #import "Flurry.h"
 
-#define kVersion @"1"
+#define kVersion @"2"
 
 @implementation AppDelegate
 

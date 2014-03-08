@@ -38,6 +38,7 @@
 		9D48369C18B5807A00796217 /* DeviceSettings in Resources */ = {isa = PBXBuildFile; fileRef = 9D48369B18B5807A00796217 /* DeviceSettings */; };
 		9D55929E18CA4B3A003CE539 /* PortraitGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D55929C18CA4B3A003CE539 /* PortraitGalleryViewController.m */; };
 		9D55929F18CA4B3A003CE539 /* PortraitGalleryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9D55929D18CA4B3A003CE539 /* PortraitGalleryViewController.xib */; };
+		9D5592A418CA9D38003CE539 /* libFlurry_4.3.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5592A318CA9D38003CE539 /* libFlurry_4.3.2.a */; };
 		9D5EDE4617FB4386008EB372 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4517FB4386008EB372 /* Foundation.framework */; };
 		9D5EDE4817FB4386008EB372 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */; };
 		9D5EDE4A17FB4386008EB372 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5EDE4917FB4386008EB372 /* UIKit.framework */; };
@@ -104,7 +105,6 @@
 		9DF96D761889EDA400EB6B7B /* trash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D741889EDA400EB6B7B /* trash@2x.png */; };
 		9DF96D7C188A0FFD00EB6B7B /* shutter_recording@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D7A188A0FFD00EB6B7B /* shutter_recording@2x.png */; };
 		9DF96D7F188A10DA00EB6B7B /* shutter_video@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D7E188A10DA00EB6B7B /* shutter_video@2x.png */; };
-		9DF96D84188A428000EB6B7B /* libFlurry_4.3.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF96D81188A408D00EB6B7B /* libFlurry_4.3.1.a */; };
 		9DF96D86188F127700EB6B7B /* background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D85188F127700EB6B7B /* background@2x.png */; };
 		9DF96D88188F130F00EB6B7B /* flickr@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D87188F130F00EB6B7B /* flickr@2x.png */; };
 		9DF96D8A188F37CE00EB6B7B /* bullet@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DF96D89188F37CE00EB6B7B /* bullet@2x.png */; };
@@ -183,6 +183,8 @@
 		9D55929B18CA4B3A003CE539 /* PortraitGalleryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PortraitGalleryViewController.h; sourceTree = "<group>"; };
 		9D55929C18CA4B3A003CE539 /* PortraitGalleryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PortraitGalleryViewController.m; sourceTree = "<group>"; };
 		9D55929D18CA4B3A003CE539 /* PortraitGalleryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PortraitGalleryViewController.xib; sourceTree = "<group>"; };
+		9D5592A218CA9C57003CE539 /* Flurry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Flurry.h; sourceTree = "<group>"; };
+		9D5592A318CA9D38003CE539 /* libFlurry_4.3.2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurry_4.3.2.a; sourceTree = "<group>"; };
 		9D5EDE4217FB4386008EB372 /* Poppy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Poppy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D5EDE4517FB4386008EB372 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9D5EDE4717FB4386008EB372 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -258,8 +260,6 @@
 		9DF96D741889EDA400EB6B7B /* trash@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash@2x.png"; sourceTree = "<group>"; };
 		9DF96D7A188A0FFD00EB6B7B /* shutter_recording@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shutter_recording@2x.png"; sourceTree = "<group>"; };
 		9DF96D7E188A10DA00EB6B7B /* shutter_video@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shutter_video@2x.png"; sourceTree = "<group>"; };
-		9DF96D80188A408D00EB6B7B /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Flurry.h; sourceTree = "<group>"; };
-		9DF96D81188A408D00EB6B7B /* libFlurry_4.3.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurry_4.3.1.a; sourceTree = "<group>"; };
 		9DF96D85188F127700EB6B7B /* background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background@2x.png"; sourceTree = "<group>"; };
 		9DF96D87188F130F00EB6B7B /* flickr@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flickr@2x.png"; sourceTree = "<group>"; };
 		9DF96D89188F37CE00EB6B7B /* bullet@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bullet@2x.png"; sourceTree = "<group>"; };
@@ -287,11 +287,11 @@
 				9DAB3CE318B673E900EDFB98 /* CoreMotion.framework in Frameworks */,
 				9DAB3CE118B673DA00EDFB98 /* CoreLocation.framework in Frameworks */,
 				9DAB3CDD18B673CB00EDFB98 /* GLKit.framework in Frameworks */,
-				9DF96D84188A428000EB6B7B /* libFlurry_4.3.1.a in Frameworks */,
 				9DF96D6D1888B82800EB6B7B /* Security.framework in Frameworks */,
 				9DF96D6B1888B81A00EB6B7B /* SystemConfiguration.framework in Frameworks */,
 				9D761EE518245B50005412AC /* AudioToolbox.framework in Frameworks */,
 				9D761EE318245A24005412AC /* MediaPlayer.framework in Frameworks */,
+				9D5592A418CA9D38003CE539 /* libFlurry_4.3.2.a in Frameworks */,
 				9D5EDE7F17FB4479008EB372 /* AVFoundation.framework in Frameworks */,
 				9D5EDE7D17FB4471008EB372 /* CoreVideo.framework in Frameworks */,
 				9D5EDE7B17FB4465008EB372 /* CoreMedia.framework in Frameworks */,
@@ -532,8 +532,8 @@
 				9D48369F18B580C300796217 /* Core app */,
 				9D48369A18B57FEF00796217 /* POD */,
 				9D48369918B57FE000796217 /* Resources */,
-				9DF96D80188A408D00EB6B7B /* Flurry.h */,
-				9DF96D81188A408D00EB6B7B /* libFlurry_4.3.1.a */,
+				9D5592A218CA9C57003CE539 /* Flurry.h */,
+				9D5592A318CA9D38003CE539 /* libFlurry_4.3.2.a */,
 				9D5EDE5717FB4386008EB372 /* Images.xcassets */,
 				9D48366818B578A800796217 /* Additions */,
 				9D48366518B578A800796217 /* 3rdParty */,
@@ -886,6 +886,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"./**",
+					/Users/ethanlowry/Development/poppy/PoppyApp,
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
@@ -911,6 +912,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"./**",
+					/Users/ethanlowry/Development/poppy/PoppyApp,
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
