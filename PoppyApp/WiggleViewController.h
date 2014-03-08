@@ -11,4 +11,5 @@
 
 @interface WiggleViewController : UIViewController <MFMailComposeViewControllerDelegate>
 @property (nonatomic, strong) UIImage *stereoImage;
+@property (nonatomic, strong) NSURL *assetURL;
 @end

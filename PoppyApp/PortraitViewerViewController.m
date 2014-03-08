@@ -239,6 +239,7 @@ int curIndex;
              
              NSMutableArray *sharingItems = [NSMutableArray new];
              [sharingItems addObject:stereoImage];
+             [sharingItems addObject:@"#poppy3d"];
              UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
              [self presentViewController:activityController animated:YES completion:nil];
          }
@@ -266,6 +267,7 @@ int curIndex;
              
              WiggleViewController *wvc = [[WiggleViewController alloc] initWithNibName:nil bundle:nil];
              wvc.stereoImage = stereoImage;
+             wvc.assetURL = [asset valueForProperty:ALAssetPropertyAssetURL];
              [self presentViewController:wvc animated:YES completion:nil];
          }
      }];

@@ -162,7 +162,9 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.viewWelcome.bounds.size.width, 60)];
     [label setTextColor:[UIColor whiteColor]];
     [label setTextAlignment:NSTextAlignmentCenter];
-    [label setText:@"Drag the image left or right until centered"];
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+    label.numberOfLines = 0;
+    [label setText:@"Drag to center the red line between the two images"]; //Drag the image left or right until centered
     
     UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 4)/2,0, 4, self.view.bounds.size.height)];
     [separatorView setBackgroundColor:[UIColor redColor]];
