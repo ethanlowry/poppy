@@ -316,7 +316,7 @@ UIView *gifView;
         [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", @"wiggle_offset"] dataUsingEncoding:NSUTF8StringEncoding]];
         // For simple data types, such as text or numbers, there's no need to set the content type
         [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
-        NSString *wiggleOffset = [NSString stringWithFormat:@"%.3f", self.xOffset/3.2];
+        NSString *wiggleOffset = [NSString stringWithFormat:@"%.3f", self.xOffset * 100/self.view.bounds.size.width];
         [body appendData:[wiggleOffset dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
         
@@ -325,10 +325,9 @@ UIView *gifView;
         [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", @"wiggle_offset_y"] dataUsingEncoding:NSUTF8StringEncoding]];
         // For simple data types, such as text or numbers, there's no need to set the content type
         [body appendData:[[NSString stringWithFormat:@"%@%@", kNewLine, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
-        NSString *wiggleYOffset = [NSString stringWithFormat:@"%.3f", self.yOffset/(self.view.bounds.size.height/100)];
+        NSString *wiggleYOffset = [NSString stringWithFormat:@"%.3f", self.yOffset * 100/self.view.bounds.size.height];
         [body appendData:[wiggleYOffset dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:[kNewLine dataUsingEncoding:NSUTF8StringEncoding]];
-        
         
         // Add the image to the request body
         [body appendData:[[NSString stringWithFormat:@"--%@%@", boundary, kNewLine] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -398,7 +397,6 @@ UIView *gifView;
 -(void)showSharingLink:(NSString *)urlString
 {
     NSMutableArray *sharingItems = [NSMutableArray new];
-    
     if (urlString) {
         [sharingItems addObject:[NSString stringWithFormat:@"Check out my Poppy Gif - %@ #poppy3d", urlString]];
     }
