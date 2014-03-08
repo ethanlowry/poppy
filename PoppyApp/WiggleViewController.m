@@ -445,8 +445,8 @@ UIView *gifView;
 	//	NSLog(@"%s %@",__FUNCTION__,aPanGestureRecognizer);
     self.wiggleURL = nil;
 	CGPoint translationOffset = [aPanGestureRecognizer translationInView:self.view];
-    
 	if (aPanGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        self.tempOffset = CGPointMake(self.xOffset, self.yOffset);
         self.stopFade = YES;
         self.offsetStartValue = translationOffset;
 	} else if (aPanGestureRecognizer.state == UIGestureRecognizerStateChanged) {
