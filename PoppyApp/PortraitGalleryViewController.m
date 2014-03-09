@@ -10,7 +10,8 @@
 #import "AppDelegate.h"
 
 @interface PortraitGalleryViewController ()
-
+    @property (nonatomic, strong) UIView *wiggleView;
+    @property (nonatomic, strong) UIView *wiggleButtonView;
 @end
 
 @implementation PortraitGalleryViewController
@@ -130,8 +131,23 @@
             
             imgView = [[UIImageView alloc] initWithFrame:displayView.bounds];
             [imgView setContentMode:UIViewContentModeScaleAspectFill];
+            [imgView setClipsToBounds:YES];
             [displayView addSubview:imgView];
             
+            float topOfButton = self.imgView.bounds.origin.y + self.imgView.bounds.size.height + (self.view.bounds.size.height - self.imgView.bounds.size.height - 75 + 20)/2;
+            CGRect wiggleFrame = CGRectMake((self.view.bounds.size.width - 240)/2,topOfButton, 240, 60);
+            self.wiggleButtonView = [[UIView alloc] initWithFrame:wiggleFrame];
+            UIView *wiggleShadowView = [[UIView alloc] initWithFrame:self.wiggleButtonView.bounds];
+            [wiggleShadowView setBackgroundColor:[UIColor grayColor]];
+            [wiggleShadowView setAlpha:0.3];
+            [self.wiggleButtonView addSubview:wiggleShadowView];
+            UIButton *btnWiggle = [[UIButton alloc] initWithFrame:self.wiggleButtonView.bounds];
+            [btnWiggle addTarget:self action:@selector(showWiggle) forControlEvents:UIControlEventTouchUpInside];
+            [btnWiggle setTitle:@"View wiggle GIF" forState:UIControlStateNormal];
+            [self.wiggleButtonView addSubview:btnWiggle];
+            [self.view addSubview:self.wiggleButtonView];
+            [self.wiggleButtonView setHidden:YES];
+
             viewAttribution = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth, 30)];
             UIView *viewAttrShadow = [[UIView alloc] initWithFrame:viewAttribution.frame];
             [viewAttrShadow setAlpha:0.3];
@@ -193,6 +209,36 @@
         } else {
             [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
         }
+    }
+
+-(void)showWiggle
+    {
+        self.wiggleView = [[UIView alloc] initWithFrame:self.view.bounds];
+        [self.wiggleView setBackgroundColor:[UIColor blackColor]];
+        UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.wiggleView.frame.size.width, 480)];
+        [webView setOpaque:NO];
+        [webView setBackgroundColor: [UIColor clearColor]];
+        CGRect dismissWiggleFrame = CGRectMake((self.wiggleView.frame.size.width - 100)/2, self.wiggleView.frame.size.height - 70, 100, 50);
+        UIView *wiggleShadowView = [[UIView alloc] initWithFrame:dismissWiggleFrame];
+        [wiggleShadowView setBackgroundColor:[UIColor grayColor]];
+        [wiggleShadowView setAlpha:0.3];
+        UIButton *wiggleButton = [[UIButton alloc] initWithFrame:dismissWiggleFrame];
+        [wiggleButton addTarget:self action:@selector(dismissWiggle) forControlEvents:UIControlEventTouchUpInside];
+        [wiggleButton setTitle:@"Done" forState:UIControlStateNormal];
+        [self.wiggleView addSubview:webView];
+        [self.wiggleView addSubview:wiggleShadowView];
+        [self.wiggleView addSubview:wiggleButton];
+        [self.view addSubview:self.wiggleView];
+        
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://poppy3d.com/playercard/%@",imageArray[imageIndex][@"token"]]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        [webView loadRequest:request];
+    }
+
+
+- (void)dismissWiggle
+    {
+        [self.wiggleView removeFromSuperview];
     }
     
 - (void)addViewerControlsContent
@@ -434,6 +480,7 @@
     
 - (void) showMedia:(BOOL)showNext
     {
+        [self.wiggleButtonView setHidden:YES];
         if (imageArray && imageArray.count > 0) {
             if(!isLoading || showNext != directionNext || imgView.image != nil){
                 if (showNext) {
@@ -462,6 +509,7 @@
                     UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
                     [animatedImgView setImage:imgView.image];
                     [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
+                    [animatedImgView setClipsToBounds:YES];
                     [displayView addSubview:animatedImgView];
                     [imgView setImage:nil];
                     CGRect finalFrame = animatedImgView.frame;
@@ -651,6 +699,11 @@
     [viewLoadingLabel setHidden:YES];
     [imgView setImage:image];
     [self showViewerControls];
+    NSString *morphURL = imageArray[imageIndex][@"morph_gif_url"];
+    if (morphURL != (id)[NSNull null]) {
+        NSLog(@"%@", morphURL);
+        [self.wiggleButtonView setHidden:NO];
+    }
 }
     
 - (void)loadInfinite

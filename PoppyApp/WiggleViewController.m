@@ -172,7 +172,7 @@ UIView *gifView;
         [cancelShadowView setAlpha:0.3];
         UIButton *cancelButton = [[UIButton alloc] initWithFrame:cancelButtonFrame];
         [cancelButton addTarget:self action:@selector(dismissAction) forControlEvents:UIControlEventTouchUpInside];
-        [cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
+        [cancelButton setTitle:@"Done" forState:UIControlStateNormal];
         [self.view addSubview:cancelShadowView];
         [self.view addSubview:cancelButton];
     }
@@ -358,7 +358,7 @@ UIView *gifView;
                                        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
                                        self.wiggleURL = [dict objectForKey:@"page_url"];
                                        [self showSharingLink:self.wiggleURL];
-                                       [self saveToDefaults];
+                                       //[self saveToDefaults];
                                        // Hide the loading indicator
                                        [label removeFromSuperview];
                                        [labelShadowView removeFromSuperview];
@@ -376,7 +376,12 @@ UIView *gifView;
     if ([defaults dictionaryForKey:@"wiggleDictionary"]) {
         wiggleDictionary = [[defaults dictionaryForKey:@"wiggleDictionary"] mutableCopy];
     }
-    NSDictionary *wiggleItem = [[NSDictionary alloc] initWithObjectsAndKeys:self.wiggleURL, @"wiggleURL", [NSString stringWithFormat:@"%f", self.xOffset], @"xOffset", [NSString stringWithFormat:@"%f", self.yOffset], @"yOffset", nil];
+    NSDictionary *wiggleItem;
+    if (self.wiggleURL) {
+        wiggleItem = [[NSDictionary alloc] initWithObjectsAndKeys:self.wiggleURL, @"wiggleURL", [NSString stringWithFormat:@"%f", self.xOffset], @"xOffset", [NSString stringWithFormat:@"%f", self.yOffset], @"yOffset", nil];
+    } else {
+        wiggleItem = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%f", self.xOffset], @"xOffset", [NSString stringWithFormat:@"%f", self.yOffset], @"yOffset", nil];
+    }
     [wiggleDictionary setObject:wiggleItem forKey:[self.assetURL absoluteString]];
     [defaults setObject:wiggleDictionary forKey:@"wiggleDictionary"];
     [defaults synchronize];
@@ -476,6 +481,7 @@ UIView *gifView;
             [self fadeInLeft];
         }
         self.tempOffset = CGPointMake(self.xOffset, self.yOffset);
+        [self saveToDefaults];
 	}
 }
     

@@ -539,6 +539,7 @@ BOOL showPopular;
         [self showPortrait];
     }
     [self dismissConnectionAlert];
+    [self dismissCalibrationAlert];
 }
 
 - (void)didReceiveMemoryWarning
