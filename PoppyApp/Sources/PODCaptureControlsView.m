@@ -128,28 +128,28 @@
 }
 
 - (IBAction)shutterButtonDown {
-	NSLog(@"%s",__FUNCTION__);
+	//NSLog(@"%s",__FUNCTION__);
 	if ([self.delegate respondsToSelector:@selector(captureControlsViewDidTouchDownShutter:)]) {
 		[self.delegate captureControlsViewDidTouchDownShutter:self];
 	}
 }
 
 - (IBAction)shutterButtonUpInside {
-	NSLog(@"%s",__FUNCTION__);
+	//NSLog(@"%s",__FUNCTION__);
 	if ([self.delegate respondsToSelector:@selector(captureControlsViewDidTouchUpShutter:)]) {
 		[self.delegate captureControlsViewDidTouchUpShutter:self];
 	}
 }
 
 - (IBAction)homeButtonPressed {
-	NSLog(@"%s",__FUNCTION__);
+	//NSLog(@"%s",__FUNCTION__);
 	if ([self.delegate respondsToSelector:@selector(captureControlsViewDidPressHome:)]) {
 		[self.delegate captureControlsViewDidPressHome:self];
 	}
 }
 
 - (IBAction)toggleRecordingTypePressed {
-	NSLog(@"%s",__FUNCTION__);
+	//NSLog(@"%s",__FUNCTION__);
 	self.recordingTypeButton.selected = !self.recordingTypeButton.selected;
 	[self setCaptureControlMode:self.recordingTypeButton.selected ? kPODCaptureControlModeVideo : kPODCaptureControlModePhoto];
 	if ([self.delegate respondsToSelector:@selector(captureControlsViewDidPressModeChange:)]) {

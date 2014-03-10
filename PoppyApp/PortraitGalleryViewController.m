@@ -431,13 +431,11 @@
     
 - (void)swipeScreenleft:(UISwipeGestureRecognizer *)sgr
     {
-        NSLog(@"show next");
         [self showMedia:YES];
     }
     
 - (void)swipeScreenRight:(UISwipeGestureRecognizer *)sgr
     {
-        NSLog(@"show previous");
         [self showMedia:NO];
     }
     
@@ -537,7 +535,7 @@
                 
                 [self showViewerControls];
             } else {
-                NSLog(@"NO MEDIA");
+                //NSLog(@"NO MEDIA");
             }
         }
     }
@@ -683,7 +681,7 @@
     [self showViewerControls];
     NSString *morphURL = imageArray[imageIndex][@"morph_gif_url"];
     if (morphURL != (id)[NSNull null]) {
-        NSLog(@"%@", morphURL);
+        //NSLog(@"%@", morphURL);
         [self.wiggleButtonView setHidden:NO];
     }
 }

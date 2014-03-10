@@ -455,7 +455,7 @@
                 CFRelease(cgImage);
                 
                 [library writeImageDataToSavedPhotosAlbum:imageData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
-                    NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
+                    //NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
                     if (self.poppyRawGroup && assetURL) {
                         [[PODAssetsManager assetsManager] addAssetURL:assetURL toGroup:self.poppyRawGroup completion:NULL];
                     }
@@ -472,7 +472,7 @@
                         UIImage *otherImage = [UIImage imageWithCGImage:cgImage];
                         NSData *otherImageData = UIImageJPEGRepresentation(otherImage, JPEGQuality);
                         [library writeImageDataToSavedPhotosAlbum:otherImageData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
-                            NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
+                            //NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
                             CFRelease(cgImage);
                             ALAssetsGroup *poppyGroup = self.poppyGroup;
                             if (poppyGroup && assetURL) {
@@ -504,7 +504,7 @@
 
 		
 		[library writeImageDataToSavedPhotosAlbum:aJPEGData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
-			NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
+			//NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
 			if (self.poppyRawGroup && assetURL) {
 				[[PODAssetsManager assetsManager] addAssetURL:assetURL toGroup:self.poppyRawGroup completion:NULL];
 			}
@@ -564,7 +564,7 @@
                     UIImage *otherImage = [UIImage imageWithCGImage:cgImage];
                     NSData *otherImageData = UIImageJPEGRepresentation(otherImage, JPEGQuality);
                     [library writeImageDataToSavedPhotosAlbum:otherImageData metadata:@{} completionBlock:^(NSURL *assetURL, NSError *error) {
-                        NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
+                        //NSLog(@"%s wroteFile: %@ %@",__FUNCTION__,assetURL,error);
                         CFRelease(cgImage);
                         ALAssetsGroup *poppyGroup = self.poppyGroup;
                         if (poppyGroup && assetURL) {
@@ -731,7 +731,7 @@
 }
 
 - (void)captureSessionDidStop {
-	NSLog(@"%s successfully stopped the capture session",__FUNCTION__);
+	//NSLog(@"%s successfully stopped the capture session",__FUNCTION__);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -879,7 +879,7 @@
         CGFloat dx = stopLocation.x - self.startLocation.x;
         CGFloat dy = stopLocation.y - self.startLocation.y;
         distance = sqrt(dx*dx + dy*dy );
-        NSLog(@"Distance: %f", distance);
+        //NSLog(@"Distance: %f", distance);
         if (distance > minDistance) {
             [self switchToViewer];
         }
@@ -904,7 +904,7 @@
 - (void)dealloc {
 	self.buttonStealer.upBlock = nil;
 	self.buttonStealer.downBlock = nil;
-	NSLog(@"%s",__FUNCTION__);
+	//NSLog(@"%s",__FUNCTION__);
 }
 
 
@@ -969,7 +969,7 @@
 			[self.movieFileOutput stopRecording];
 		} else {
 			[[TCMCaptureManager captureManager] finishWriterWithCompletionHandler:^(AVAssetWriter *aWriter) {
-				NSLog(@"%s finished writing: %@",__FUNCTION__,aWriter);
+				//NSLog(@"%s finished writing: %@",__FUNCTION__,aWriter);
 				// TODO: transfer to video library
 				NSURL *fileURL = aWriter.outputURL;
 				[self moveRecordedVideoToAssetLibrary:fileURL];

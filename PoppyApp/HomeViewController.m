@@ -51,7 +51,7 @@ BOOL showPopular;
     ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
     if (status == ALAuthorizationStatusNotDetermined) {
         [lib enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-            NSLog(@"%i",[group numberOfAssets]);
+            //NSLog(@"%i",[group numberOfAssets]);
         } failureBlock:^(NSError *error) {
             if (error.code == ALAssetsLibraryAccessUserDeniedError) {
                 NSLog(@"user denied access, code: %i",error.code);
@@ -85,17 +85,14 @@ BOOL showPopular;
     
     __weak __typeof__(self) weakSelf = self;
     self.buttonStealer.upBlock = ^{
-        NSLog(@"^^^^^^^^^^^^^^^^ VOLUME UP ^^^^^^^^^^^^^^");
         [weakSelf plusVolumeButtonPressedAction];
     };
     self.buttonStealer.downBlock = ^{
-        NSLog(@"vvvvvvvvvvvvvvvv VOLUME DOWN vvvvvvvvvvvvvvv");
         [weakSelf minusVolumeButtonPressedAction];
     };
 }
 
 - (void)minusVolumeButtonPressedAction {
-    NSLog(@"--- minus vol button pressed ---");
     [self launchViewer];
 }
 

@@ -64,7 +64,7 @@ void volumeListenerCallback (
 
 - (void)addMyListener {
 	if (self.listenerRegistrationCount > 0) {
-		NSLog(@"%s over registering! (%ld)",__FUNCTION__,(long)self.listenerRegistrationCount);
+		//NSLog(@"%s over registering! (%ld)",__FUNCTION__,(long)self.listenerRegistrationCount);
 	}
 	AudioSessionAddPropertyListener(kAudioSessionProperty_CurrentHardwareOutputVolume, volumeListenerCallback, (__bridge void *)(self));
 	self.listenerRegistrationCount++;

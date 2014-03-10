@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <MessageUI/MessageUI.h>
 
-@interface WiggleViewController : UIViewController <MFMailComposeViewControllerDelegate>
+@interface WiggleViewController : UIViewController
 @property (nonatomic, strong) UIImage *stereoImage;
 @property (nonatomic, strong) NSURL *assetURL;
 @end

@@ -104,7 +104,7 @@ NSString * const kPODDeviceSettingsCalibrationRotationOffsetKey = @"rotationOffs
 		}
 	}
 	if (![fallbackPlatformString isEqualToString:platformString]) {
-		NSLog(@"%s no per device settings found for: %@ falling back to %@",__FUNCTION__,platformString, fallbackPlatformString);
+		//NSLog(@"%s no per device settings found for: %@ falling back to %@",__FUNCTION__,platformString, fallbackPlatformString);
 		// write it into the settings to speedup lookup in the future
 		self.deviceSettings[platformString] = perDeviceSettings;
 	}
@@ -132,7 +132,7 @@ NSString * const kPODDeviceSettingsCalibrationRotationOffsetKey = @"rotationOffs
 				}
 				settings;
 			});
-			NSLog(@"%s found json file %@  -- %@",__FUNCTION__,fileURL, deviceString);
+			//NSLog(@"%s found json file %@  -- %@",__FUNCTION__,fileURL, deviceString);
 			NSError *error = nil;
 			NSData *jsonData = [NSData dataWithContentsOfURL:fileURL options:0 error:&error];
 			if (!jsonData) {
@@ -144,12 +144,12 @@ NSString * const kPODDeviceSettingsCalibrationRotationOffsetKey = @"rotationOffs
 					NSAssert(NO, @"Error parsing the config json");
 				} else {
 					// parse it
-					NSLog(@"%s %@",__FUNCTION__,jsonDict);
+					//NSLog(@"%s %@",__FUNCTION__,jsonDict);
 					for (NSString *modeName in jsonDict) {
 						PODDeviceSettings *settings = [PODDeviceSettings deviceSettingsFromJSONRepresentation:jsonDict[modeName] modeName:modeName deviceString:deviceString];
 						if (settings) {
 							perDeviceSettings[settings.modeName] = settings;
-							NSLog(@"%s settings loaded: %@",__FUNCTION__, settings);
+							//NSLog(@"%s settings loaded: %@",__FUNCTION__, settings);
 						}
 					}
 				}

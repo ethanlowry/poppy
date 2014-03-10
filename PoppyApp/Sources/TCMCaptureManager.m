@@ -313,7 +313,7 @@
 				if (((char *)&subFormat)[0] == 'v') {
 					continue;
 				}
-				NSLog(@"%s description = %@  |%@|",__FUNCTION__,format, [[NSString alloc] initWithBytes:&subFormat length:4 encoding:NSMacOSRomanStringEncoding]);
+				//NSLog(@"%s description = %@  |%@|",__FUNCTION__,format, [[NSString alloc] initWithBytes:&subFormat length:4 encoding:NSMacOSRomanStringEncoding]);
 				// set format and call out to client
 				__strong __typeof__(weakContinueBlock) strongContinueBlock = weakContinueBlock;
 				[weakSelf enqueueBlockToSessionQueue:^{

@@ -32,7 +32,7 @@
 	[self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAlbum
 									  usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
 										  if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:albumName]) {
-											  NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
+											  //NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
 											  if (group.numberOfAssets > 0) {
 												  NSIndexSet *lastItemSet = [NSIndexSet indexSetWithIndex:group.numberOfAssets-1];
 												  [group enumerateAssetsAtIndexes:lastItemSet options:0 usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
@@ -63,8 +63,8 @@
 				 resultBlock:^(ALAsset *asset) {
 					 // assign the photo to the album
 					 [anAssetsGroup addAsset:asset];
-					 NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [anAssetsGroup valueForProperty:ALAssetsGroupPropertyName]);
-					 NSLog(@"SIZE: %f : %f", [asset defaultRepresentation].dimensions.height, [asset defaultRepresentation].dimensions.width);
+					 //NSLog(@"Added %@ to %@", [[asset defaultRepresentation] filename], [anAssetsGroup valueForProperty:ALAssetsGroupPropertyName]);
+					 //NSLog(@"SIZE: %f : %f", [asset defaultRepresentation].dimensions.height, [asset defaultRepresentation].dimensions.width);
 					 safeCompletion(asset,nil);
 				 }
 				failureBlock:^(NSError* error) {
@@ -99,7 +99,7 @@
         [library enumerateGroupsWithTypes:ALAssetsGroupAlbum
                                usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
                                    if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:aName]) {
-                                       NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
+                                       //NSLog(@"found album %@", [group valueForProperty:ALAssetsGroupPropertyName]);
                                        didFindGroup = YES;
                                        aGroupCompletion(group, nil);
                                        *stop = YES;

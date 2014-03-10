@@ -34,7 +34,6 @@ NSURL *fileURL;
 UIImage *leftImg;
 UIImage *rightImg;
 float offset = 0.0;
-MFMailComposeViewController *picker;
 UIView *gifView;
 
 
@@ -183,78 +182,6 @@ UIView *gifView;
 {
     [self dismissViewControllerAnimated:YES completion:^{}];
 }
-
-/*
--(void)saveGif
-{
-    gifView = [[UIView alloc] initWithFrame:self.view.frame];
-    float scale = 4.0;
-    
-    //crop -- currently assumes the image in aspect fill is full width
-    float cropAmount = offset * leftImg.size.width/320 - offset/2;
-    NSLog(@"OFFSET: %f", offset);
-    NSLog(@"WIDTH: %f, HEIGHT: %f", leftImg.size.width, leftImg.size.height);
-    NSLog(@"CROP AMT:%f", cropAmount);
-    
-    //crop the left image with scale
-    CGRect leftCrop;
-    if (cropAmount > 0) {
-        leftCrop = CGRectMake(0, 0, leftImg.size.width - cropAmount, leftImg.size.height);
-    } else {
-        leftCrop = CGRectMake(-cropAmount, 0, leftImg.size.width + cropAmount, leftImg.size.height);
-    }
-    CGImageRef leftImageRef = CGImageCreateWithImageInRect([leftImg CGImage], leftCrop);
-    UIImage *leftForAnimation = [UIImage imageWithCGImage:leftImageRef scale:scale orientation:UIImageOrientationUp];
-    CGImageRelease(leftImageRef);
-    
-    //crop the right image with scale
-    CGRect rightCrop;
-    if (cropAmount > 0) {
-        rightCrop = CGRectMake(cropAmount, 0, rightImg.size.width - cropAmount, rightImg.size.height);
-    } else {
-        rightCrop = CGRectMake(0, 0, rightImg.size.width + cropAmount, rightImg.size.height);
-    }
-    CGImageRef rightImageRef = CGImageCreateWithImageInRect([rightImg CGImage], rightCrop);
-    UIImage *rightForAnimation = [UIImage imageWithCGImage:rightImageRef scale:scale orientation:UIImageOrientationUp];
-    CGImageRelease(rightImageRef);
-    
-    NSLog(@"WIDTH: %f, HEIGHT: %f", leftForAnimation.size.width, leftForAnimation.size.height);
-    
-    //make the gif
-    [self makeAnimatedGifWithLeft:leftForAnimation withRight:rightForAnimation];
-    
-    //display the gif
-    UIImage *image = [UIImage animatedImageWithAnimatedGIFURL:fileURL];
-    animatedView = [[UIImageView alloc] initWithImage:image];
-    [animatedView setFrame:self.view.frame];
-    [animatedView setContentMode:UIViewContentModeScaleAspectFill];
-    [gifView addSubview:animatedView];
-    
-    // add the send button
-    CGRect buttonFrame = CGRectMake(50, self.view.frame.size.height - 70, 100, 50);
-    UIView *shadowView = [[UIView alloc] initWithFrame:buttonFrame];
-    [shadowView setBackgroundColor:[UIColor blackColor]];
-    [shadowView setAlpha:0.3];
-    UIButton *sendButton = [[UIButton alloc] initWithFrame:buttonFrame];
-    [sendButton addTarget:self action:@selector(displayComposerSheet) forControlEvents:UIControlEventTouchUpInside];
-    [sendButton setTitle:@"Send" forState:UIControlStateNormal];
-    [gifView addSubview:shadowView];
-    [gifView addSubview:sendButton];
-    
-    // add the retake button
-    CGRect buttonFrame2 = CGRectMake(170, self.view.frame.size.height - 70, 100, 50);
-    UIView *shadowView2 = [[UIView alloc] initWithFrame:buttonFrame2];
-    [shadowView2 setBackgroundColor:[UIColor blackColor]];
-    [shadowView2 setAlpha:0.3];
-    UIButton *retakeButton = [[UIButton alloc] initWithFrame:buttonFrame2];
-    [retakeButton addTarget:self action:@selector(redoGif) forControlEvents:UIControlEventTouchUpInside];
-    [retakeButton setTitle:@"Redo" forState:UIControlStateNormal];
-    [gifView addSubview:shadowView2];
-    [gifView addSubview:retakeButton];
-    
-    [self.view addSubview:gifView];
-}
- */
 
 -(void)redoGif
 {
@@ -536,47 +463,6 @@ UIView *gifView;
     } else {
         [self.leftImgView setAlpha:0.5];
     }
-}
-
--(void)displayComposerSheet
-{
-    picker = [[MFMailComposeViewController alloc] init];
-    picker.mailComposeDelegate = self;
-    [picker setSubject:@"Check out my wiggle gif!"];
-    
-    // Attach the image to the email
-    NSData *gifData = [NSData dataWithContentsOfURL: fileURL];
-    [picker addAttachmentData:gifData mimeType:@"image/gif" fileName:@"animated.gif"];
-    
-    // Fill out the email body text
-    NSString *emailBody = @"My wiggle gif is attached";
-    [picker setMessageBody:emailBody isHTML:NO];
-    [self presentViewController:picker animated:YES completion:nil];
-    
-}
-
-- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
-{
-    switch (result)
-    {
-        case MFMailComposeResultCancelled:
-            NSLog(@"Mail cancelled: you cancelled the operation and no email message was queued.");
-            break;
-        case MFMailComposeResultSaved:
-            NSLog(@"Mail saved: you saved the email message in the drafts folder.");
-            break;
-        case MFMailComposeResultSent:
-            NSLog(@"Mail send: the email message is queued in the outbox. It is ready to send.");
-            break;
-        case MFMailComposeResultFailed:
-            NSLog(@"Mail failed: the email message was not saved or queued, possibly due to an error.");
-            break;
-        default:
-            NSLog(@"Mail not sent.");
-            break;
-    }
-    // Remove the mail view
-    [picker dismissViewControllerAnimated:NO completion:^{}];
 }
 
 - (BOOL)prefersStatusBarHidden

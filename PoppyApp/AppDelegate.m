@@ -122,7 +122,7 @@ int retry;
                                    NSLog(@"ERROR: %@", error);
                                    isConnected = NO;
                                    if (retry < 3) {
-                                       NSLog(@"RETRY # %d", retry);
+                                       //NSLog(@"RETRY # %d", retry);
                                        retry = retry + 1;
                                        [self performSelector:@selector(loadJSON:) withObject:sort afterDelay:0.5 inModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
                                    }
