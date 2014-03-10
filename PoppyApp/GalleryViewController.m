@@ -11,6 +11,7 @@
 
 @interface GalleryViewController ()
 @property (nonatomic, strong) UIView *separatorBar;
+@property (nonatomic, strong) RBVolumeButtons *buttonStealer;
 @end
 
 @implementation GalleryViewController
@@ -20,7 +21,6 @@
 @synthesize frameHeight;
 @synthesize frameWidth;
 
-@synthesize buttonStealer;
 @synthesize viewLoadingLabel;
 @synthesize imageArray;
 @synthesize viewViewerControls;
@@ -93,34 +93,42 @@ NSMutableArray *recentRequests;
     imageArray = showPopular ? poppyAppDelegate.topImageArray : poppyAppDelegate.recentImageArray;
     queue = [NSOperationQueue new];
     recentRequests = [[NSMutableArray alloc] init];
+    
+    self.buttonStealer = [[RBVolumeButtons alloc] init];
+    
+    __weak __typeof__(self) weakSelf = self;
+    self.buttonStealer.upBlock = ^{
+        [weakSelf plusVolumeButtonPressedAction];
+    };
+    self.buttonStealer.downBlock = ^{
+        [weakSelf minusVolumeButtonPressedAction];
+    };
+    
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationChanged:)
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
 }
-
-- (void)activateButtonStealer
-{
-    //NSLog(@"ACTIVATING BUTTON STEALER");
-    if (!buttonStealer) {
-        __weak typeof(self) weakSelf = self;
-        buttonStealer = [[RBVolumeButtons alloc] init];
-        buttonStealer.upBlock = ^{
-            // + volume button pressed
-            //NSLog(@"volume button pressed");
-            [weakSelf goHome];
-        };
-    }
     
-    [buttonStealer startStealingVolumeButtonEvents];
+- (void)minusVolumeButtonPressedAction {
+    [self showMedia:YES];
+}
+    
+- (void)plusVolumeButtonPressedAction {
+    [self goHome];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     //NSLog(@"viewDidAppear");
     
-    [self activateButtonStealer];
+    int64_t delayInSeconds = 0.01;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self.buttonStealer startStealingVolumeButtonEvents];
+    });
+    
     AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     [poppyAppDelegate makeScreenBrightnessMax];
     
@@ -529,7 +537,6 @@ NSMutableArray *recentRequests;
 
 - (void)goHome
 {
-    [buttonStealer stopStealingVolumeButtonEvents];
     [self dismissViewControllerAnimated:YES completion:^{}];
 }
 
@@ -561,6 +568,20 @@ NSMutableArray *recentRequests;
 - (BOOL)prefersStatusBarHidden
 {
     return YES;
+}
+    
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+    int64_t delayInSeconds = 0.01;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self.buttonStealer stopStealingVolumeButtonEvents];
+    });
+}
+    
+- (void)dealloc {
+	self.buttonStealer.upBlock = nil;
+	self.buttonStealer.downBlock = nil;
 }
 
 - (NSUInteger)supportedInterfaceOrientations

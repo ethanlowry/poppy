@@ -39,8 +39,6 @@
 
 @property (nonatomic) BOOL showPopular;
 
-@property (nonatomic, strong) RBVolumeButtons *buttonStealer;
-
 @property (nonatomic, strong) NSMutableArray *imageArray;
 
 @end

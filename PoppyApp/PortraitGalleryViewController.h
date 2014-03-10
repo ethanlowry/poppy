@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
-#import "RBVolumeButtons.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <MediaPlayer/MediaPlayer.h>
 
@@ -34,8 +33,6 @@
 @property (nonatomic, strong) UIView *viewBlockAlert;
 
 @property (nonatomic) BOOL showPopular;
-
-@property (nonatomic, strong) RBVolumeButtons *buttonStealer;
 
 @property (nonatomic, strong) NSMutableArray *imageArray;
     

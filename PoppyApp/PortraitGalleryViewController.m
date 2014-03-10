@@ -21,7 +21,6 @@
     @synthesize frameHeight;
     @synthesize frameWidth;
     
-    @synthesize buttonStealer;
     @synthesize viewLoadingLabel;
     @synthesize imageArray;
     @synthesize viewViewerControls;
@@ -93,27 +92,11 @@
                                                    object:nil];
     }
     
-- (void)activateButtonStealer
-    {
-        //NSLog(@"ACTIVATING BUTTON STEALER");
-        if (!buttonStealer) {
-            __weak typeof(self) weakSelf = self;
-            buttonStealer = [[RBVolumeButtons alloc] init];
-            buttonStealer.upBlock = ^{
-                // + volume button pressed
-                //NSLog(@"volume button pressed");
-                [weakSelf goHome];
-            };
-        }
-        
-        [buttonStealer startStealingVolumeButtonEvents];
-    }
     
 - (void)viewDidAppear:(BOOL)animated
     {
         AppDelegate *poppyAppDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [poppyAppDelegate makeScreenBrightnessNormal];
-        [self activateButtonStealer];
         if (!imgView) {
             frameWidth = self.view.bounds.size.width;
             frameHeight = self.view.bounds.size.height;
@@ -561,7 +544,6 @@
     
 - (void)goHome
     {
-        [buttonStealer stopStealingVolumeButtonEvents];
         [self dismissViewControllerAnimated:YES completion:^{}];
     }
     
