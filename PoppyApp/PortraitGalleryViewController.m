@@ -131,10 +131,10 @@
             
             imgView = [[UIImageView alloc] initWithFrame:displayView.bounds];
             [imgView setContentMode:UIViewContentModeScaleAspectFill];
-            [imgView setClipsToBounds:YES];
+            [displayView setClipsToBounds:YES];
             [displayView addSubview:imgView];
             
-            float topOfButton = self.imgView.bounds.origin.y + self.imgView.bounds.size.height + (self.view.bounds.size.height - self.imgView.bounds.size.height - 75 + 20)/2;
+            float topOfButton = self.imgView.bounds.origin.y + self.imgView.bounds.size.height + (self.view.bounds.size.height - self.imgView.bounds.size.height - 60 + 20)/2;
             CGRect wiggleFrame = CGRectMake((self.view.bounds.size.width - 240)/2,topOfButton, 240, 60);
             self.wiggleButtonView = [[UIView alloc] initWithFrame:wiggleFrame];
             UIView *wiggleShadowView = [[UIView alloc] initWithFrame:self.wiggleButtonView.bounds];
@@ -198,7 +198,7 @@
     {
         if (!viewViewerControls)
         {
-            viewViewerControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 75, frameWidth, frameHeight)];
+            viewViewerControls = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 60, frameWidth, 60)];
             [viewViewerControls setAutoresizingMask: UIViewAutoresizingFlexibleTopMargin];
             [self addViewerControlsContent];
             [self.view addSubview:viewViewerControls];
@@ -250,19 +250,19 @@
         
         float spacing = (frameWidth - (4 * 70))/3;
         
-        UIButton *buttonShare = [[UIButton alloc] initWithFrame: CGRectMake(0,0,70,75)];
+        UIButton *buttonShare = [[UIButton alloc] initWithFrame: CGRectMake(0,0,70,60)];
         [buttonShare setImage:[UIImage imageNamed:@"sharing"] forState:UIControlStateNormal];
         [buttonShare addTarget:self action:@selector(showSharing) forControlEvents:UIControlEventTouchUpInside];
         
-        UIButton *buttonBlock = [[UIButton alloc] initWithFrame: CGRectMake(70 + spacing,0,70,75)];
+        UIButton *buttonBlock = [[UIButton alloc] initWithFrame: CGRectMake(70 + spacing,0,70,60)];
         [buttonBlock setImage:[UIImage imageNamed:@"flag"] forState:UIControlStateNormal];
         [buttonBlock addTarget:self action:@selector(showBlockAlert) forControlEvents:UIControlEventTouchUpInside];
         
-        buttonFavorite = [[UIButton alloc] initWithFrame: CGRectMake(140+2 * spacing,0,70,75)];
+        buttonFavorite = [[UIButton alloc] initWithFrame: CGRectMake(140+2 * spacing,0,70,60)];
         [buttonFavorite setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
         [buttonFavorite addTarget:self action:@selector(markFavorite) forControlEvents:UIControlEventTouchUpInside];
         
-        UIButton *buttonHome = [[UIButton alloc] initWithFrame: CGRectMake(viewViewerControls.frame.size.width - 70,0,70,75)];
+        UIButton *buttonHome = [[UIButton alloc] initWithFrame: CGRectMake(viewViewerControls.frame.size.width - 70,0,70,60)];
         [buttonHome setImage:[UIImage imageNamed:@"home"] forState:UIControlStateNormal];
         [buttonHome addTarget:self action:@selector(goHome) forControlEvents:UIControlEventTouchUpInside];
         
@@ -509,7 +509,7 @@
                     UIImageView *animatedImgView = [[UIImageView alloc] initWithFrame:imgView.frame];
                     [animatedImgView setImage:imgView.image];
                     [animatedImgView setContentMode:UIViewContentModeScaleAspectFill];
-                    [animatedImgView setClipsToBounds:YES];
+                    //[animatedImgView setClipsToBounds:YES];
                     [displayView addSubview:animatedImgView];
                     [imgView setImage:nil];
                     CGRect finalFrame = animatedImgView.frame;
