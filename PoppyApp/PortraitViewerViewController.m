@@ -124,7 +124,7 @@ int curIndex;
         self.btnWiggle = [[UIButton alloc] initWithFrame:wiggleFrame];
         [self.btnWiggle addTarget:self action:@selector(makeWiggle) forControlEvents:UIControlEventTouchUpInside];
         //[self.btnWiggle setBackgroundColor:[UIColor blackColor]];
-        [self.btnWiggle setTitle:@"Make a wiggle GIF" forState:UIControlStateNormal];
+        [self.btnWiggle setTitle:@"Make a Poppy GIF" forState:UIControlStateNormal];
         [self.view addSubview:self.btnWiggle];
     }
     

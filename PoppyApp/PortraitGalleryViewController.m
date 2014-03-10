@@ -143,7 +143,7 @@
             [self.wiggleButtonView addSubview:wiggleShadowView];
             UIButton *btnWiggle = [[UIButton alloc] initWithFrame:self.wiggleButtonView.bounds];
             [btnWiggle addTarget:self action:@selector(showWiggle) forControlEvents:UIControlEventTouchUpInside];
-            [btnWiggle setTitle:@"View wiggle GIF" forState:UIControlStateNormal];
+            [btnWiggle setTitle:@"View Poppy GIF" forState:UIControlStateNormal];
             [self.wiggleButtonView addSubview:btnWiggle];
             [self.view addSubview:self.wiggleButtonView];
             [self.wiggleButtonView setHidden:YES];
@@ -278,7 +278,7 @@
         if (imageArray[imageIndex] && imageArray[imageIndex][@"web_url"]) {
             NSMutableArray *sharingItems = [NSMutableArray new];
             
-            [sharingItems addObject:[NSString stringWithFormat:@"Check out this Poppy Gif - %@ #poppy3d", imageArray[imageIndex][@"web_url"]]];
+            [sharingItems addObject:[NSString stringWithFormat:@"Check out this Poppy GIF - %@ #poppy3d", imageArray[imageIndex][@"web_url"]]];
             
             UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
             [self presentViewController:activityController animated:YES completion:nil];

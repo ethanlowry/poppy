@@ -403,7 +403,7 @@ UIView *gifView;
 {
     NSMutableArray *sharingItems = [NSMutableArray new];
     if (urlString) {
-        [sharingItems addObject:[NSString stringWithFormat:@"Check out my Poppy Gif - %@ #poppy3d", urlString]];
+        [sharingItems addObject:[NSString stringWithFormat:@"Check out my Poppy GIF - %@ #poppy3d", urlString]];
     }
     
     UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
