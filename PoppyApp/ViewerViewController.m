@@ -97,7 +97,7 @@ int curIndex = -1;
     self.buttonStealer.downBlock = ^{
         [weakSelf minusVolumeButtonPressedAction];
     };
-    
+    curIndex = -1;
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationChanged:)

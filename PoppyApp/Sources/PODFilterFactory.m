@@ -22,7 +22,7 @@
 	return s_maxDimension;
 }
 
-+ (CIFilter *)keystoneFilterWithImage:(CIImage *)inputImage factor:(CGFloat)aFactor longEdge:(CGRectEdge)anEdge {
++ (CIFilter *)keystoneFilterWithImage:(CIImage *)inputImage factor:(CGFloat)aFactor shift:(CGFloat)aShift longEdge:(CGRectEdge)anEdge {
 	// TO DO: deal with horizontal offset
 	CGRect extentRect = inputImage.extent;
 	CIVector *topLeft = [CIVector vectorWithCGPoint:CGPointMake(CGRectGetMinX(extentRect), CGRectGetMaxY(extentRect))];
@@ -30,17 +30,17 @@
 	CIVector *bottomLeft = [CIVector vectorWithCGPoint:CGPointMake(CGRectGetMinX(extentRect), CGRectGetMinY(extentRect))];
 	CIVector *bottomRight = [CIVector vectorWithCGPoint:CGPointMake(CGRectGetMaxX(extentRect), CGRectGetMinY(extentRect))];
 	
-	CGFloat inset = aFactor * CGRectGetHeight(extentRect);
+	CGFloat inset = (aFactor + aShift) * CGRectGetHeight(extentRect);
+    //CGFloat squeeze = aFactor * CGRectGetWidth(extentRect) / 2;
+    CGFloat squeeze = CGRectGetWidth(extentRect) * aShift * 3;
 	
 	if (anEdge == CGRectMinXEdge) {
-		bottomLeft = [CIVector vectorWithX:bottomLeft.X Y:bottomLeft.Y + inset];
-		topLeft = [CIVector vectorWithX:topLeft.X Y:topLeft.Y - inset];
+        bottomLeft = [CIVector vectorWithX:bottomLeft.X - squeeze Y:bottomLeft.Y + inset];
+        topLeft = [CIVector vectorWithX:topLeft.X - squeeze Y:topLeft.Y - inset];
 	} else if (anEdge == CGRectMaxXEdge) {
-		bottomRight = [CIVector vectorWithX:bottomRight.X Y:bottomRight.Y + inset];
-		topRight = [CIVector vectorWithX:topRight.X Y:topRight.Y - inset];
+        bottomRight = [CIVector vectorWithX:bottomRight.X - squeeze Y:bottomRight.Y + inset];
+        topRight = [CIVector vectorWithX:topRight.X - squeeze Y:topRight.Y - inset];
 	}
-	
-	
 	
 	CIFilter *result = [CIFilter filterWithName:@"CIPerspectiveTransform" keysAndValues:kCIInputImageKey,inputImage,
 						@"inputTopLeft"    ,topLeft,
@@ -76,27 +76,43 @@
 			  @"inputTransform",[NSValue valueWithCGAffineTransform:CGAffineTransformMakeRotation(TCMRadiansFromDegrees(aSetting.calibratedRotation))],nil];
 	[filterChain addObject:filter];
 	
+    // using shiftoffset to compensate for the horizontal shift in the keystoning
+    CGFloat shiftOffset = [PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset.x / 3.0;
+    NSLog(@"SHIFT: %f", shiftOffset);
+    
 	CGRect cropRect = CGRectZero;
 	cropRect.size = [PODFilterChainSettings absoluteSizeForNormalizedSize:aSetting.sideCropSize imageExtent:fullExtent];
 	cropRect.origin.y = round(CGRectGetHeight(cropRect) / -2.0);
 	cropRect.origin.x = round(CGRectGetWidth(cropRect) / -2.0);
+    
+    CGFloat stretch = cropRect.size.width * shiftOffset * 3;
+    
 	CGRect leftCropRect = CGRectOffset(cropRect, -[PODFilterChainSettings absoluteWidthForNormalizedWidth:aSetting.leftDistance imageExtent:fullExtent] ,0);
-	
+    
+    leftCropRect.origin.x = leftCropRect.origin.x + stretch;
+    leftCropRect.size.width = leftCropRect.size.width - stretch;
+
+    
 	CIFilter *leftCropFilter = [CIFilter filterWithName:@"CICrop" keysAndValues:kCIInputImageKey,filter.outputImage, @"inputRectangle",[CIVector vectorWithCGRect:leftCropRect],nil];
 	[filterChain addObject:leftCropFilter];
 
 	
 	CGRect rightCropRect = CGRectOffset(cropRect,[PODFilterChainSettings absoluteWidthForNormalizedWidth:aSetting.rightDistance imageExtent:fullExtent],0);
+    
+
+    rightCropRect.size.width = rightCropRect.size.width + stretch;
+    
 	CIFilter *rightCropFilter = [CIFilter filterWithName:@"CICrop" keysAndValues:kCIInputImageKey,filter.outputImage, @"inputRectangle",[CIVector vectorWithCGRect:rightCropRect],nil];
 	[filterChain addObject:rightCropFilter];
 
 	CGFloat keystoneFactor = aSetting.keystoneFactor;
 	
     // TO DO: adjust the keystoneFactor based on the center shift
-	CIFilter *leftKeystoneFilter = [self keystoneFilterWithImage:leftCropFilter.outputImage factor:keystoneFactor longEdge:CGRectMinXEdge];
+    
+	CIFilter *leftKeystoneFilter = [self keystoneFilterWithImage:leftCropFilter.outputImage factor:keystoneFactor shift:-shiftOffset longEdge:CGRectMinXEdge];
 	[filterChain addObject:leftKeystoneFilter];
 
-	CIFilter *rightKeystoneFilter = [self keystoneFilterWithImage:rightCropFilter.outputImage factor:keystoneFactor longEdge:CGRectMaxXEdge];
+	CIFilter *rightKeystoneFilter = [self keystoneFilterWithImage:rightCropFilter.outputImage factor:keystoneFactor shift:shiftOffset longEdge:CGRectMaxXEdge];
 	[filterChain addObject:rightKeystoneFilter];
 
 	

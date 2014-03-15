@@ -71,6 +71,7 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
     } else if (self.needsImage) {
         // Launch the image capture phase of calibration
         self.needsImage = NO;
+        [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = 0.0;
         PODRecordViewController *vc = [[PODRecordViewController alloc] initWithNibName:nil bundle:nil];
         vc.forCalibration = YES;
         [self presentViewController:vc animated:NO completion:NULL];

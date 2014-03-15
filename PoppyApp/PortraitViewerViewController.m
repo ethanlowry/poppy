@@ -286,14 +286,14 @@ int curIndex;
          if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypePhoto) {
              countPhoto++;
              if (self.minGoodAsset < 0) {
-                 self.minGoodAsset = index;
+                 self.minGoodAsset = (int)index;
              }
-             self.maxGoodAsset = index;
+             self.maxGoodAsset = (int)index;
          }
      }];
     
     if (countPhoto > 0) {
-        int assetCount  = [self.assetsGroup numberOfAssets];
+        int assetCount  = (int)[self.assetsGroup numberOfAssets];
         if(curIndex == -1) {
             curIndex = assetCount;
         }

@@ -873,7 +873,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Hack Things LLC (TDD7PUZN8B)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
@@ -890,7 +890,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
-				PROVISIONING_PROFILE = "0BC1ABDB-399A-4104-A9C1-82D942D14033";
+				PROVISIONING_PROFILE = "B9342E34-5B54-43D0-8B54-9F0602308455";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -899,7 +899,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Hack Things LLC (TDD7PUZN8B)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PoppyApp/Poppy-Prefix.pch";
@@ -916,7 +916,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Poppy;
-				PROVISIONING_PROFILE = "0BC1ABDB-399A-4104-A9C1-82D942D14033";
+				PROVISIONING_PROFILE = "E1A876E8-1617-4EAD-9066-C7414578D4A4";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

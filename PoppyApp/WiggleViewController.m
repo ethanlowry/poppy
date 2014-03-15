@@ -190,6 +190,7 @@ UIView *gifView;
 
 -(void)postGif
 {
+    
     if (self.wiggleURL) {
         [self showSharingLink:self.wiggleURL];
     } else {

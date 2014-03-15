@@ -2,7 +2,7 @@
 	"photo" : {
 		"filterChainSettings" :
 		{
-			"center" : "{0.493, 0.5}",
+			"center" : "{0.5, 0.5}",
 			"rotation" : 0.5,
 			"leftDistance" : 0.195,
 			"rightDistance" : 0.195,
@@ -19,7 +19,7 @@
 	"video" : {
 		"filterChainSettings" :
 		{
-			"center" : "{0.493, 0.5}",
+			"center" : "{0.5, 0.5}",
 			"rotation" : 0.5,
 			"leftDistance" : 0.195,
 			"rightDistance" : 0.195,
