@@ -87,7 +87,7 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
         self.CIContext = [CIContext contextWithEAGLContext:self.EAGLContext];
         self.GLKView = glkitView;
         
-        self.horizontalImageView = [[UIImageView alloc] initWithFrame:CGRectMake([PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset.x*1024, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+        self.horizontalImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-[PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset.x*1024, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
         [self.horizontalImageView setContentMode:UIViewContentModeScaleAspectFill];
         [self.horizontalImageView setClipsToBounds:YES];
         [self.horizontalImageView setBackgroundColor:[UIColor redColor]];
@@ -386,7 +386,7 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
             [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f", (self.rotationOffsetStartValue + atan(self.yOffset/self.view.bounds.size.width/2)*180/M_PI)*100]];
             
         } else {
-            CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x)), translationOffset.x);
+            CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x)), translationOffset.x)/10;
             CGRect newFrame = CGRectMake(-(self.centerOffsetStartValue.x - xChangeValue / 1024.)*1024, 0, self.horizontalImageView.bounds.size.width, self.horizontalImageView.bounds.size.height);
             [self.horizontalImageView setFrame:newFrame];
             [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f", (self.centerOffsetStartValue.x - xChangeValue / 1024.)*1000]];
@@ -400,7 +400,7 @@ typedef NS_ENUM(NSInteger, PODCalibrateDisplayMode) {
             [PODDeviceSettingsManager deviceSettingsManager].rotationOffsetInDegrees = degreesChanged;
             [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f", degreesChanged*100]];
         } else {
-            CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x)), translationOffset.x);
+            CGFloat xChangeValue = copysign(MAX(0.0,ABS(translationOffset.x)), translationOffset.x)/10;
             [PODDeviceSettingsManager deviceSettingsManager].calibrationCenterOffset = CGPointMake(self.centerOffsetStartValue.x - xChangeValue / 1024., 0);
             [self.xOffsetLabel setText:[NSString stringWithFormat:@"%02.1f", (self.centerOffsetStartValue.x - xChangeValue / 1024.)*1000]];
         }
