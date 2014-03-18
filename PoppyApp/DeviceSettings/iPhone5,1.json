@@ -28,10 +28,12 @@
 			"sideCropSize" : "{0.330, 0.923}",
 		},
 		"cameraSettings" : {
-			"fps" : 30,
+			"fps" : 20,
 			"resolution" : "{1920, 1080}",
 			"zoom" : 1.0, 
-			"smoothAutoFocus" : true
+			"smoothAutoFocus" : true,
+            "simplePreview" : true,
+            "simplePreviewZoom" : 1.2,
 		}
 	}
 

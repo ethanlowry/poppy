@@ -134,9 +134,10 @@
 		}
 	} else {
 		if (self.videoOutput) {
+            AVCaptureVideoDataOutput *output = self.videoOutput;
 			[captureManager enqueueBlockToSessionQueue:^{
 				[captureManager.captureSession beginConfiguration];
-				[[captureManager captureSession] removeOutput:self.videoOutput];
+				[[captureManager captureSession] removeOutput:output];
 				[captureManager.captureSession commitConfiguration];
 			}];
 		}

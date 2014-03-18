@@ -421,8 +421,10 @@
 							  AVVideoCodecH264, AVVideoCodecKey,
 							  pixelBufferAttributes[(__bridge id)kCVPixelBufferWidthKey], AVVideoWidthKey,
 							  pixelBufferAttributes[(__bridge id)kCVPixelBufferHeightKey], AVVideoHeightKey,
-							  @{AVVideoAllowFrameReorderingKey : @NO, AVVideoAverageBitRateKey : @(dataRate), AVVideoProfileLevelKey : AVVideoProfileLevelH264HighAutoLevel }, AVVideoCompressionPropertiesKey,
+                              @{AVVideoAllowFrameReorderingKey : @NO, AVVideoAverageBitRateKey : @(dataRate), AVVideoProfileLevelKey : AVVideoProfileLevelH264HighAutoLevel,AVVideoExpectedSourceFrameRateKey : @(self.desiredDeviceSettings.cameraSettings.fps)}, AVVideoCompressionPropertiesKey,
 							  nil];
+    
+    
 	AVAssetWriterInput *writerInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:settings];
 	writerInput.expectsMediaDataInRealTime = YES;
 	
